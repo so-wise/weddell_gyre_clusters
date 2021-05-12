@@ -1,3 +1,6 @@
+# Location-specific
+datasets_bsose
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
