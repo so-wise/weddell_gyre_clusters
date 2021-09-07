@@ -7,25 +7,34 @@ from sklearn import mixture
 import xarray as xr
 
 #####################################################################
-# Train and apply GMM
+# Train GMM
 #####################################################################
-def train_and_apply_gmm(profiles, Xpca, n_components_selected, random_state=42):
-# train_gmm(profiles, Xpca, n_components_selected, random_state=42)
-# returns profile object with labels sand posterior probabilities
+def train_gmm(Xpca, n_components_selected, random_state=42):
+# train_gmm(Xpca, n_components_selected, random_state=42)
+# returns gmm
 
     # establish gmm
-    best_gmm = mixture.GaussianMixture(n_components=n_components_selected,
-                                       covariance_type='full',
-                                       random_state=random_state)
+    gmm = mixture.GaussianMixture(n_components=n_components_selected,
+                                  covariance_type='full',
+                                  random_state=random_state)
 
-    # fit this GMM
-    best_gmm.fit(Xpca)
+    # fit this GMM using the training data in PC space
+    gmm.fit(Xpca)
+
+    return gmm
+
+#####################################################################
+# Apply GMM
+#####################################################################
+def apply_gmm(profiles, Xpca, gmm, n_components_selected, random_state=42):
+# train_gmm(profiles, Xpca, n_components_selected, random_state=42)
+# returns gmm
 
     # assign class labels ("predict" the class using the selected GMM)
-    labels = best_gmm.predict(Xpca)
+    labels = gmm.predict(Xpca)
 
     # find posterior probabilities (the probabilities of belonging to each class)
-    posterior_probs = best_gmm.predict_proba(Xpca)
+    posterior_probs = gmm.predict_proba(Xpca)
 
     # convert labels into xarray format
     xlabels = xr.DataArray(labels, coords=[profiles.profile], dims='profile')
