@@ -116,12 +116,9 @@ def preprocess_time_and_date(profiles):
     return profiles
 
 #####################################################################
-# Fit and apply PCA (applied to absolute salinity, conservative temp)
+# Apply preprocessing scaling
 #####################################################################
-def fit_and_apply_pca(profiles, number_of_pca_components=3):
-
-    # start message
-    print('fit_and_apply_pca')
+def apply_scaling(profiles):
 
     # scale salinity
     X = profiles.prof_SA
@@ -135,6 +132,19 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3):
 
     # concatenate
     Xscaled = np.concatenate((scaled_T,scaled_S),axis=1)
+
+    return Xscaled
+
+#####################################################################
+# Fit and apply PCA (applied to absolute salinity, conservative temp)
+#####################################################################
+def fit_and_apply_pca(profiles, number_of_pca_components=3):
+
+    # start message
+    print('fit_and_apply_pca')
+
+    # concatenate
+    Xscaled = apply_scaling(profiles)
 
     # create PCA object
     pca = PCA(number_of_pca_components)
@@ -155,3 +165,47 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3):
     print(total_variance_explained_)
 
     return profiles, pca, Xpca
+
+#####################################################################
+# Fit and apply UMAP
+#####################################################################
+def fit_and_apply_umap(ploc,profiles,n_neighbors=50,min_dist=0.0):
+
+    # import packages
+    import umap
+    import random
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as colors
+
+    # start message
+    print('fit_and_apply_umap')
+
+    # apply scaling
+    Xscaled = apply_scaling(profiles)
+
+    # random sample
+    rsample_size = int(0.33*Xscaled.shape[0])
+    rows_id = random.sample(range(0,Xscaled.shape[0]-1), rsample_size)
+    Xscaled_for_umap = Xscaled[rows_id,:]
+
+    # apply UMAP to scaled data
+    embedding = umap.UMAP(n_neighbors=n_neighbors,
+                          min_dist=min_dist,
+                          n_components=3,
+                          random_state=42).fit_transform(Xscaled_for_umap)
+
+    embedding50n_3D=embedding
+
+    #Plot embedding
+    sns.set(style='white', context='notebook', rc={'figure.figsize':(14,10)})
+    fig = plt.figure(figsize=(20,20))
+    ax = fig.gca(projection='3d')
+
+    xy=embedding50n_3D
+
+    ax.scatter(xy[:, 0], xy[:, 1], xy[:,2], 'o', s=1.0)
+    plt.savefig(ploc + 'umap' + '.png')
+    plt.close()
+
+    return embedding

@@ -1,3 +1,8 @@
+# install if needed
+# pip install umap-learn
+# pip install seaborn
+# pip install gsw
+
 # import
 import load_and_preprocess as lp
 import bic_and_aic as ba
@@ -89,6 +94,12 @@ pt.plot_SA_class_structure(ploc, profiles, class_means,
 pt.plot_sig0_class_structure(ploc, profiles, class_means,
                              class_stds, n_components_selected, zmin, zmax)
 
+# plot t-SNE
+pt.plot_tsne(ploc, profiles, Xpca, random_state=0, perplexity=50)
+
+# alternative
+umap_embed = lp.fit_and_apply_umap(ploc,profiles, n_neighbors=50, min_dist=0.0)
+
 # plot label map
 pt.plot_label_map(ploc, profiles, n_components_selected,
                    lon_min, lon_max, lat_min, lat_max)
@@ -96,5 +107,5 @@ pt.plot_label_map(ploc, profiles, n_components_selected,
 # calculate the i-metric_
 df1D = profiles.isel(depth=0)
 gmm.calc_i_metric(profiles)
-plt.plot_i_metric_single_panel(df1D)
-plot_i_metric_multiple_panels(df1D, n_components_selected)
+#plt.plot_i_metric_single_panel(df1D)
+#plot_i_metric_multiple_panels(df1D, n_components_selected)

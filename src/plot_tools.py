@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+from sklearn import manifold
+import random
 import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -32,6 +34,7 @@ def plot_bic_scores(ploc, max_N, bic_mean, bic_std):
     spl.set_ylabel('BIC score',fontsize=18)
     # save figure
     plt.savefig(ploc + 'bic_scores.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot AIC scores
@@ -50,6 +53,7 @@ def plot_aic_scores(ploc, max_N, aic_mean, aic_std):
     spl.set_ylabel('AIC score',fontsize=18)
     # save figure
     plt.savefig(ploc + 'aic_scores.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Sample profile plots for T, S, CT, SA, and sig0
@@ -62,33 +66,43 @@ def prof_TS_sample_plots(ploc, profiles):
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_T[subset].plot(y='depth', yincrease=False)
     plt.savefig(ploc + 'prof_T_subset.png', bbox_inches='tight')
+    plt.close()
     # salinity plots
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_S[subset].plot(y='depth', yincrease=False)
     plt.savefig(ploc + 'prof_S_subset.png', bbox_inches='tight')
+    plt.close()
     # conservative temperature plots
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_CT[subset].plot(y='depth', yincrease=False)
     plt.savefig(ploc + 'prof_CT_subset.png', bbox_inches='tight')
+    plt.close()
     # absolute salinity plots
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_SA[subset].plot(y='depth', yincrease=False)
     plt.savefig(ploc + 'prof_SA_subset.png', bbox_inches='tight')
+    plt.close()
     # sigma0 density
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.sig0[subset].plot(y='depth', yincrease=False)
     plt.savefig(ploc + 'sig0_subset.png', bbox_inches='tight')
+    plt.close()
     # histograms
     xr.plot.hist(profiles.prof_T,figsize=(15,10))
     plt.savefig(ploc + 'hist_prof_T.png', bbox_inches='tight')
+    plt.close()
     xr.plot.hist(profiles.prof_S,figsize=(15,10))
     plt.savefig(ploc + 'hist_prof_S.png', bbox_inches='tight')
+    plt.close()
     xr.plot.hist(profiles.prof_CT,figsize=(15,10))
     plt.savefig(ploc + 'hist_prof_CT.png', bbox_inches='tight')
+    plt.close()
     xr.plot.hist(profiles.prof_SA,figsize=(15,10))
     plt.savefig(ploc + 'hist_prof_SA.png', bbox_inches='tight')
+    plt.close()
     xr.plot.hist(profiles.sig0,figsize=(15,10))
     plt.savefig(ploc + 'hist_sig0.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot PCA structure for temperature and salinity
@@ -130,6 +144,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
         ax.tick_params(axis='y', labelsize=30)
 
     plt.savefig(ploc + 'pca_CT.png', bbox_inches='tight')
+    plt.close()
 
     # ------- SALINITY PCA COMPONENTS
     # initialize the figure
@@ -166,6 +181,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
         ax.tick_params(axis='y', labelsize=30)
 
     plt.savefig(ploc + 'pca_SA.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot mean and stdev salinity class structure
@@ -224,6 +240,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
 
     fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_SA_byClass.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot mean and stdev conservative temperature class structure
@@ -282,6 +299,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
 
     fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_CT_byClass.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot mean and stdev density class structure
@@ -340,6 +358,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 
     fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_sig0_byClass.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot class label map using cartopy
@@ -388,6 +407,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
 
     # save figure
     plt.savefig(ploc + 'label_map.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot single i-metric map
@@ -428,6 +448,7 @@ def plot_i_metric_single_panel(df1D):
 
     # save figure
     plt.savefig(ploc + 'i-metric_single.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot multiple i-metric maps (one per class)
@@ -469,6 +490,27 @@ def plot_i_metric_multiple_panels(df1D, n_components_selected):
 
         # save figure
         plt.savefig(ploc + 'i-metric_' + str(int(iclass)) + '.png', bbox_inches='tight')
+        plt.close()
+
+#####################################################################
+# Fit and plot t-SNE 
+#####################################################################
+def plot_tsne(ploc, profiles, Xpca, random_state=0, perplexity=50):
+    # random sample for tSNE
+    rows_id = random.sample(range(0,Xpca.shape[0]-1), 1000)
+    Xpca_for_tSNE = Xpca[rows_id,:]
+    colors_for_tSNE = profiles.label[rows_id].values
+    tsne = manifold.TSNE(n_components=2, init='random',
+                         random_state=random_state,
+                         perplexity=perplexity)
+    trans_data = tsne.fit_transform(Xpca_for_tSNE).T
+
+    # scatterplot
+    plt.scatter(trans_data[0], trans_data[1], c=colors_for_tSNE)
+    plt.title("t-SNE")
+    plt.axis('tight')
+    plt.savefig(ploc + 'tSNE' + '.png')
+    plt.close()
 
 #####################################################################
 # T-S plot for a single pressure level

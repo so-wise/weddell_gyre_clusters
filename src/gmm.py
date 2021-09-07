@@ -4,6 +4,7 @@
 
 #import numpy as np
 from sklearn import mixture
+import numpy as np
 import xarray as xr
 
 #####################################################################
