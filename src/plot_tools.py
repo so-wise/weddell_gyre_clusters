@@ -10,12 +10,167 @@ import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
 from sklearn import manifold
+import seaborn as sns
 import random
 import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import random
 import gsw
+
+#####################################################################
+# Plot PCA structure
+#####################################################################
+def plot_pca(ploc, profiles, pca, Xpca, frac=0.33):
+
+    ############# Temperature plot
+
+    # initialize the figure
+    plt.figure(figsize=(30, 30))
+    plt.style.use('seaborn-darkgrid')
+    #palette = cmx.Paired(np.linspace(0,1,n_comp))
+
+    # vertical coordinate
+    z = profiles.depth.values
+
+    # iterate over groups
+    num = 0
+    for npca in range(pca.n_components):
+        num += 1
+
+        # select subplot
+        ax = plt.subplot(1,3,num)
+        plt.plot(pca.components_[npca,0:15], z, marker='', linestyle='solid',
+                 color='black', linewidth=6.0, alpha=0.9)
+
+        # custom grid and axes
+        plt.ylim([min(z), max(z)])
+        #plt.xlim([33.6, 37.0])
+
+        #text box
+        fs = 42 # font size
+        plt.xlabel('PC', fontsize=fs)
+        plt.ylabel('Depth (m)', fontsize=fs)
+        plt.title('PC' + str(num) + ' (temp)', fontsize=fs)
+
+        # font and axis stuff
+        plt.gca().invert_yaxis()
+        ax.tick_params(axis='x', labelsize=30)
+        ax.tick_params(axis='y', labelsize=30)
+
+    # save figure and close
+    plt.savefig(ploc + 'pca_temp.png', bbox_inches='tight')
+    plt.close()
+
+    ############# Salinity plot
+
+    # initialize the figure
+    plt.figure(figsize=(30, 30))
+    plt.style.use('seaborn-darkgrid')
+    #palette = cmx.Paired(np.linspace(0,1,n_comp))
+
+    # vertical coordinate
+    z = profiles.depth.values
+
+    # iterate over groups
+    num = 0
+    for npca in range(pca.n_components):
+        num += 1
+
+        # select subplot
+        ax = plt.subplot(1,3,num)
+        plt.plot(pca.components_[npca,15:], z, marker='', linestyle='solid',
+                 color='black', linewidth=6.0, alpha=0.9)
+
+        # custom grid and axes
+        plt.ylim([min(z), max(z)])
+        #plt.xlim([33.6, 37.0])
+
+        #text box
+        fs = 42 # font size
+        plt.xlabel('PC', fontsize=fs)
+        plt.ylabel('Depth (m)', fontsize=fs)
+        plt.title('PC' + str(num) + ' (salt)', fontsize=fs)
+
+        # font and axis stuff
+        plt.gca().invert_yaxis()
+        ax.tick_params(axis='x', labelsize=30)
+        ax.tick_params(axis='y', labelsize=30)
+
+    # save figure and close
+    plt.savefig(ploc + 'pca_salt.png', bbox_inches='tight')
+    plt.close()
+
+    ############# 3D (no shading by class yet)
+
+    # just to shorten the name
+    xy=Xpca
+    # random sample
+    rsample_size = int(frac*xy.shape[0])
+    rows_id = random.sample(range(0,xy.shape[0]-1), rsample_size)
+    xyp = xy[rows_id,:]
+
+    # 3D scatterplots (not shaded by class in this instance)
+
+    # view 1
+    fig = plt.figure(figsize=(15,15))
+    ax = fig.add_subplot(projection='3d')
+    ax.view_init(30, 0)
+    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
+    plt.savefig(ploc + 'pca_scatter_nolabels_view1' + '.png')
+    plt.close()
+
+    # view 2
+    fig = plt.figure(figsize=(15,15))
+    ax = fig.add_subplot(projection='3d')
+    ax.view_init(30, 120)
+    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
+    plt.savefig(ploc + 'pca_scatter_nolabels_view2' + '.png')
+    plt.close()
+
+    # view 3
+    fig = plt.figure(figsize=(15,15))
+    ax = fig.add_subplot(projection='3d')
+    ax.view_init(30, 240)
+    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
+    plt.savefig(ploc + 'pca_scatter_nolabels_view3' + '.png')
+    plt.close()
+
+#####################################################################
+# Plot UMAP structures (not shaded by class or anything yet)
+#####################################################################
+def plot_umap(ploc, Xtrans, frac=0.33):
+
+    # just to shorten the name
+    xy=Xtrans
+    # random sample
+    rsample_size = int(frac*xy.shape[0])
+    rows_id = random.sample(range(0,xy.shape[0]-1), rsample_size)
+    xyp = xy[rows_id,:]
+
+    # view 1
+    fig = plt.figure(figsize=(15,15))
+    ax = fig.add_subplot(projection='3d')
+    ax.view_init(30, 0)
+    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
+    plt.savefig(ploc + 'umap_scatter_nolabels_view1' + '.png')
+    plt.close()
+
+    # view 2
+    fig = plt.figure(figsize=(15,15))
+    ax = fig.add_subplot(projection='3d')
+    ax.view_init(30, 120)
+    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
+    plt.savefig(ploc + 'umap_scatter_nolabels_view2' + '.png')
+    plt.close()
+
+    # view 3
+    fig = plt.figure(figsize=(15,15))
+    ax = fig.add_subplot(projection='3d')
+    ax.view_init(30, 240)
+    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
+    plt.savefig(ploc + 'umap_scatter_nolabels_view3' + '.png')
+    plt.close()
 
 #####################################################################
 # Plot BIC scores
@@ -493,7 +648,7 @@ def plot_i_metric_multiple_panels(df1D, n_components_selected):
         plt.close()
 
 #####################################################################
-# Fit and plot t-SNE 
+# Fit and plot t-SNE
 #####################################################################
 def plot_tsne(ploc, profiles, Xpca, random_state=0, perplexity=50):
     # random sample for tSNE

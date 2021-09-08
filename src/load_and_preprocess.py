@@ -2,10 +2,13 @@
 # Utilities for loading profile data, slicing
 #####################################################################
 
+# import pakcages
 import numpy as np
 import xarray as xr
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
+import umap
+import random
 
 #####################################################################
 # Load the profile data (combined CTD, float, and seal data)
@@ -164,19 +167,12 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3):
     total_variance_explained_ = np.sum(pca.explained_variance_ratio_)
     print(total_variance_explained_)
 
-    return profiles, pca, Xpca
+    return pca, Xpca
 
 #####################################################################
 # Fit and apply UMAP
 #####################################################################
-def fit_and_apply_umap(ploc,profiles,n_neighbors=50,min_dist=0.0):
-
-    # import packages
-    import umap
-    import random
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    import matplotlib.colors as colors
+def fit_and_apply_umap(ploc,profiles,n_neighbors=50,min_dist=0.0,frac=0.33):
 
     # start message
     print('fit_and_apply_umap')
@@ -185,27 +181,17 @@ def fit_and_apply_umap(ploc,profiles,n_neighbors=50,min_dist=0.0):
     Xscaled = apply_scaling(profiles)
 
     # random sample
-    rsample_size = int(0.33*Xscaled.shape[0])
+    rsample_size = int(frac*Xscaled.shape[0])
     rows_id = random.sample(range(0,Xscaled.shape[0]-1), rsample_size)
     Xscaled_for_umap = Xscaled[rows_id,:]
 
-    # apply UMAP to scaled data
+    # fit UMAP to scaled data
     embedding = umap.UMAP(n_neighbors=n_neighbors,
                           min_dist=min_dist,
                           n_components=3,
-                          random_state=42).fit_transform(Xscaled_for_umap)
+                          random_state=42).fit(Xscaled_for_umap)
 
-    embedding50n_3D=embedding
+    # transform
+    Xumap = embedding.transform(Xscaled)
 
-    #Plot embedding
-    sns.set(style='white', context='notebook', rc={'figure.figsize':(14,10)})
-    fig = plt.figure(figsize=(20,20))
-    ax = fig.gca(projection='3d')
-
-    xy=embedding50n_3D
-
-    ax.scatter(xy[:, 0], xy[:, 1], xy[:,2], 'o', s=1.0)
-    plt.savefig(ploc + 'umap' + '.png')
-    plt.close()
-
-    return embedding
+    return embedding, Xumap

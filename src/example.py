@@ -1,9 +1,13 @@
-# install if needed
+#####################################################################
+# These may need to be installed
+#####################################################################
 # pip install umap-learn
 # pip install seaborn
 # pip install gsw
 
-# import
+#####################################################################
+# Import packages
+#####################################################################
 import load_and_preprocess as lp
 import bic_and_aic as ba
 import plot_tools as pt
@@ -15,9 +19,15 @@ import gmm
 from dask.distributed import Client
 import dask
 
-# start dask Client
+#####################################################################
+# Start Dask client (not working at present)
+#####################################################################
 #client = Client(n_workers=2, threads_per_worker=2, memory_limit='6GB')
 #client
+
+#####################################################################
+# Set runtime parameters (filenames, flags, ranges)
+#####################################################################
 
 # set locations and names
 descrip = 'allDomain' # extra description for filename
@@ -27,6 +37,9 @@ dloc = 'models/'
 
 # maximum number of components
 max_N = 20
+
+# transformation method (pca, umap)
+transform_method = 'pca'
 
 # calculate BIC and AIC?
 getBIC = False
@@ -51,6 +64,10 @@ n_components_selected = 10
 gmm_fname = 'models/gmm_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip
 fname = 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip + '.nc'
 
+#####################################################################
+# Data loading and preprocessing
+#####################################################################
+
 # load profile subset based on ranges given above
 profiles = lp.load_profile_data(data_location, lon_min, lon_max,
                                 lat_min, lat_max, zmin, zmax)
@@ -64,27 +81,61 @@ profiles = density.calc_density(profiles)
 # quick prof_T and prof_S selection plots
 pt.prof_TS_sample_plots(ploc, profiles)
 
-# apply PCA
-profiles, pca, Xpca = lp.fit_and_apply_pca(profiles)
+#####################################################################
+# Dimensionality reduction / transformation
+#####################################################################
+
+if transform_method=='pca':
+
+    # apply PCA
+    pca, Xtrans = lp.fit_and_apply_pca(profiles)
+
+    # plot PCA structure
+    pt.plot_pca(ploc, profiles, pca, Xtrans)
+
+elif transform_method=='umap':
+
+    # alternatively, apply UMAP
+    embedding, Xtrans = lp.fit_and_apply_umap(ploc, profiles,
+                                              n_neighbors=50, min_dist=0.0)
+
+    # plot UMAP structure
+    pt.plot_umap(ploc, Xtrans)
+
+else:
+
+    print('Invalid transform method! Must be pca or umap')
+
+#####################################################################
+# Statistical measures to inform number of classes
+#####################################################################
 
 # calculate BIC and AIC
 if getBIC==True:
-    bic_mean, bic_std, aic_mean, aic_std = ba.calc_bic_and_aic(Xpca, max_N)
+    bic_mean, bic_std, aic_mean, aic_std = ba.calc_bic_and_aic(Xtrans, max_N)
     pt.plot_bic_scores(ploc, max_N, bic_mean, bic_std)
     pt.plot_aic_scores(ploc, max_N, aic_mean, aic_std)
+
+#####################################################################
+# Establish GMM (either load it or train a new one)
+#####################################################################
 
 # if GMM exists, load it. Otherwise, create it.
 if os.path.isfile(gmm_fname):
     best_gmm = io.load_gmm(gmm_fname)
 else:
-    best_gmm = gmm.train_gmm(Xpca, n_components_selected)
+    best_gmm = gmm.train_gmm(Xtrans, n_components_selected)
     io.save_gmm(gmm_fname, best_gmm)
 
 # apply eitehr loaded or created GMM
-profiles = gmm.apply_gmm(profiles, Xpca, best_gmm, n_components_selected)
+profiles = gmm.apply_gmm(profiles, Xtrans, best_gmm, n_components_selected)
 
 # calculate class statistics
 class_means, class_stds = gmm.calc_class_stats(profiles)
+
+#####################################################################
+# Establish GMM (either load it or train a new one)
+#####################################################################
 
 # plot T, S vertical structure of the classes,
 pt.plot_CT_class_structure(ploc, profiles, class_means,
@@ -94,11 +145,8 @@ pt.plot_SA_class_structure(ploc, profiles, class_means,
 pt.plot_sig0_class_structure(ploc, profiles, class_means,
                              class_stds, n_components_selected, zmin, zmax)
 
-# plot t-SNE
-pt.plot_tsne(ploc, profiles, Xpca, random_state=0, perplexity=50)
-
-# alternative
-umap_embed = lp.fit_and_apply_umap(ploc,profiles, n_neighbors=50, min_dist=0.0)
+# plot t-SNE with class labels
+pt.plot_tsne(ploc, profiles, Xtrans, random_state=0, perplexity=50)
 
 # plot label map
 pt.plot_label_map(ploc, profiles, n_components_selected,
@@ -107,5 +155,5 @@ pt.plot_label_map(ploc, profiles, n_components_selected,
 # calculate the i-metric_
 df1D = profiles.isel(depth=0)
 gmm.calc_i_metric(profiles)
-#plt.plot_i_metric_single_panel(df1D)
-#plot_i_metric_multiple_panels(df1D, n_components_selected)
+plt.plot_i_metric_single_panel(df1D)
+plot_i_metric_multiple_panels(df1D, n_components_selected)
