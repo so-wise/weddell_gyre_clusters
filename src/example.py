@@ -1,6 +1,7 @@
 #####################################################################
 # These may need to be installed
 #####################################################################
+# conda install -c conda-forge cartopy_offlinedata
 # pip install umap-learn
 # pip install seaborn
 # pip install gsw
@@ -134,7 +135,7 @@ profiles = gmm.apply_gmm(profiles, Xtrans, best_gmm, n_components_selected)
 class_means, class_stds = gmm.calc_class_stats(profiles)
 
 #####################################################################
-# Establish GMM (either load it or train a new one)
+# Plot classification results
 #####################################################################
 
 # plot T, S vertical structure of the classes,
@@ -148,12 +149,17 @@ pt.plot_sig0_class_structure(ploc, profiles, class_means,
 # plot t-SNE with class labels
 pt.plot_tsne(ploc, profiles, Xtrans, random_state=0, perplexity=50)
 
+# plot some single level T-S diagrams
+pt.plot_TS_single_lev(ploc, df, n_components_selected,
+                      descrip='', plev=0, PTrange=(-2, 27.0),
+                      SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60)
+
 # plot label map
-pt.plot_label_map(ploc, profiles, n_components_selected,
-                   lon_min, lon_max, lat_min, lat_max)
+#pt.plot_label_map(ploc, profiles, n_components_selected,
+#                   lon_min, lon_max, lat_min, lat_max)
 
 # calculate the i-metric_
-df1D = profiles.isel(depth=0)
-gmm.calc_i_metric(profiles)
-plt.plot_i_metric_single_panel(df1D)
-plot_i_metric_multiple_panels(df1D, n_components_selected)
+#df1D = profiles.isel(depth=0)
+#gmm.calc_i_metric(profiles)
+#plt.plot_i_metric_single_panel(df1D)
+#plot_i_metric_multiple_panels(df1D, n_components_selected)
