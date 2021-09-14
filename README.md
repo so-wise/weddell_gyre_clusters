@@ -13,7 +13,7 @@ At present, you can use Docker to get this project installed and running. (We co
 ```
 cd <where-you-want-to-work>
 
-docker pull pangeo/pangeo-notebook:2021.07.17
+docker pull pangeo/pangeo-notebook:2021.09.08
 
 docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.09.08 jupyter-lab --no-browser --ip=0.0.0.0
 ```
