@@ -1,7 +1,6 @@
 #####################################################################
 # These may need to be installed
 #####################################################################
-# conda install -c conda-forge cartopy_offlinedata
 # pip install umap-learn
 # pip install seaborn
 # pip install gsw
@@ -40,6 +39,7 @@ dloc = 'models/'
 max_N = 20
 
 # transformation method (pca, umap)
+# --- at present, UMAP transform crashes the kernel
 transform_method = 'pca'
 
 # calculate BIC and AIC?
@@ -82,6 +82,10 @@ profiles = density.calc_density(profiles)
 # quick prof_T and prof_S selection plots
 pt.prof_TS_sample_plots(ploc, profiles)
 
+# pairplot: unscaled (warning: this is very slow)
+#pt.plot_pairs(ploc,np.concatenate((profiles.prof_CT, profiles.prof_SA),axis=1),
+#              kind="hist",descr="unscaled")
+
 #####################################################################
 # Dimensionality reduction / transformation
 #####################################################################
@@ -94,6 +98,9 @@ if transform_method=='pca':
     # plot PCA structure
     pt.plot_pca(ploc, profiles, pca, Xtrans)
 
+    # pairplot of transformed variables
+    pt.plot_pairs(ploc, Xtrans, kind='hist', descr=transform_method)
+
 elif transform_method=='umap':
 
     # alternatively, apply UMAP
@@ -102,6 +109,9 @@ elif transform_method=='umap':
 
     # plot UMAP structure
     pt.plot_umap(ploc, Xtrans)
+
+    # pairplot of transformed variables
+    pt.plot_pairs(ploc, Xtrans, kind='hist', descr=transform_method)
 
 else:
 
@@ -128,7 +138,7 @@ else:
     best_gmm = gmm.train_gmm(Xtrans, n_components_selected)
     io.save_gmm(gmm_fname, best_gmm)
 
-# apply eitehr loaded or created GMM
+# apply either loaded or created GMM
 profiles = gmm.apply_gmm(profiles, Xtrans, best_gmm, n_components_selected)
 
 # calculate class statistics
@@ -150,10 +160,14 @@ pt.plot_sig0_class_structure(ploc, profiles, class_means,
 pt.plot_tsne(ploc, profiles, Xtrans, random_state=0, perplexity=50)
 
 # plot some single level T-S diagrams
-pt.plot_TS_single_lev(ploc, df, n_components_selected,
+pt.plot_TS_single_lev(ploc, profiles, n_components_selected,
                       descrip='', plev=0, PTrange=(-2, 27.0),
                       SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60)
 
+# plot multiple-level T-S diagrams
+pt.plot_TS_multi_lev(ploc, profiles, n_components_selected,
+                     descrip='', plev=0, PTrange=(-2, 27.0),
+                     SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60)
 # plot label map
 #pt.plot_label_map(ploc, profiles, n_components_selected,
 #                   lon_min, lon_max, lat_min, lat_max)

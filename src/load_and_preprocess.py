@@ -17,7 +17,7 @@ def load_profile_data(data_location, lon_min, lon_max,
                           lat_min, lat_max, zmin, zmax):
 
     # start message
-    print('load_profile_data')
+    print('load_and_preprocess.load_profile_data')
 
     # load the ctds, floats, and seals
     ctds = xr.open_mfdataset(data_location + 'CTD/*.nc',
@@ -73,7 +73,7 @@ def load_profile_data(data_location, lon_min, lon_max,
 def preprocess_time_and_date(profiles):
 
     # start message
-    print('preprocess_time_and_data')
+    print('load_and_preprocess.preprocess_time_and_data')
 
     # select MITprof values
     ntime_array_ymd = profiles.prof_YYYYMMDD.values
@@ -123,20 +123,24 @@ def preprocess_time_and_date(profiles):
 #####################################################################
 def apply_scaling(profiles):
 
+    # start message
+    print('load_and_preprocess.apply_scaling')
+
     # scale salinity
-    X = profiles.prof_SA
-    scaled_S = preprocessing.scale(X)
+    XS = profiles.prof_SA
+    scaled_S = preprocessing.scale(XS)
     scaled_S.shape
 
     # scale temperature
-    X = profiles.prof_CT
-    scaled_T = preprocessing.scale(X)
+    XT = profiles.prof_CT
+    scaled_T = preprocessing.scale(XT)
     scaled_T.shape
 
     # concatenate
+    Xraw = np.concatenate((XT,XS),axis=1)
     Xscaled = np.concatenate((scaled_T,scaled_S),axis=1)
 
-    return Xscaled
+    return Xraw, Xscaled
 
 #####################################################################
 # Fit and apply PCA (applied to absolute salinity, conservative temp)
@@ -144,10 +148,10 @@ def apply_scaling(profiles):
 def fit_and_apply_pca(profiles, number_of_pca_components=3):
 
     # start message
-    print('fit_and_apply_pca')
+    print('load_and_preprocess.fit_and_apply_pca')
 
     # concatenate
-    Xscaled = apply_scaling(profiles)
+    Xraw, Xscaled = apply_scaling(profiles)
 
     # create PCA object
     pca = PCA(number_of_pca_components)
@@ -175,10 +179,10 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3):
 def fit_and_apply_umap(ploc,profiles,n_neighbors=50,min_dist=0.0,frac=0.33):
 
     # start message
-    print('fit_and_apply_umap')
+    print('load_and_preprocess.fit_and_apply_umap')
 
     # apply scaling
-    Xscaled = apply_scaling(profiles)
+    Xraw, Xscaled = apply_scaling(profiles)
 
     # random sample
     rsample_size = int(frac*Xscaled.shape[0])
