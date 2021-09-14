@@ -15,7 +15,8 @@ def calc_bic_and_aic(Xpca, max_N, max_iter=20):
 # returns bic_mean, bic_std, aic_mean, aic_std
 
     # start message
-    print('calc_bic_and_aic: this may take some time')
+    print('bic_and_aic.calc_bic_and_aic')
+    print('--- this may take some time ---')
 
     # initialize, declare variables
     bic_scores = np.zeros((2,max_iter))

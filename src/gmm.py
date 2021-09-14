@@ -10,9 +10,11 @@ import xarray as xr
 #####################################################################
 # Train GMM
 #####################################################################
-def train_gmm(Xpca, n_components_selected, random_state=42):
-# train_gmm(Xpca, n_components_selected, random_state=42)
+def train_gmm(Xtrain, n_components_selected, random_state=42):
+# train_gmm(Xtrain, n_components_selected, random_state=42)
 # returns gmm
+
+    print('gmm.train_gmm')
 
     # establish gmm
     gmm = mixture.GaussianMixture(n_components=n_components_selected,
@@ -20,8 +22,9 @@ def train_gmm(Xpca, n_components_selected, random_state=42):
                                   random_state=random_state)
 
     # fit this GMM using the training data in PC space
-    gmm.fit(Xpca)
+    gmm.fit(Xtrain)
 
+    # return the gmm object, which has now been trained
     return gmm
 
 #####################################################################
@@ -30,6 +33,8 @@ def train_gmm(Xpca, n_components_selected, random_state=42):
 def apply_gmm(profiles, Xpca, gmm, n_components_selected, random_state=42):
 # train_gmm(profiles, Xpca, n_components_selected, random_state=42)
 # returns gmm
+
+    print('gmm.apply_gmm')
 
     # assign class labels ("predict" the class using the selected GMM)
     labels = gmm.predict(Xpca)
@@ -56,6 +61,9 @@ def apply_gmm(profiles, Xpca, gmm, n_components_selected, random_state=42):
 # Get mean and standard deviation (class statistics)
 #####################################################################
 def calc_class_stats(profiles):
+
+    print('gmm.calc_class_stats')
+
     # create grouped object using the labels
     grouped = profiles.groupby("label")
 
@@ -69,6 +77,8 @@ def calc_class_stats(profiles):
 # Calculate the i-metric
 #####################################################################
 def calc_i_metric(profiles):
+
+    print('gmm.calc_i_metric')
 
     # first, get 1D dataframe
     df1D = profiles.isel(depth=0)
@@ -93,10 +103,19 @@ def calc_i_metric(profiles):
 #####################################################################
 # Contains the definition of the i-metric
 #####################################################################
-# function defines the i-metric
 def get_i_metric(posterior_prob_list):
+
+    # first, sort the posterior probability list
     sorted_posterior_list = sorted(posterior_prob_list)
+
+    # I_metric = 1 - (max_probability - runner_up)
     ic_metric = 1 - (sorted_posterior_list[-1] - sorted_posterior_list[-2])
+
+    # list the runner-up class (next most likely)
     runner_up_label = posterior_prob_list.index(sorted_posterior_list[-2])
+
+    # what the class with the maximum probability?
     label = posterior_prob_list.index(sorted_posterior_list[-1])
+
+    # return the i-metric, label, and runner-up label
     return ic_metric, np.array([label, runner_up_label]) # np.sort()

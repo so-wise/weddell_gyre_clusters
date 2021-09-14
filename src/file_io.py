@@ -10,6 +10,8 @@ from sklearn import mixture
 #####################################################################
 def save_gmm(file_name, gmm):
 
+    print('file_io.save_gmm')
+
     # save weights, means, and covariances of GMM
     np.save(file_name + '_weights.npy', gmm.weights_, allow_pickle=False)
     np.save(file_name + '_means.npy', gmm.means_, allow_pickle=False)
@@ -19,6 +21,8 @@ def save_gmm(file_name, gmm):
 # Load an existing GMM
 #####################################################################
 def load_gmm(file_name):
+
+    print('file_io.load_gmm')
 
     # load means and covariances
     means = np.load(file_name + '_means.npy')

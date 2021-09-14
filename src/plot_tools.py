@@ -577,6 +577,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
     ax.coastlines(resolution='50m')
     ax.gridlines(color='black')
     ax.add_feature(cartopy.feature.LAND)
+    plt.colorbar(CS)
 
     # save figure
     plt.savefig(ploc + 'label_map.png', bbox_inches='tight')
@@ -585,7 +586,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
 #####################################################################
 # Plot single i-metric map
 #####################################################################
-def plot_i_metric_single_panel(df1D):
+def plot_i_metric_single_panel(df1D, lon_min, lon_max, lat_min, lat_max, rr=0.66):
 
     # extract values as new DataArrays
     da_lon = df1D.lon
@@ -596,6 +597,9 @@ def plot_i_metric_single_panel(df1D):
     lons = da_lon.values
     lats = da_lat.values
     c = da_i_metric.values
+
+    # size of random sample (all profiles by now)
+    random_sample_size = int(np.ceil(rr*df1D.lon.size))
 
     # random sample for plotting
     rows_id = random.sample(range(0,c.size-1), random_sample_size)
@@ -632,11 +636,13 @@ def plot_i_metric_multiple_panels(df1D, n_components_selected):
     da_lon = df1D.lon
     da_lat = df1D.lat
     da_i_metric = df1D.i_metric
+    da_label = df1D.label
 
     # extract values
     lons = da_lon.values
     lats = da_lat.values
     c = da_i_metric.values
+    labels = da_label.values
 
     for iclass in range(n_components_selected):
 
@@ -657,12 +663,13 @@ def plot_i_metric_multiple_panels(df1D, n_components_selected):
                          s=10.0,
                          transform=ccrs.Geodetic(),
                          )
+        plt.colorbar(CS)
         ax.coastlines(resolution='50m')
         ax.gridlines(color='black')
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
-        plt.savefig(ploc + 'i-metric_' + str(int(iclass)) + '.png', bbox_inches='tight')
+        plt.savefig(ploc + 'i-metric_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
         plt.close()
 
 #####################################################################
@@ -679,7 +686,8 @@ def plot_tsne(ploc, profiles, Xpca, random_state=0, perplexity=50):
     trans_data = tsne.fit_transform(Xpca_for_tSNE).T
 
     # scatterplot
-    plt.scatter(trans_data[0], trans_data[1], c=colors_for_tSNE)
+    CS = plt.scatter(trans_data[0], trans_data[1], c=colors_for_tSNE)
+    plt.colorbar(CS)
     plt.title("t-SNE")
     plt.axis('tight')
     plt.savefig(ploc + 'tSNE' + '.png', bbox_inches='tight')
@@ -730,15 +738,15 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     plt.figure(figsize=(13, 13))
     CL = plt.contour(ctg, sag, sig0_grid, colors='black', zorder=1)
     plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
-    plt.scatter(T_random_sample,
-                S_random_sample,
-                c = clabels_random_sample,
-                marker='o',
-                cmap= colormap,
-                s=8.0,
-                zorder=2,
-                )
-
+    SC = plt.scatter(T_random_sample,
+                     S_random_sample,
+                     c = clabels_random_sample,
+                     marker='o',
+                     cmap= colormap,
+                     s=8.0,
+                     zorder=2,
+                     )
+    plt.colorbar(SC)
     plt.xlabel('Conservative temperature [$^\circ$C]', fontsize=20)
     plt.ylabel('Absolute salinity [psu]', fontsize=20)
     plt.xlim(PTrange)
@@ -756,11 +764,11 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                       SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60):
 
     # make (stack and reset index)
-    df1D = profiles.stack(z=('profile','depth')).reset_index('z')
+    df1D = df.stack(z=('profile','depth')).reset_index('z')
     # now use isel to loop through labels
 
     # define colormap
-    colormap = plt.get_cmap('tab10', n_comp)
+    colormap = plt.get_cmap('cividis', n_comp)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
@@ -769,6 +777,7 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     lon = -20
     lat = -65
 
+    # calculate SA and CT lines for plot
     sa_grid = gsw.SA_from_SP(sp_grid, p, lon, lat)
     ct_grid = gsw.CT_from_pt(sa_grid, pt_grid)
     ctg,sag = np.meshgrid(ct_grid,sa_grid)
@@ -777,36 +786,44 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     # extract values as new DataArrays
     T = df1D.prof_CT.values
     S = df1D.prof_SA.values
-    clabels = df1D.label.values
+    labels = df1D.label.values
+    depths = df1D.depth.values
 
-    # size of random sample (all profiles by now)
-    random_sample_size = int(np.ceil(rr*df.profile.size))
+    # for each class, create new plot
+    for nclass in range(n_comp):
 
-    # random sample for plotting
-    rows_id = random.sample(range(0,clabels.size-1), random_sample_size)
-    T_random_sample = T[rows_id]
-    S_random_sample = S[rows_id]
-    clabels_random_sample = clabels[rows_id]
+        T1 = T[labels==nclass]
+        S1 = S[labels==nclass]
+        c1 = depths[labels==nclass]
 
-    #colormap with Historical data
-    plt.figure(figsize=(13, 13))
-    CL = plt.contour(ctg, sag, sig0_grid, colors='black', zorder=1)
-    plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
-    plt.scatter(T_random_sample,
-                S_random_sample,
-                c = clabels_random_sample,
-                marker='o',
-                cmap= colormap,
-                s=8.0,
-                zorder=2,
-                )
+        # size of random sample (all profiles by now)
+        random_sample_size = int(np.ceil(rr*T1.size))
 
-    plt.xlabel('Conservative temperature [$^\circ$C]', fontsize=20)
-    plt.ylabel('Absolute salinity [psu]', fontsize=20)
-    plt.xlim(PTrange)
-    plt.ylim(SPrange)
-    plt.xticks(fontsize=18)
-    plt.yticks(fontsize=18)
-    plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
-    plt.savefig(ploc + 'TS_single_lev_' + str(int(p)) + 'dbar' + descrip + '.png', bbox_inches='tight')
-    plt.close()
+        # random sample for plotting
+        rows_id = random.sample(range(0,T1.size-1), random_sample_size)
+        T_random_sample = T1[rows_id]
+        S_random_sample = S1[rows_id]
+        clabels_random_sample = c1[rows_id]
+
+        #colormap with Historical data
+        plt.figure(figsize=(13, 13))
+        CL = plt.contour(ctg, sag, sig0_grid, colors='black', zorder=1)
+        plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
+        SC = plt.scatter(T_random_sample,
+                         S_random_sample,
+                         c = clabels_random_sample,
+                         marker='o',
+                         cmap= colormap,
+                         s=8.0,
+                         zorder=2,
+                         )
+        plt.colorbar(SC)
+        plt.xlabel('Conservative temperature [$^\circ$C]', fontsize=20)
+        plt.ylabel('Absolute salinity [psu]', fontsize=20)
+        plt.xlim(PTrange)
+        plt.ylim(SPrange)
+        plt.xticks(fontsize=18)
+        plt.yticks(fontsize=18)
+        plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
+        plt.savefig(ploc + 'TS_multilev_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
+        plt.close()

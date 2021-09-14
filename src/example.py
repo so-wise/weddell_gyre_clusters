@@ -169,11 +169,11 @@ pt.plot_TS_multi_lev(ploc, profiles, n_components_selected,
                      descrip='', plev=0, PTrange=(-2, 27.0),
                      SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60)
 # plot label map
-#pt.plot_label_map(ploc, profiles, n_components_selected,
-#                   lon_min, lon_max, lat_min, lat_max)
+pt.plot_label_map(ploc, profiles, n_components_selected,
+                   lon_min, lon_max, lat_min, lat_max)
 
-# calculate the i-metric_
-#df1D = profiles.isel(depth=0)
-#gmm.calc_i_metric(profiles)
-#plt.plot_i_metric_single_panel(df1D)
-#plot_i_metric_multiple_panels(df1D, n_components_selected)
+# calculate the i-metric
+df1D = profiles.isel(depth=0)
+df1D = gmm.calc_i_metric(profiles)
+pt.plot_i_metric_single_panel(df1D, lon_min, lon_max, lat_min, lat_max)
+pt.plot_i_metric_multiple_panels(df1D, n_components_selected)
