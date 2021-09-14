@@ -28,7 +28,8 @@ Alternatively, if you're working on an HPC platform, you'll probably need to run
 ```
 cd <where-you-want-to-work>
 singularity pull docker://pangeo/pangeo-notebook:2021.09.08
-singularity run --nv --bind /data/expose/so-wise/:/mnt pangeo-notebook:2021.09.08.sif bash
+singularity run --bind /data/expose/so-wise/:/mnt pangeo-notebook_2021.09.08.sif bash
+cd /mnt
 ```
 The `--nv` flag turns on GPU support, which may not be available on every workstation. 
 
