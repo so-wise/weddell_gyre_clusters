@@ -14,7 +14,7 @@ import random
 # Load the profile data (combined CTD, float, and seal data)
 #####################################################################
 def load_profile_data(data_location, lon_min, lon_max,
-                          lat_min, lat_max, zmin, zmax):
+                      lat_min, lat_max, zmin, zmax, zscale=False):
 
     # start message
     print('load_and_preprocess.load_profile_data')
@@ -51,21 +51,32 @@ def load_profile_data(data_location, lon_min, lon_max,
     # only keep a subset of the data variables, as we don't need them all
     profiles = profiles.get(['prof_date','prof_YYYYMMDD','prof_HHMMSS','prof_T','prof_S'])
 
-    # select lat/lon section using the subsetting parameters specified above
-    profiles = profiles.where(profiles.lon<=lon_max,drop=True)
-    profiles = profiles.where(profiles.lon>=lon_min,drop=True)
-    profiles = profiles.where(profiles.lat<=lat_max,drop=True)
-    profiles = profiles.where(profiles.lat>=lat_min,drop=True)
-
-    # drop any remaining profiles with NaN values
-    # the profiles with NaN values likely don't have measurements in the selected depth range
-    profiles = profiles.dropna('profile')
+    # either use the z-scaling (no discarded profiles) or use geometric bounds
+    # for discarding profiles
+    if zscale==True:
+        print('This feature is not ready yet *******************'')
+        profiles = z_scaling(profiles)
+    else:
+        profiles = profiles.where(profiles.lon<=lon_max,drop=True)
+        profiles = profiles.where(profiles.lon>=lon_min,drop=True)
+        profiles = profiles.where(profiles.lat<=lat_max,drop=True)
+        profiles = profiles.where(profiles.lat>=lat_min,drop=True)
+        # drop any remaining profiles with NaN values
+        # the profiles with NaN values don't have measurements in selected depth range
+        profiles = profiles.dropna('profile')
 
     # start message
     print('----> profiles loaded')
 
     # return
     return profiles
+
+#####################################################################
+# z-scaling
+#####################################################################
+def z_scaling(df):
+    print('This feature is not ready yet ***')
+    return df
 
 #####################################################################
 # Handle date and time data
