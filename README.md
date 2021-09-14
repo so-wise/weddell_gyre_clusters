@@ -19,7 +19,7 @@ docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work pangeo/pangeo-notebook:2
 ```
 Note that Docker can only see "down the tree", so make sure that any data and files that you want to work with are within the tree. To test the source code in `src`, you can use this same Docker image to run `ipython`:
 ```
-docker run --rm -it -p 8808:8808 -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.07.17 bash
+docker run --rm -it -p 8808:8808 -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.09.08 bash
 ```
 and then run `ipython3`. 
 
