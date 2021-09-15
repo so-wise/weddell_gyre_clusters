@@ -12,7 +12,6 @@ import matplotlib as mpl
 import pandas as pd
 from sklearn import manifold
 import seaborn as sns
-import random
 import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -20,9 +19,9 @@ import random
 import gsw
 
 #####################################################################
-# Plot PCA structure
+# Plot PCA vertical structure
 #####################################################################
-def plot_pca(ploc, profiles, pca, Xpca, frac=0.33):
+def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
 
     # start message
     print('plot_tools.plot_pca')
@@ -105,39 +104,59 @@ def plot_pca(ploc, profiles, pca, Xpca, frac=0.33):
     plt.savefig(ploc + 'pca_salt.png', bbox_inches='tight')
     plt.close()
 
-    ############# 3D (no shading by class yet)
+#####################################################################
+# Plot PCA structure in 3D space (with or without class labels
+#####################################################################
+def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
 
-    # just to shorten the name
+    # just to shorten the names
     xy=Xpca
+
+    # if plot with label
+    if withLabels==True:
+        labels=profiles.label.values
+
     # random sample
     rsample_size = int(frac*xy.shape[0])
     rows_id = random.sample(range(0,xy.shape[0]-1), rsample_size)
+
+    # select radom sample in xy and color
     xyp = xy[rows_id,:]
 
-    # 3D scatterplots (not shaded by class in this instance)
+    if withLabels==True:
+        c = labels[rows_id]
+        labs='labelled'
+    else:
+        c = [[ 0.267004,  0.004874,  0.329415,  1.  ]]
+        labs='nolabels'
+
+    # 3D scatterplots
 
     # view 1
     fig = plt.figure(figsize=(15,15))
     ax = fig.add_subplot(projection='3d')
     ax.view_init(30, 0)
-    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
-    plt.savefig(ploc + 'pca_scatter_nolabels_view1' + '.png', bbox_inches='tight')
+    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=0.1, s=1.0)
+    if withLabels==True: plt.colorbar(CS)
+    plt.savefig(ploc + 'pca_scatter_' + labs + '_view1' + '.png', bbox_inches='tight')
     plt.close()
 
     # view 2
     fig = plt.figure(figsize=(15,15))
     ax = fig.add_subplot(projection='3d')
     ax.view_init(30, 120)
-    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
-    plt.savefig(ploc + 'pca_scatter_nolabels_view2' + '.png', bbox_inches='tight')
+    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=0.1, s=1.0)
+    if withLabels==True: plt.colorbar(CS)
+    plt.savefig(ploc + 'pca_scatter_' + labs + '_view2' + '.png', bbox_inches='tight')
     plt.close()
 
     # view 3
     fig = plt.figure(figsize=(15,15))
     ax = fig.add_subplot(projection='3d')
     ax.view_init(30, 240)
-    ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', s=1.0)
-    plt.savefig(ploc + 'pca_scatter_nolabels_view3' + '.png', bbox_inches='tight')
+    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=0.1, s=1.0)
+    if withLabels==True: plt.colorbar(CS)
+    plt.savefig(ploc + 'pca_scatter_' + labs + '_view3' + '.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################
@@ -586,7 +605,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
 #####################################################################
 # Plot single i-metric map
 #####################################################################
-def plot_i_metric_single_panel(df1D, lon_min, lon_max, lat_min, lat_max, rr=0.66):
+def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max, rr=0.66):
 
     # extract values as new DataArrays
     da_lon = df1D.lon
@@ -630,7 +649,7 @@ def plot_i_metric_single_panel(df1D, lon_min, lon_max, lat_min, lat_max, rr=0.66
 #####################################################################
 # Plot multiple i-metric maps (one per class)
 #####################################################################
-def plot_i_metric_multiple_panels(df1D, n_components_selected):
+def plot_i_metric_multiple_panels(ploc, df1D, n_components_selected):
 
     # extract values as new DataArrays
     da_lon = df1D.lon
@@ -673,24 +692,20 @@ def plot_i_metric_multiple_panels(df1D, n_components_selected):
         plt.close()
 
 #####################################################################
-# Fit and plot t-SNE
+# Plot t-SNE
 #####################################################################
-def plot_tsne(ploc, profiles, Xpca, random_state=0, perplexity=50):
-    # random sample for tSNE
-    rows_id = random.sample(range(0,Xpca.shape[0]-1), 1000)
-    Xpca_for_tSNE = Xpca[rows_id,:]
-    colors_for_tSNE = profiles.label[rows_id].values
-    tsne = manifold.TSNE(n_components=2, init='random',
-                         random_state=random_state,
-                         perplexity=perplexity)
-    trans_data = tsne.fit_transform(Xpca_for_tSNE).T
+def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
 
     # scatterplot
-    CS = plt.scatter(trans_data[0], trans_data[1], c=colors_for_tSNE)
+    CS = plt.scatter(tSNE_data[0],
+                     tSNE_data[1],
+                     cmap=colormap,
+                     s=1.0,
+                     c=colors_for_tSNE)
     plt.colorbar(CS)
     plt.title("t-SNE")
     plt.axis('tight')
-    plt.savefig(ploc + 'tSNE' + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'tSNE' + '_tmp' + '.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################

@@ -8,16 +8,25 @@
 #####################################################################
 # Import packages
 #####################################################################
+
+### modules in this package
 import load_and_preprocess as lp
 import bic_and_aic as ba
 import plot_tools as pt
 import file_io as io
-import os.path
 import density
 import gmm
-# import dask
-from dask.distributed import Client
-import dask
+### plotting tools
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.cm as cmx
+import matplotlib as mpl
+### os tools
+import os.path
+### import dask
+#from dask.distributed import Client
+#import dask
 
 #####################################################################
 # Start Dask client (not working at present)
@@ -42,6 +51,12 @@ max_N = 20
 # --- at present, UMAP transform crashes the kernel
 transform_method = 'pca'
 
+# use the kernel PCA approach (memory intensive, not working yet)
+use_kernel_pca = False
+
+# number of PCA components
+n_pca = 3
+
 # calculate BIC and AIC?
 getBIC = False
 
@@ -62,9 +77,16 @@ zmax = 900.0
 n_components_selected = 10
 
 # create filename for saving GMM and saving labelled profiles
+pca_fname = 'models/pca_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_pca)) + descrip
 gmm_fname = 'models/gmm_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip
 fname = 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip + '.nc'
 
+# colormap
+colormap = plt.get_cmap('tab10', n_components_selected)
+
+#####################################################################
+# Run the standard analysis stuff
+#####################################################################
 #####################################################################
 # Data loading and preprocessing
 #####################################################################
@@ -90,21 +112,35 @@ pt.prof_TS_sample_plots(ploc, profiles)
 # Dimensionality reduction / transformation
 #####################################################################
 
+# use PCA, either regular or KernelPCA
 if transform_method=='pca':
 
-    # apply PCA
-    pca, Xtrans = lp.fit_and_apply_pca(profiles)
+    # if trained PCA already exists, load it
+    if os.path.isfile(pca_fname):
+        pca = io.load_pca(pca_fname)
+        Xtrans = lp.apply_pca(profiles, pca)
+    # otherwise, go ahead and train it
+    else:
+        # apply PCA
+        pca, Xtrans = lp.fit_and_apply_pca(profiles,
+                                           number_of_pca_components=n_pca,
+                                           kernel=use_kernel_pca,
+                                           train_frac=1.0)
+        # save for future use
+        io.save_pca(pca_fname, pca)
 
     # plot PCA structure
-    pt.plot_pca(ploc, profiles, pca, Xtrans)
+    pt.plot_pca_vertical_structure(ploc, profiles, pca, Xtrans)
+    pt.plot_pca3D(ploc, colormap, profiles, Xtrans, frac=0.33)
 
     # pairplot of transformed variables
     pt.plot_pairs(ploc, Xtrans, kind='hist', descr=transform_method)
 
+# the UMAP method produces a 2D projection
 elif transform_method=='umap':
 
     # alternatively, apply UMAP
-    embedding, Xtrans = lp.fit_and_apply_umap(ploc, profiles,
+    embedding, Xtrans = lp.fit_and_apply_umap(profiles,
                                               n_neighbors=50, min_dist=0.0)
 
     # plot UMAP structure
@@ -145,6 +181,16 @@ profiles = gmm.apply_gmm(profiles, Xtrans, best_gmm, n_components_selected)
 class_means, class_stds = gmm.calc_class_stats(profiles)
 
 #####################################################################
+# Calculate and plot tSNE with class labels
+#####################################################################
+
+# fit and apply tsne
+tSNE_data, colors_for_tSNE = lp.fit_and_apply_tsne(profiles, Xtrans)
+
+# plot t-SNE with class labels
+pt.plot_tsne(ploc, colormap, profiles, tSNE_data, colors_for_tSNE)
+
+#####################################################################
 # Plot classification results
 #####################################################################
 
@@ -156,8 +202,8 @@ pt.plot_SA_class_structure(ploc, profiles, class_means,
 pt.plot_sig0_class_structure(ploc, profiles, class_means,
                              class_stds, n_components_selected, zmin, zmax)
 
-# plot t-SNE with class labels
-pt.plot_tsne(ploc, profiles, Xtrans, random_state=0, perplexity=50)
+# plot 3D pca structure (now with class labels)
+pt.plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=True)
 
 # plot some single level T-S diagrams
 pt.plot_TS_single_lev(ploc, profiles, n_components_selected,
@@ -175,5 +221,8 @@ pt.plot_label_map(ploc, profiles, n_components_selected,
 # calculate the i-metric
 df1D = profiles.isel(depth=0)
 df1D = gmm.calc_i_metric(profiles)
-pt.plot_i_metric_single_panel(df1D, lon_min, lon_max, lat_min, lat_max)
-pt.plot_i_metric_multiple_panels(df1D, n_components_selected)
+pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
+pt.plot_i_metric_multiple_panels(ploc, df1D, n_components_selected)
+
+#####################################################################
+#####################################################################

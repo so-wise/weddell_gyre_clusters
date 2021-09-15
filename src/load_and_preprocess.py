@@ -7,6 +7,7 @@ import numpy as np
 import xarray as xr
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
+from sklearn.decomposition import KernelPCA
 import umap
 import random
 
@@ -54,7 +55,7 @@ def load_profile_data(data_location, lon_min, lon_max,
     # either use the z-scaling (no discarded profiles) or use geometric bounds
     # for discarding profiles
     if zscale==True:
-        print('This feature is not ready yet *******************'')
+        print('This feature is not ready yet *******************')
         profiles = z_scaling(profiles)
     else:
         profiles = profiles.where(profiles.lon<=lon_max,drop=True)
@@ -156,7 +157,8 @@ def apply_scaling(profiles):
 #####################################################################
 # Fit and apply PCA (applied to absolute salinity, conservative temp)
 #####################################################################
-def fit_and_apply_pca(profiles, number_of_pca_components=3):
+def fit_and_apply_pca(profiles, number_of_pca_components=3,
+                      kernel=False, train_frac=0.33):
 
     # start message
     print('load_and_preprocess.fit_and_apply_pca')
@@ -165,18 +167,26 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3):
     Xraw, Xscaled = apply_scaling(profiles)
 
     # create PCA object
-    pca = PCA(number_of_pca_components)
+    if kernel==True:
+        # KernelPCA approach (crashses due to memory)
+        print('load_and_preprocess: apply KernelPCA')
+        pca = KernelPCA(n_components=number_of_pca_components,
+                        kernel='linear', fit_inverse_transform=True, gamma=10)
+    else:
+        pca = PCA(number_of_pca_components)
 
-    # fit PCA model
-    pca.fit(Xscaled)
+    # random sample for training
+    pf = profiles.profile
+    rsample_size = np.min((int(train_frac*pf.size),int(pf.size)))
+    rows_id = random.sample(range(0,pf.size), rsample_size)
+    Xtrain = Xscaled[rows_id,:]
 
-    # transform input data into PCA representation
+    # fit PCA model using training dataset
+    print('Fitting PCA')
+    pca.fit(Xtrain)
+
+    # transform entire input dataset into PCA representation
     Xpca = pca.transform(Xscaled)
-
-    # add PCA values to the profiles Dataset
-    #PCA1 = xr.DataArray(Xpca[:,0],dims='profile')
-    #PCA2 = xr.DataArray(Xpca[:,1],dims='profile')
-    #PCA3 = xr.DataArray(Xpca[:,2],dims='profile')
 
     # calculated total variance explained
     total_variance_explained_ = np.sum(pca.explained_variance_ratio_)
@@ -185,9 +195,54 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3):
     return pca, Xpca
 
 #####################################################################
+# Apply an existing PCA
+#####################################################################
+def apply_pca(profiles, pca):
+
+    # start message
+    print('load_and_preprocess.apply_pca')
+
+    # concatenate
+    Xraw, Xscaled = apply_scaling(profiles)
+
+    # transform
+    Xpca = pca.transform(Xscaled)
+
+    # calculated total variance explained
+    total_variance_explained_ = np.sum(pca.explained_variance_ratio_)
+    print(total_variance_explained_)
+
+    return Xpca
+
+#####################################################################
+# Fit and apply t-SNE
+#####################################################################
+def fit_and_apply_tsne(profiles, Xpca, random_state=0, perplexity=50,
+                       tsne_frac=0.10):
+
+    # sample size
+    sample_size = np.min((int(tsne_frac*Xpca.shape[0]),int(Xpca.shape[0])))
+
+    # random sample for tSNE plot
+    rows_id = random.sample(range(0,Xpca.shape[0]), sample_size)
+    Xpca_for_tSNE = Xpca[rows_id,:]
+    colors_for_tSNE = profiles.label[rows_id].values
+
+    # create tSNE object
+    tsne = manifold.TSNE(n_components=2, init='random',
+                         random_state=random_state,
+                         perplexity=perplexity)
+
+    # fit tsne
+    trans_data = tsne.fit_transform(Xpca_for_tSNE).T
+
+    # return tsne-transformed data
+    return trans_data, colors_for_tSNE
+
+#####################################################################
 # Fit and apply UMAP
 #####################################################################
-def fit_and_apply_umap(ploc,profiles,n_neighbors=50,min_dist=0.0,frac=0.33):
+def fit_and_apply_umap(profiles,n_neighbors=50,min_dist=0.0,frac=0.33):
 
     # start message
     print('load_and_preprocess.fit_and_apply_umap')
