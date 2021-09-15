@@ -214,6 +214,12 @@ pt.plot_TS_single_lev(ploc, profiles, n_components_selected,
 pt.plot_TS_multi_lev(ploc, profiles, n_components_selected,
                      descrip='', plev=0, PTrange=(-2, 27.0),
                      SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60)
+
+# plot T-S diagram (all levels shown)
+pt.plot_TS_all_lev(ploc, profiles, n_components_selected,
+                   descrip='', PTrange=(-2, 27.0),
+                   SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.33)
+
 # plot label map
 pt.plot_label_map(ploc, profiles, n_components_selected,
                    lon_min, lon_max, lat_min, lat_max)
