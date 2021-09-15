@@ -188,7 +188,7 @@ class_means, class_stds = gmm.calc_class_stats(profiles)
 tSNE_data, colors_for_tSNE = lp.fit_and_apply_tsne(profiles, Xtrans)
 
 # plot t-SNE with class labels
-pt.plot_tsne(ploc, colormap, profiles, tSNE_data, colors_for_tSNE)
+pt.plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE)
 
 #####################################################################
 # Plot classification results

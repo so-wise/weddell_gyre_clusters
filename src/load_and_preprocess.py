@@ -8,6 +8,7 @@ import xarray as xr
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
 from sklearn.decomposition import KernelPCA
+from sklearn import manifold
 import umap
 import random
 

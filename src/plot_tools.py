@@ -751,10 +751,10 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 
     #colormap with Historical data
     plt.figure(figsize=(13, 13))
-    CL = plt.contour(ctg, sag, sig0_grid, colors='black', zorder=1)
+    CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
     plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
-    SC = plt.scatter(T_random_sample,
-                     S_random_sample,
+    SC = plt.scatter(S_random_sample,
+                     T_random_sample,
                      c = clabels_random_sample,
                      marker='o',
                      cmap= colormap,
@@ -762,12 +762,12 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                      zorder=2,
                      )
     plt.colorbar(SC)
-    plt.xlabel('Conservative temperature [$^\circ$C]', fontsize=20)
-    plt.ylabel('Absolute salinity [psu]', fontsize=20)
-    plt.xlim(PTrange)
-    plt.ylim(SPrange)
-    plt.xticks(fontsize=18)
+    plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
+    plt.xlabel('Absolute salinity [psu]', fontsize=20)
+    plt.ylim(PTrange)
+    plt.xlim(SPrange)
     plt.yticks(fontsize=18)
+    plt.xticks(fontsize=18)
     plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
     plt.savefig(ploc + 'TS_single_lev_' + str(int(p)) + 'dbar' + descrip + '.png', bbox_inches='tight')
     plt.close()
@@ -812,10 +812,10 @@ def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
 
     #colormap with Historical data
     plt.figure(figsize=(13, 13))
-    CL = plt.contour(ctg, sag, sig0_grid, colors='black', zorder=1)
+    CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
     plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
-    SC = plt.scatter(T_random_sample,
-                     S_random_sample,
+    SC = plt.scatter(S_random_sample,
+                     T_random_sample,
                      c = clabels_random_sample,
                      marker='o',
                      cmap= colormap,
@@ -823,12 +823,12 @@ def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
                      zorder=2,
                      )
     plt.colorbar(SC)
-    plt.xlabel('Conservative temperature [$^\circ$C]', fontsize=20)
-    plt.ylabel('Absolute salinity [psu]', fontsize=20)
-    plt.xlim(PTrange)
-    plt.ylim(SPrange)
-    plt.xticks(fontsize=18)
+    plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
+    plt.xlabel('Absolute salinity [psu]', fontsize=20)
+    plt.ylim(PTrange)
+    plt.xlim(SPrange)
     plt.yticks(fontsize=18)
+    plt.xticks(fontsize=18)
     #plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
     plt.savefig(ploc + 'TS_all_levs' + descrip + '.png', bbox_inches='tight')
     plt.close()
@@ -883,10 +883,10 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 
         #colormap with Historical data
         plt.figure(figsize=(13, 13))
-        CL = plt.contour(ctg, sag, sig0_grid, colors='black', zorder=1)
+        CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
         plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
-        SC = plt.scatter(T_random_sample,
-                         S_random_sample,
+        SC = plt.scatter(S_random_sample,
+                         T_random_sample,
                          c = clabels_random_sample,
                          marker='o',
                          cmap= colormap,
@@ -894,12 +894,12 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                          zorder=2,
                          )
         plt.colorbar(SC)
-        plt.xlabel('Conservative temperature [$^\circ$C]', fontsize=20)
-        plt.ylabel('Absolute salinity [psu]', fontsize=20)
-        plt.xlim(PTrange)
-        plt.ylim(SPrange)
-        plt.xticks(fontsize=18)
+        plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
+        plt.xlabel('Absolute salinity [psu]', fontsize=20)
+        plt.ylim(PTrange)
+        plt.xlim(SPrange)
         plt.yticks(fontsize=18)
+        plt.xticks(fontsize=18)
         plt.title('Class ' + str(nclass) , fontsize=22)
         plt.savefig(ploc + 'TS_multilev_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
         plt.close()
