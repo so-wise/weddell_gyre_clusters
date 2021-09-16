@@ -1,6 +1,6 @@
 # Location-specific
 datasets_bsose
-notebooks/exploratory/dask-worker-space 
+notebooks/exploratory/dask-worker-space
 notebooks/exploratory/processed_data
 
 # Byte-compiled / optimized / DLL files
@@ -100,3 +100,6 @@ io/
 data_so-chic
 data_so-chic/
 .data_so-chic/
+
+# Ignore saved profiles
+*.nc

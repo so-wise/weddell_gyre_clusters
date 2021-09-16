@@ -1,17 +1,14 @@
 # syntax=docker/dockerfile:1
-FROM pangeo/pangeo-notebook:2021.07.17
 
-#WORKDIR /code
-#ENV FLASK_APP=app.py
-#ENV FLASK_RUN_HOST=0.0.0.0
+# indicate the base image from this repository and tag
+FROM pangeo/pangeo-notebook:2021.09.08
 
-RUN conda install -n notebook -c conda-forge <somepackage> && conda clean -tipsy
+# copy the requirements file
+COPY requirements.txt requirements.txt
 
-# COPY requirements.txt requirements.txt
-# RUN pip install -r requirements.txt
-#EXPOSE 5000
-#COPY . .
-#CMD ["flask", "run"]
+# install the required packages
+RUN pip install -r requirements.txt
 
-
-
+# take the files and folders in your local build context and
+# add them to the Docker image’s current working directory
+COPY . .

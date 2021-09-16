@@ -1,8 +1,12 @@
+#####################################################################
+# Utilities for calculating density w/ Gibbs Sea Water (gsw, TEOS-10)
+#####################################################################
+
 import gsw
 import xarray as xr
 
 #####################################################################
-# Calculate density using Gibbs Sea Water (gsw, TEOS-10)
+# Calculate density of each profile in an xarray dataset 
 #####################################################################
 def calc_density(profiles):
 
@@ -27,3 +31,14 @@ def calc_density(profiles):
 
     # return it
     return profiles
+
+#####################################################################
+# Scalar density value
+#####################################################################
+def calc_scalar_density(pt, sp, p, lon, lat):
+
+    sa = gsw.SA_from_SP(sp, p, lon, lat)
+    ct = gsw.CT_from_pt(sa, pt)
+    sig0 = gsw.density.sigma0(sa,ct)
+
+    return sig0

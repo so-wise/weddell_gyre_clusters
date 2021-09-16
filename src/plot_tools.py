@@ -26,6 +26,20 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
     # start message
     print('plot_tools.plot_pca')
 
+    # split into temp (first half) and salt (second half)
+    y = pca.components_
+    n = int(y.shape[1])
+
+    # condition to check length is EVEN or not
+    # if lenght is ODD, show message and exit
+    if( n%2 != 0 ):
+        print('plot_tools.plot_pca: bad PCA array')
+        exit()
+
+    # pca temp and salinity
+    pca_temp = y[:, 0:int(n/2)]
+    pca_salt = y[:, int(n/2):n]
+
     ############# Temperature plot
 
     # initialize the figure
@@ -42,8 +56,8 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         num += 1
 
         # select subplot
-        ax = plt.subplot(1,3,num)
-        plt.plot(pca.components_[npca,0:15], z, marker='', linestyle='solid',
+        ax = plt.subplot(3,3,num)
+        plt.plot(pca_temp[npca,:], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
         # custom grid and axes
@@ -81,8 +95,8 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         num += 1
 
         # select subplot
-        ax = plt.subplot(1,3,num)
-        plt.plot(pca.components_[npca,15:], z, marker='', linestyle='solid',
+        ax = plt.subplot(3,3,num)
+        plt.plot(pca_salt[npca,:], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
         # custom grid and axes
@@ -379,7 +393,8 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
 # Plot mean and stdev salinity class structure
 #####################################################################
 def plot_SA_class_structure(ploc, profiles, class_means,
-                           class_stds, n_components_selected, zmin, zmax):
+                           class_stds, n_components_selected,
+                           zmin, zmax, Smin=33.6, Smax=37.0):
 
     # select colormap
     colormap = plt.get_cmap('tab10', n_components_selected)
@@ -417,7 +432,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
 
         # custom grid and axes
         plt.ylim([zmin, zmax])
-        plt.xlim([33.6, 37.0])
+        plt.xlim([Smin, Smax])
 
        #text box
         fs = 42 # font size
@@ -438,7 +453,8 @@ def plot_SA_class_structure(ploc, profiles, class_means,
 # Plot mean and stdev conservative temperature class structure
 #####################################################################
 def plot_CT_class_structure(ploc, profiles, class_means,
-                            class_stds, n_components_selected, zmin, zmax):
+                            class_stds, n_components_selected,
+                            zmin, zmax, Tmin=-3, Tmax=20):
 
     # select colormap
     colormap = plt.get_cmap('tab10', n_components_selected)
@@ -476,7 +492,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
 
         # custom grid and axes
         plt.ylim([zmin,zmax])
-        plt.xlim([-3, 20])
+        plt.xlim([Tmin, Tmax])
 
         #text box
         fs = 42 # font size
@@ -497,7 +513,8 @@ def plot_CT_class_structure(ploc, profiles, class_means,
 # Plot mean and stdev density class structure
 #####################################################################
 def plot_sig0_class_structure(ploc, profiles, class_means,
-                           class_stds, n_components_selected, zmin, zmax):
+                           class_stds, n_components_selected,
+                           zmin, zmax, sig0min=24.0, sig0max=28.0):
 
     # select colormap
     colormap = plt.get_cmap('tab10', n_components_selected)
@@ -535,7 +552,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 
         # custom grid and axes
         plt.ylim([zmin, zmax])
-        plt.xlim([24.0, 28.0])
+        plt.xlim([sig0min, sig0max])
 
        #text box
         fs = 42 # font size
@@ -649,7 +666,8 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max, r
 #####################################################################
 # Plot multiple i-metric maps (one per class)
 #####################################################################
-def plot_i_metric_multiple_panels(ploc, df1D, n_components_selected):
+def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
+                                    lat_min, lat_max, n_components_selected):
 
     # extract values as new DataArrays
     da_lon = df1D.lon
@@ -673,7 +691,7 @@ def plot_i_metric_multiple_panels(ploc, df1D, n_components_selected):
         #colormap with Historical data
         plt.figure(figsize=(17, 13))
         ax = plt.axes(projection=ccrs.PlateCarree())
-        ax.set_extent([-80, 80, -85, -30], ccrs.PlateCarree())
+        ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
         CS = plt.scatter(lons_random_sample-360,
                          lats_random_sample,
                          c=clabels_random_sample,
