@@ -40,9 +40,9 @@ import os.path
 #####################################################################
 
 # set locations and names
-descrip = 'just60S' # extra description for filename
+descrip = 'justWeddellSea' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots_just60S/'
+ploc = 'plots_WeddellSea/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -50,7 +50,7 @@ if not os.path.exists(ploc):
     os.makedirs(ploc)
 
 # calculate BIC and AIC? set max number of components
-getBIC = False
+getBIC = True
 max_N = 20
 
 # transformation method (pca, umap)
@@ -61,7 +61,7 @@ transform_method = 'pca'
 use_kernel_pca = False
 
 # save the processed output as a NetCDF file?
-saveOutput = True
+saveOutput = False
 
 # number of PCA components
 n_pca = 6
@@ -79,13 +79,13 @@ n_components_selected = 10
 # zmax = 900.0
 
 #longitude and latitude range
-lon_min = -80
-lon_max =  80
+lon_min = -70
+lon_max =  0
 lat_min = -85
-lat_max = -60
+lat_max = -55
 # depth range
 zmin = 10.0
-zmax = 310.0
+zmax = 300.0
 
 # temperature and salinity ranges for plotting
 Trange=(-3.0, 6.0)
@@ -123,6 +123,16 @@ profiles = density.calc_density(profiles)
 
 # quick prof_T and prof_S selection plots
 pt.prof_TS_sample_plots(ploc, profiles)
+
+# plot random profile
+pt.plot_profile(ploc, profiles.isel(profile=2000))
+
+# regrid onto density levels (maybe useful for plotting later?)
+profiles = lp.regrid_onto_more_vertical_levels(profiles, zmin, zmax)
+profiles = lp.regrid_onto_density_levels(profiles)
+
+# plot sa and ct on density levels
+pt.plot_profiles_on_density_levels(ploc, profiles)
 
 # pairplot: unscaled (warning: this is very slow)
 #pt.plot_pairs(ploc,np.concatenate((profiles.prof_CT, profiles.prof_SA),axis=1),
@@ -214,7 +224,7 @@ pt.plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE)
 # Plot classification results
 #####################################################################
 
-# plot T, S vertical structure of the classes,
+# plot T, S vertical structure of the classes
 pt.plot_CT_class_structure(ploc, profiles, class_means,class_stds,
                            n_components_selected, zmin, zmax,
                            Tmin=Trange[0], Tmax=Trange[1])
@@ -223,6 +233,14 @@ pt.plot_SA_class_structure(ploc, profiles, class_means,class_stds,
                            Smin=Srange[0], Smax=Srange[1])
 pt.plot_sig0_class_structure(ploc, profiles, class_means,class_stds,
                            n_components_selected, zmin, zmax)
+
+# plot T, S vertical structure on sig0 surfaces
+pt.plot_CT_class_structure_onSig(ploc, profiles, class_means,class_stds,
+                          n_components_selected,
+                          Tmin=Trange[0], Tmax=Trange[1])
+pt.plot_SA_class_structure_onSig(ploc, profiles, class_means,class_stds,
+                          n_components_selected,
+                          Smin=Srange[0], Smax=Srange[1])
 
 # plot 3D pca structure (now with class labels)
 pt.plot_pca3D(ploc, colormap, profiles, Xtrans, frac=0.33, withLabels=True)
@@ -239,8 +257,16 @@ pt.plot_TS_multi_lev(ploc, profiles, n_components_selected,
 
 # plot T-S diagram (all levels shown)
 pt.plot_TS_all_lev(ploc, profiles, n_components_selected,
-                   descrip='', PTrange=Trange,
-                   SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
+                   descrip='', PTrange=Trange, SPrange=Srange,
+                   lon = -20, lat = -65, rr = 0.60)
+
+# plot T-S diagrams (by class, shaded by year and month)
+pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+                   descrip='', PTrange=Trange, SPrange=Srange,
+                   lon = -20, lat = -65, rr = 0.60, timeShading='year')
+pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+                   descrip='', PTrange=Trange, SPrange=Srange,
+                   lon = -20, lat = -65, rr = 0.60, timeShading='month')
 
 # plot label map
 pt.plot_label_map(ploc, profiles, n_components_selected,

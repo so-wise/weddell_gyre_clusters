@@ -9,8 +9,9 @@ from sklearn import preprocessing
 from sklearn.decomposition import PCA
 from sklearn.decomposition import KernelPCA
 from sklearn import manifold
-import umap
+from xgcm import Grid
 import random
+import umap
 
 #####################################################################
 # Load the profile data (combined CTD, float, and seal data)
@@ -73,12 +74,37 @@ def load_profile_data(data_location, lon_min, lon_max,
     # return
     return profiles
 
-#####################################################################
-# z-scaling
+####################################################################
+# z-scaling (scale profile by length of water column)
 #####################################################################
 def z_scaling(df):
-    print('This feature is not ready yet ***')
-    return df
+
+    #df.apply_ufunc(z1Dinterp, exclude_dims=set(("depth",))
+
+    #return df
+    return
+
+#####################################################################
+# 1D interpolation (of a single vector)
+#####################################################################
+def z1Dinterp(x):
+
+    # find index of first nan cell
+    nan_index = np.where(np.isnan(x))[0][0]
+
+    # just select part of vector before the upper nan (bathymetry)
+    y = x[:nan_index]
+
+    # extract depth values above the not-nan value
+    z = df.depth[:nan_index].values
+
+    # scale depth between [0,1]
+    zscaled = (z-z[0])/max(z-z[0])
+
+    # now we would have to interpolate onto a standard set of levels
+    # ranging from [0,1]. Perhaps 50 levels?
+
+    return zscaled
 
 #####################################################################
 # Handle date and time data
@@ -129,6 +155,76 @@ def preprocess_time_and_date(profiles):
     profiles = profiles.set_coords('time')
 
     # examine Dataset again
+    return profiles
+
+#####################################################################
+# Regrid onto higher-resolution vertical grid
+#####################################################################
+def regrid_onto_more_vertical_levels(profiles, zmin, zmax, zlevs=50):
+
+    # define grid object
+    grid = Grid(profiles, coords={'Z': {'center': 'depth'}}, periodic=False)
+    target_z_levels = np.linspace(zmin, zmax, zlevs)
+
+    # linearly interpolate temperature onto selected z levels
+    ct_on_highz = grid.transform(profiles.prof_CT, 'Z',
+                                 target_z_levels,
+                                 target_data=profiles.depth,
+                                 method='linear')
+
+    # linearly interpolate salt onto selected z levels
+    sa_on_highz = grid.transform(profiles.prof_SA, 'Z',
+                                 target_z_levels,
+                                 target_data=profiles.depth,
+                                 method='linear')
+    # linearly interpolate density onto selected z levels
+    sig0_on_highz = grid.transform(profiles.sig0, 'Z',
+                                target_z_levels,
+                                target_data=profiles.depth,
+                                method='linear')
+
+    # rename dimension to avoid conflict with existing dimension
+    profiles['ct_on_highz'] = ct_on_highz.rename({'depth':'depth_highz'})
+    profiles['sa_on_highz'] = sa_on_highz.rename({'depth':'depth_highz'})
+    profiles['sig0_on_highz'] = sig0_on_highz.rename({'depth':'depth_highz'})
+
+    # drop any levels where the interpolation failed
+    profiles = profiles.dropna(dim='depth_highz', how='all')
+
+    return profiles
+
+#####################################################################
+# Regrid onto density levels (probably run after high-z interpolation)
+#####################################################################
+def regrid_onto_density_levels(profiles, sig0levs=100):
+
+    # define target sigma levels
+    sig0min = profiles.sig0_on_highz.values.min()
+    sig0max = profiles.sig0_on_highz.values.max()
+    target_sig0_levels = np.linspace(sig0min, sig0max, sig0levs)
+
+    # define grid object
+    grid = Grid(profiles, coords={'Z': {'center': 'depth_highz'}}, periodic=False)
+
+    # linearly interpolate temperature onto selected z levels
+    ct_on_sig0 = grid.transform(profiles.ct_on_highz, 'Z',
+                                target_sig0_levels,
+                                target_data=profiles.sig0_on_highz,
+                                method='linear')
+
+    # linearly interpolate salt onto selected z levels
+    sa_on_sig0 = grid.transform(profiles.sa_on_highz, 'Z',
+                                target_sig0_levels,
+                                target_data=profiles.sig0_on_highz,
+                                method='linear')
+
+    # rename dimension to avoid conflict with existing dimension
+    profiles['ct_on_sig0'] = ct_on_sig0.rename({'sig0_on_highz':'sig0_levs'})
+    profiles['sa_on_sig0'] = sa_on_sig0.rename({'sig0_on_highz':'sig0_levs'})
+
+    # drop any levels where the interpolation failed
+    profiles = profiles.dropna(dim='sig0_levs', how='all')
+
     return profiles
 
 #####################################################################

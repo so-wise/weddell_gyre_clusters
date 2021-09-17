@@ -6,7 +6,7 @@ import gsw
 import xarray as xr
 
 #####################################################################
-# Calculate density of each profile in an xarray dataset 
+# Calculate density of each profile in an xarray dataset
 #####################################################################
 def calc_density(profiles):
 
