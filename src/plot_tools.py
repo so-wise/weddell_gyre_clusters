@@ -35,19 +35,20 @@ def plot_profile(ploc, df):
 #####################################################################
 # Plot single profile
 #####################################################################
-def plot_profiles_on_density_levels(ploc, profiles):
+def plot_profiles_on_density_levels(ploc, profiles, frac=0.33):
 
     # start message
     print('plot_tools.plot_profiles_on_density_levels')
 
     # conservative temp
     plt.figure(figsize=(30, 30))
-    xr.plot.pcolormesh(profiles.ct_on_sig0, x='profile', y='sig0_levs')
+    profiles.ct_on_sig0.plot()
     plt.savefig(ploc + 'ct_on_sig0.png', bbox_inches='tight')
     plt.close()
 
     # absolute salinity
-    xr.plot.pcolormesh(profiles.sa_on_sig0, x='profile', y='sig0_levs')
+    plt.figure(figsize=(30, 30))
+    profiles.sa_on_sig0.plot()
     plt.savefig(ploc + 'sa_on_sig0.png', bbox_inches='tight')
     plt.close()
 
@@ -871,12 +872,12 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
     CS = plt.scatter(tSNE_data[0],
                      tSNE_data[1],
                      cmap=colormap,
-                     s=1.0,
+                     s=5.0,
                      c=colors_for_tSNE)
     plt.colorbar(CS)
     plt.title("t-SNE")
     plt.axis('tight')
-    plt.savefig(ploc + 'tSNE' + '_tmp' + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'tSNE' + '.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################

@@ -162,6 +162,8 @@ def preprocess_time_and_date(profiles):
 #####################################################################
 def regrid_onto_more_vertical_levels(profiles, zmin, zmax, zlevs=50):
 
+    print('load_and_preprocess.regrid_onto_more_vertical_levels')
+
     # define grid object
     grid = Grid(profiles, coords={'Z': {'center': 'depth'}}, periodic=False)
     target_z_levels = np.linspace(zmin, zmax, zlevs)
@@ -198,6 +200,8 @@ def regrid_onto_more_vertical_levels(profiles, zmin, zmax, zlevs=50):
 #####################################################################
 def regrid_onto_density_levels(profiles, sig0levs=100):
 
+    print('load_and_preprocess.regrid_onto_density_levels')
+
     # define target sigma levels
     sig0min = profiles.sig0_on_highz.values.min()
     sig0max = profiles.sig0_on_highz.values.max()
@@ -222,8 +226,23 @@ def regrid_onto_density_levels(profiles, sig0levs=100):
     profiles['ct_on_sig0'] = ct_on_sig0.rename({'sig0_on_highz':'sig0_levs'})
     profiles['sa_on_sig0'] = sa_on_sig0.rename({'sig0_on_highz':'sig0_levs'})
 
-    # drop any levels where the interpolation failed
+    # drop any levels where there are no values (all NaNs)
     profiles = profiles.dropna(dim='sig0_levs', how='all')
+
+    return profiles
+
+#####################################################################
+# Select more specific density range; drop NaNs
+#####################################################################
+def select_sig0_range(profiles,sig0range=(26.5,27.2)):
+
+    print('load_and_preprocess.select_sig0_range')
+
+    # select profiles in the more specific density range
+    profiles = profiles.sel(sig0_levs=slice(sig0range[0],sig0range[1]))
+
+    # drop all profiles with nan values
+    profiles = profiles.dropna(dim='profile', how='any')
 
     return profiles
 
@@ -235,15 +254,15 @@ def apply_scaling(profiles):
     # start message
     print('load_and_preprocess.apply_scaling')
 
-    # scale salinity
+    # select SA on pressure levels or SA on sig0
     XS = profiles.prof_SA
-    scaled_S = preprocessing.scale(XS)
-    scaled_S.shape
-
-    # scale temperature
     XT = profiles.prof_CT
+
+    # scale salinity and temperature
+    scaled_S = preprocessing.scale(XS)
     scaled_T = preprocessing.scale(XT)
-    scaled_T.shape
+    #scaled_S.shape
+    #scaled_T.shape
 
     # concatenate
     Xraw = np.concatenate((XT,XS),axis=1)

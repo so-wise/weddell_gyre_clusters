@@ -40,9 +40,9 @@ import os.path
 #####################################################################
 
 # set locations and names
-descrip = 'justWeddellSea' # extra description for filename
+descrip = 'allDomain_density' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots_WeddellSea/'
+ploc = 'plots_allDomain_density/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -64,7 +64,7 @@ use_kernel_pca = False
 saveOutput = False
 
 # number of PCA components
-n_pca = 6
+n_pca = 3
 
 # make decision about n_components_selected (iterative part of analysis)
 n_components_selected = 10
