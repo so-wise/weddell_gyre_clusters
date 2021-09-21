@@ -74,6 +74,29 @@ def load_profile_data(data_location, lon_min, lon_max,
     # return
     return profiles
 
+#####################################################################
+# Load single class from previously classififed data
+#####################################################################
+def load_single_class(data_location, selected_class):
+
+    # start message
+    print('load_and_preprocess.load_single_class')
+
+    # load the class
+    profiles = xr.open_dataset(data_location)
+
+    # select the single class, drop old class info
+    inClass = (profiles.label == selected_class)
+    profiles = profiles.isel(profile=inClass)
+    profiles = profiles.drop_vars({'label','posteriors'})
+    profiles = profiles.drop('CLASS')
+
+    # start message
+    print('----> single-class profiles loaded')
+
+    # return
+    return profiles
+
 ####################################################################
 # z-scaling (scale profile by length of water column)
 #####################################################################
@@ -112,7 +135,7 @@ def z1Dinterp(x):
 def preprocess_time_and_date(profiles):
 
     # start message
-    print('load_and_preprocess.preprocess_time_and_data')
+    print('load_and_preprocess.preprocess_time_and_date')
 
     # select MITprof values
     ntime_array_ymd = profiles.prof_YYYYMMDD.values
@@ -249,14 +272,22 @@ def select_sig0_range(profiles,sig0range=(26.5,27.2)):
 #####################################################################
 # Apply preprocessing scaling
 #####################################################################
-def apply_scaling(profiles):
+def apply_scaling(profiles, method='onZ'):
 
     # start message
     print('load_and_preprocess.apply_scaling')
 
     # select SA on pressure levels or SA on sig0
-    XS = profiles.prof_SA
-    XT = profiles.prof_CT
+    if method=='onZ':
+        print('load_and_preprocess.apply_scaling: using depth levels')
+        XS = profiles.prof_SA
+        XT = profiles.prof_CT
+    elif method=='onSig':
+        print('load_and_preprocess.apply_scaling: using density levels')
+        XS = profiles.sa_on_sig0
+        XT = profiles.ct_on_sig0
+    else:
+        print('method must be onZ or onSig')
 
     # scale salinity and temperature
     scaled_S = preprocessing.scale(XS)
@@ -274,13 +305,13 @@ def apply_scaling(profiles):
 # Fit and apply PCA (applied to absolute salinity, conservative temp)
 #####################################################################
 def fit_and_apply_pca(profiles, number_of_pca_components=3,
-                      kernel=False, train_frac=0.33):
+                      kernel=False, train_frac=0.33, method='onZ'):
 
     # start message
     print('load_and_preprocess.fit_and_apply_pca')
 
     # concatenate
-    Xraw, Xscaled = apply_scaling(profiles)
+    Xraw, Xscaled = apply_scaling(profiles, method)
 
     # create PCA object
     if kernel==True:
@@ -313,13 +344,13 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3,
 #####################################################################
 # Apply an existing PCA
 #####################################################################
-def apply_pca(profiles, pca):
+def apply_pca(profiles, pca, method='onZ'):
 
     # start message
     print('load_and_preprocess.apply_pca')
 
     # concatenate
-    Xraw, Xscaled = apply_scaling(profiles)
+    Xraw, Xscaled = apply_scaling(profiles, method=method)
 
     # transform
     Xpca = pca.transform(Xscaled)

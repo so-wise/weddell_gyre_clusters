@@ -40,9 +40,9 @@ import os.path
 #####################################################################
 
 # set locations and names
-descrip = 'allDomain_density_27.0-27.2' # extra description for filename
+descrip = 'allDomain_density_test' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots_allDomain_density_27.0-27.2/'
+ploc = 'plots_allDomain_density_test/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -67,20 +67,22 @@ saveOutput = False
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 9
+n_components_selected = 2
 
 #longitude and latitude range
-lon_min = -80
+lon_min = -65
 lon_max =  80
 lat_min = -85
 lat_max = -30
 # depth range
-zmin = 300.0
-zmax = 1800.0
+zmin = 100.0
+zmax = 1000.0
+# density range
+sig0range = (26.0, 27.8)
 
 # temperature and salinity ranges for plotting
-Trange=(-2, 17.0)
-Srange=(34.0, 36.0)
+Trange=(-2, 21.0)
+Srange=(33.5, 36.5)
 # based on the above, calculate the density range
 sig0min = round(density.calc_scalar_density(Trange[0],Srange[0],
     p=0.0,lon=0.0,lat=-60),2)
@@ -93,7 +95,7 @@ gmm_fname = dloc + 'gmm_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_
 fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip + '.nc'
 
 # colormap
-colormap = plt.get_cmap('tab10', n_components_selected)
+colormap = plt.get_cmap('tab20', n_components_selected)
 
 #####################################################################
 # Run the standard analysis stuff
@@ -127,10 +129,10 @@ profiles = lp.regrid_onto_density_levels(profiles)
 #              kind="hist",descr="unscaled")
 
 # select more specific density range
-profiles = lp.select_sig0_range(profiles, sig0range=(27.0,27.2))
+profiles = lp.select_sig0_range(profiles, sig0range=sig0range)
 
-# plot sa and ct on density levels
-pt.plot_profiles_on_density_levels(ploc, profiles)
+# plot sa and ct on density levels (CRASHES)
+#pt.plot_profiles_on_density_levels(ploc, profiles)
 
 #####################################################################
 # Dimensionality reduction / transformation
@@ -149,7 +151,8 @@ if transform_method=='pca':
         pca, Xtrans = lp.fit_and_apply_pca(profiles,
                                            number_of_pca_components=n_pca,
                                            kernel=use_kernel_pca,
-                                           train_frac=0.99)
+                                           train_frac=0.99,
+                                           method='onSig')
         # save for future use
         io.save_pca(pca_fname, pca)
 

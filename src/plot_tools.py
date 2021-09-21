@@ -27,7 +27,7 @@ def plot_profile(ploc, df):
    df.prof_S.plot(ax=ax2, y='depth', yincrease=False)
    df.swap_dims({'depth': 'sig0'}).prof_CT.plot(ax=ax3, y='sig0', marker='.', yincrease=False)
    df.swap_dims({'depth': 'sig0'}).prof_SA.plot(ax=ax4, y='sig0', marker='.', yincrease=False)
-   fig.subplots_adjust(wspace=0.7)
+   #fig.subplots_adjust(wspace=0.7)
    # save figure and close
    plt.savefig(ploc + 'single_profile.png', bbox_inches='tight')
    plt.close()
@@ -90,7 +90,7 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         num += 1
 
         # select subplot
-        ax = plt.subplot(3,3,num)
+        ax = plt.subplot(5,3,num)
         plt.plot(pca_temp[npca,:], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
@@ -129,7 +129,7 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         num += 1
 
         # select subplot
-        ax = plt.subplot(3,3,num)
+        ax = plt.subplot(5,3,num)
         plt.plot(pca_salt[npca,:], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
@@ -364,7 +364,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
         num += 1
 
         # select subplot
-        ax = plt.subplot(1,3,num)
+        ax = plt.subplot(2,3,num)
         plt.plot(pca.components_[npca,0:15], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
@@ -401,7 +401,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
         num += 1
 
         # select subplot
-        ax = plt.subplot(1,3,num)
+        ax = plt.subplot(2,3,num)
         plt.plot(pca.components_[npca,15:], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
@@ -431,12 +431,12 @@ def plot_SA_class_structure(ploc, profiles, class_means,
                            zmin, zmax, Smin=33.6, Smax=37.0):
 
     # select colormap
-    colormap = plt.get_cmap('tab10', n_components_selected)
+    colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
     # initialize the figure
-    fig = plt.figure(figsize=(60, 60))
+    fig = plt.figure(figsize=(60, 100))
     #plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
@@ -456,7 +456,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
         std_S = class_stds.prof_SA[nrow,:].values
 
         # select subplot
-        ax = plt.subplot(5,2,num)
+        ax = plt.subplot(7,2,num)
         plt.plot(mean_S, z, marker='', linestyle='solid', color=colorVal,
             linewidth=6.0, alpha=0.9)
         plt.plot(mean_S+std_S, z, marker='', linestyle='dashed', color=colorVal,
@@ -479,7 +479,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
         ax.tick_params(axis='x', labelsize=30)
         ax.tick_params(axis='y', labelsize=30)
 
-    fig.subplots_adjust(wspace=0.7)
+    #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_SA_byClass.png', bbox_inches='tight')
     plt.close()
 
@@ -491,12 +491,12 @@ def plot_CT_class_structure(ploc, profiles, class_means,
                             zmin, zmax, Tmin=-3, Tmax=20):
 
     # select colormap
-    colormap = plt.get_cmap('tab10', n_components_selected)
+    colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
     # initialize the figure
-    fig = plt.figure(figsize=(60, 60))
+    fig = plt.figure(figsize=(60, 100))
     #plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
@@ -516,7 +516,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
         std_T = class_stds.prof_CT[nrow,:].values
 
         # select subplot
-        ax = plt.subplot(5,2,num)
+        ax = plt.subplot(7,2,num)
         plt.plot(mean_T, z, marker='', linestyle='solid', color=colorVal,
             linewidth=6.0, alpha=0.9)
         plt.plot(mean_T+std_T, z, marker='', linestyle='dashed', color=colorVal,
@@ -539,7 +539,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
         ax.tick_params(axis='x', labelsize=30)
         ax.tick_params(axis='y', labelsize=30)
 
-    fig.subplots_adjust(wspace=0.7)
+    #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_CT_byClass.png', bbox_inches='tight')
     plt.close()
 
@@ -551,12 +551,12 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
                            Smin=33.6, Smax=37.0):
 
     # select colormap
-    colormap = plt.get_cmap('tab10', n_components_selected)
+    colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
     # initialize the figure
-    fig = plt.figure(figsize=(60, 60))
+    fig = plt.figure(figsize=(60, 100))
     #plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
@@ -576,7 +576,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
         std_S = class_stds.sa_on_sig0[nrow,:].values
 
         # select subplot
-        ax = plt.subplot(5,2,num)
+        ax = plt.subplot(7,2,num)
         plt.plot(mean_S, sig0, marker='', linestyle='solid', color=colorVal,
             linewidth=6.0, alpha=0.9)
         plt.plot(mean_S+std_S, sig0, marker='', linestyle='dashed', color=colorVal,
@@ -599,7 +599,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
         ax.tick_params(axis='x', labelsize=30)
         ax.tick_params(axis='y', labelsize=30)
 
-    fig.subplots_adjust(wspace=0.7)
+    #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_SA_sig0_byClass.png', bbox_inches='tight')
     plt.close()
 
@@ -611,12 +611,12 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
                             Tmin=-3, Tmax=20):
 
     # select colormap
-    colormap = plt.get_cmap('tab10', n_components_selected)
+    colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
     # initialize the figure
-    fig = plt.figure(figsize=(60, 60))
+    fig = plt.figure(figsize=(60, 100))
     #plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
@@ -636,7 +636,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
         std_T = class_stds.ct_on_sig0[nrow,:].values
 
         # select subplot
-        ax = plt.subplot(5,2,num)
+        ax = plt.subplot(7,2,num)
         plt.plot(mean_T, sig0, marker='', linestyle='solid', color=colorVal,
             linewidth=6.0, alpha=0.9)
         plt.plot(mean_T+std_T, sig0, marker='', linestyle='dashed', color=colorVal,
@@ -659,7 +659,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
         ax.tick_params(axis='x', labelsize=30)
         ax.tick_params(axis='y', labelsize=30)
 
-    fig.subplots_adjust(wspace=0.7)
+    #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_CT_sig0_byClass.png', bbox_inches='tight')
     plt.close()
 
@@ -671,12 +671,12 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
                            zmin, zmax, sig0min=24.0, sig0max=28.0):
 
     # select colormap
-    colormap = plt.get_cmap('tab10', n_components_selected)
+    colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
     # initialize the figure
-    fig = plt.figure(figsize=(60, 60))
+    fig = plt.figure(figsize=(60, 100))
     #plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
@@ -696,7 +696,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
         std_S = class_stds.sig0[nrow,:].values
 
         # select subplot
-        ax = plt.subplot(5,2,num)
+        ax = plt.subplot(7,2,num)
         plt.plot(mean_S, z, marker='', linestyle='solid', color=colorVal,
             linewidth=6.0, alpha=0.9)
         plt.plot(mean_S+std_S, z, marker='', linestyle='dashed', color=colorVal,
@@ -719,7 +719,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
         ax.tick_params(axis='x', labelsize=30)
         ax.tick_params(axis='y', labelsize=30)
 
-    fig.subplots_adjust(wspace=0.7)
+    #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_sig0_byClass.png', bbox_inches='tight')
     plt.close()
 
@@ -730,7 +730,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
                    lon_min, lon_max, lat_min, lat_max):
 
     # define colormap
-    colormap = plt.get_cmap('tab10', n_components_selected)
+    colormap = plt.get_cmap('tab20', n_components_selected)
 
     # extract values as new DataArrays
     df1D = profiles.isel(depth=0)
@@ -752,7 +752,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
     lats_random_sample = lats[rows_id]
     clabels_random_sample = clabels[rows_id]
 
-    #colormap with Historical data
+    # scatterplot
     plt.figure(figsize=(17, 13))
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
@@ -767,7 +767,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
     ax.coastlines(resolution='50m')
     ax.gridlines(color='black')
     ax.add_feature(cartopy.feature.LAND)
-    plt.colorbar(CS)
+    #plt.colorbar(CS)
 
     # save figure
     plt.savefig(ploc + 'label_map.png', bbox_inches='tight')
@@ -854,7 +854,7 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                          s=10.0,
                          transform=ccrs.Geodetic(),
                          )
-        plt.colorbar(CS)
+        #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
         ax.gridlines(color='black')
         ax.add_feature(cartopy.feature.LAND)
@@ -893,7 +893,7 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     df1D = df.isel(depth=plev)
 
     # define colormap
-    colormap = plt.get_cmap('tab10', n_comp)
+    colormap = plt.get_cmap('tab20', n_comp)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
@@ -954,7 +954,7 @@ def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
     df1D = df.stack(z=('profile','depth')).reset_index('z')
 
     # define colormap
-    colormap = plt.get_cmap('tab10', n_comp)
+    colormap = plt.get_cmap('tab20', n_comp)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
@@ -1081,14 +1081,17 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 #####################################################################
 def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                       SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60,
-                      timeShading='year'):
+                      timeShading='month'):
 
     # make (stack and reset index)
     df1D = df.isel(depth=0)
     # now use isel to loop through labels
 
-    # define colormap
-    colormap = plt.get_cmap('cividis', n_comp)
+    # define colormap (cyclic)
+    if timeShading=='month':
+        colormap = plt.get_cmap('hsv_r', 12)
+    else:
+        colormap = plt.get_cmap('cividis', 30)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
