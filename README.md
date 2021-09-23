@@ -24,14 +24,19 @@ docker run --rm -it -p 8808:8808 -v $PWD:/work -w /work pangeo/pangeo-notebook:2
 and then run `ipython3`. 
 
 ### Singularity container
-Alternatively, if you're working on an HPC platform, you'll probably need to run singularity instead. These commands for reference:
+NOTE: I'm having a shell issue. I have to run `source .cshrc` when I log on in order for my aliases to be defined. 
+
+If you're working on an HPC platform (e.g for access to more memory or GPUs), you'll probably need to run singularity instead. These commands seem to basically work on BAS HPC:
 ```
-cd <where-you-want-to-work>
-singularity pull docker://pangeo/pangeo-notebook:2021.09.08
-singularity run --bind /data/expose/so-wise/:/mnt pangeo-notebook_2021.09.08.sif bash
+$ cd <where-you-want-to-work>
+$ singularity pull docker://pangeo/pangeo-notebook:2021.09.08
+Singularity> source activate notebook
+(notebook) Singularity> ipython
 cd /mnt
 ```
-The `--nv` flag turns on GPU support, which may not be available on every workstation. 
+You might have to pip install gsw, seaborn, and umap-learn. Eventually I need to get these into their own image, once I learn how to do that. 
+
+(Now, I'm running into lots of other bugs, but they don't seem to be related to the computing environment.)
 
 ## Project Organization
 ```
