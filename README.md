@@ -42,11 +42,13 @@ If you're working on an HPC platform (e.g for access to more memory or GPUs), yo
 ```
 $ cd <where-you-want-to-work>
 $ singularity pull docker://pangeo/pangeo-notebook:2021.09.08
+$ singularity shell --bind /data/expose/so-wise/:/mnt pangeo-notebook_2021.09.08.sif -nv 
 Singularity> source activate notebook
+(notebook) Singularity> pip install seaborn gsw umap-learn 
 (notebook) Singularity> ipython
 cd /mnt
 ```
-You might have to pip install gsw, seaborn, and umap-learn. Eventually I need to get these into their own image, once I learn how to do that. 
+The `-nv` flag should give access to GPUs. After the `source activate notebook` step, you might have to pip install gsw, seaborn, and umap-learn. Eventually I need to get these into their own image, once I learn how to do that. 
 
 (Now, I'm running into lots of other bugs, but they don't seem to be related to the computing environment.)
 
