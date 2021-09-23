@@ -40,9 +40,9 @@ import os.path
 #####################################################################
 
 # set locations and names
-descrip = 'allDomain_density_test' # extra description for filename
+descrip = 'allDomain_density_27.0-27.2_v3' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots_allDomain_density_test/'
+ploc = 'plots_allDomain_density_27.0-27.2_v3/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -50,7 +50,7 @@ if not os.path.exists(ploc):
     os.makedirs(ploc)
 
 # calculate BIC and AIC? set max number of components
-getBIC = True
+getBIC = False
 max_N = 20
 
 # transformation method (pca, umap)
@@ -67,7 +67,7 @@ saveOutput = False
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 2
+n_components_selected = 12
 
 #longitude and latitude range
 lon_min = -65
@@ -76,9 +76,9 @@ lat_min = -85
 lat_max = -30
 # depth range
 zmin = 100.0
-zmax = 1000.0
+zmax = 4000.0
 # density range
-sig0range = (26.0, 27.8)
+sig0range = (27.0, 27.2)
 
 # temperature and salinity ranges for plotting
 Trange=(-2, 21.0)
