@@ -339,8 +339,9 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3,
     Xpca = pca.transform(Xscaled)
 
     # calculated total variance explained
-    total_variance_explained_ = np.sum(pca.explained_variance_ratio_)
-    print(total_variance_explained_)
+    if kernel==False:
+        total_variance_explained_ = np.sum(pca.explained_variance_ratio_)
+        print(total_variance_explained_)
 
     return pca, Xpca
 
