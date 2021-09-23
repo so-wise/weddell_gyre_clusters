@@ -7,6 +7,18 @@
 
 ## Requirements
 - Python 3.8+
+- gsw==3.4.0
+- xarray==0.19.0
+- xgcm==0.5.2
+- Cartopy==0.19.0.post1
+- joblib==1.0.1
+- matplotlib==3.4.3
+- numpy==1.21.2
+- pandas==1.3.2
+- dask==2021.8.1
+- scikit_learn==0.24.2
+- seaborn==0.11.2
+- umap==0.1.1
 
 ## Getting started
 
