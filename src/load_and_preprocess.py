@@ -264,6 +264,9 @@ def select_sig0_range(profiles,sig0range=(26.5,27.2)):
     # select profiles in the more specific density range
     profiles = profiles.sel(sig0_levs=slice(sig0range[0],sig0range[1]))
 
+    # might be redundant, but get rid of levels where all values nan
+    profiles = profiles.dropna(dim='')
+
     # drop all profiles with nan values
     profiles = profiles.dropna(dim='profile', how='any')
 
