@@ -30,8 +30,14 @@ def load_profile_data(data_location, lon_min, lon_max,
     seals = xr.open_mfdataset(data_location + 'SEALS/*.nc',
                               concat_dim='iPROF', combine='nested')
 
+    # add variable to indicate data source
+    ctds['source'] = 'ctd'
+    floats['source'] = 'float'
+    seals['source'] = 'seal'
+
     # combine into single xarray.Dataset object
-    profiles = xr.combine_nested([ctds, floats, seals], concat_dim='iPROF')
+    profiles = xr.combine_nested([ctds, floats, seals],
+                                 concat_dim='iPROF')
 
     # assign depth coordinate
     profiles.coords['iDEPTH'] = profiles.prof_depth[0,:].values
