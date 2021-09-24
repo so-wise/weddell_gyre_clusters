@@ -204,9 +204,9 @@ def regrid_onto_more_vertical_levels(profiles, zmin, zmax, zlevs=50):
                                  method='linear')
     # linearly interpolate density onto selected z levels
     sig0_on_highz = grid.transform(profiles.sig0, 'Z',
-                                target_z_levels,
-                                target_data=profiles.depth,
-                                method='linear')
+                                   target_z_levels,
+                                   target_data=profiles.depth,
+                                   method='linear')
 
     # rename dimension to avoid conflict with existing dimension
     profiles['ct_on_highz'] = ct_on_highz.rename({'depth':'depth_highz'})

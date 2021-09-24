@@ -1160,3 +1160,216 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
         plt.title('Class ' + str(nclass) , fontsize=22)
         plt.savefig(ploc + 'TS_by' + timeShading + '_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
         plt.close()
+
+#####################################################################
+# Plot class stats, split by longitude
+#####################################################################
+def plot_lon_split(ploc, df):
+
+    fs = 28 # font size
+
+    dfg = df.groupby('subgroup')
+    z = df.depth.values
+    sig0_levs = df.sig0_levs.values
+
+    dfg_mean = dfg.mean('profile')
+    dfg_std = dfg.std('profile')
+
+    ### CT
+    myVar = 'CT'
+    ybar = dfg_mean[myVar]
+    ystd = dfg_std[myVar]
+    # plot
+    plt.figure(figsize=(25,30))
+    ax = plt.subplot(1,2,1)
+    # group a
+    myGroup = 'a'
+    plt.plot(ybar.sel(subgroup=myGroup), -z,
+                marker='', linestyle='solid', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.grid()
+    # group b
+    myGroup = 'b'
+    plt.plot(ybar.sel(subgroup=myGroup), -z,
+                marker='', linestyle='solid', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.title('Blue: <= lon0, Red: > lon0', fontsize=fs)
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    # right panel
+    ax = plt.subplot(1,2,2)
+    dybar = ybar.sel(subgroup='b') - ybar.sel(subgroup='a')
+    plt.plot(dybar, -z,
+                marker='', linestyle='solid', color='black', linewidth=6.0, alpha=0.9)
+    plt.title('Red-Blue', fontsize=fs)
+    plt.grid()
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    plt.savefig(ploc + 'twogroup_CT.png', bbox_inches='tight')
+    plt.close()
+
+    ### SA
+    myVar = 'SA'
+    ybar = dfg_mean[myVar]
+    ystd = dfg_std[myVar]
+    # plot
+    plt.figure(figsize=(25,30))
+    ax = plt.subplot(1,2,1)
+    # group a
+    myGroup = 'a'
+    plt.plot(ybar.sel(subgroup=myGroup), -z,
+                marker='', linestyle='solid', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.grid()
+    # group b
+    myGroup = 'b'
+    plt.plot(ybar.sel(subgroup=myGroup), -z,
+                marker='', linestyle='solid', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    plt.title('Blue: <= lon0, Red: > lon0', fontsize=fs)
+
+    # right panel
+    ax = plt.subplot(1,2,2)
+    dybar = ybar.sel(subgroup='b') - ybar.sel(subgroup='a')
+    plt.plot(dybar, -z,
+                marker='', linestyle='solid', color='black', linewidth=6.0, alpha=0.9)
+    plt.title('Red-Blue', fontsize=fs)
+    plt.grid()
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    plt.savefig(ploc + 'twogroup_SA.png', bbox_inches='tight')
+    plt.close()
+
+    ### sig0
+    myVar = 'sig0'
+    ybar = dfg_mean[myVar]
+    ystd = dfg_std[myVar]
+    # plot
+    plt.figure(figsize=(25,30))
+    ax = plt.subplot(1,2,1)
+    # group a
+    myGroup = 'a'
+    plt.plot(ybar.sel(subgroup=myGroup), -z,
+                marker='', linestyle='solid', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.grid()
+    # group b
+    myGroup = 'b'
+    plt.plot(ybar.sel(subgroup=myGroup), -z,
+                marker='', linestyle='solid', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), -z,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    plt.title('Blue: <= lon0, Red: > lon0', fontsize=fs)
+
+    # right panel
+    ax = plt.subplot(1,2,2)
+    dybar = ybar.sel(subgroup='b') - ybar.sel(subgroup='a')
+    plt.plot(dybar, -z,
+                marker='', linestyle='solid', color='black', linewidth=6.0, alpha=0.9)
+    plt.title('Red-Blue', fontsize=fs)
+    plt.grid()
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    plt.savefig(ploc + 'twogroup_sig0.png', bbox_inches='tight')
+    plt.close()
+
+    ### CT_onsig
+    myVar = 'CT_onsig'
+    ybar = dfg_mean[myVar]
+    ystd = dfg_std[myVar]
+    # plot
+    plt.figure(figsize=(25,30))
+    ax = plt.subplot(1,2,1)
+    # group a
+    myGroup = 'a'
+    plt.plot(ybar.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='solid', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.grid()
+    # group b
+    myGroup = 'b'
+    plt.plot(ybar.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='solid', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+
+    plt.title('Blue: <= lon0, Red: > lon0', fontsize=fs)
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    # right panel
+    ax = plt.subplot(1,2,2)
+    dybar = ybar.sel(subgroup='b') - ybar.sel(subgroup='a')
+    plt.plot(dybar, sig0_levs,
+                marker='', linestyle='solid', color='black', linewidth=6.0, alpha=0.9)
+    plt.title('Red-Blue', fontsize=fs)
+    plt.grid()
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    plt.savefig(ploc + 'twogroup_CT_onSig0.png', bbox_inches='tight')
+    plt.close()
+
+    ### SA_onsig
+    myVar = 'SA_onsig'
+    ybar = dfg_mean[myVar]
+    ystd = dfg_std[myVar]
+    # plot
+    plt.figure(figsize=(25,30))
+    ax = plt.subplot(1,2,1)
+    # group a
+    myGroup = 'a'
+    plt.plot(ybar.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='solid', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='b', linewidth=6.0, alpha=0.9)
+    plt.grid()
+    # group b
+    myGroup = 'b'
+    plt.plot(ybar.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='solid', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)+ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+    plt.plot(ybar.sel(subgroup=myGroup)-ystd.sel(subgroup=myGroup), sig0_levs,
+                marker='', linestyle='dashed', color='r', linewidth=6.0, alpha=0.9)
+
+    plt.title('Blue: <= lon0, Red: > lon0', fontsize=fs)
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    # right panel
+    ax = plt.subplot(1,2,2)
+    dybar = ybar.sel(subgroup='b') - ybar.sel(subgroup='a')
+    plt.plot(dybar, sig0_levs,
+                marker='', linestyle='solid', color='black', linewidth=6.0, alpha=0.9)
+    plt.title('Red-Blue', fontsize=fs)
+    plt.grid()
+    plt.xticks(fontsize=fs)
+    plt.yticks(fontsize=fs)
+    plt.savefig(ploc + 'twogroup_SA_onSig0.png', bbox_inches='tight')
+    plt.close()
