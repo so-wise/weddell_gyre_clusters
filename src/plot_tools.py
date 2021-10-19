@@ -15,6 +15,8 @@ import seaborn as sns
 import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
+from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+from shapely.ops import cascaded_union
 import random
 import gsw
 
@@ -756,6 +758,11 @@ def plot_label_map(ploc, profiles, n_components_selected,
     plt.figure(figsize=(17, 13))
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
+
+    # add background image for ocean bathymetry
+    ax.stock_img()
+
+    # scatter plot
     CS = plt.scatter(lons_random_sample-360,
                      lats_random_sample,
                      c=clabels_random_sample,
@@ -768,6 +775,11 @@ def plot_label_map(ploc, profiles, n_components_selected,
     ax.gridlines(color='black')
     ax.add_feature(cartopy.feature.LAND)
     #plt.colorbar(CS)
+
+    # 200 m bathymetry line
+    #bathym = cfeature.NaturalEarthFeature(name='bathymetry_J_200', scale='10m', category='physical')
+    #bathym = cascaded_union(list(bathym.geometries()))
+    #ax.add_geometries(bathym, facecolor='none', edgecolor='grey', linestyle='solid', linewidth=0.5, crs=ccrs.PlateCarree())
 
     # save figure
     plt.savefig(ploc + 'label_map.png', bbox_inches='tight')
