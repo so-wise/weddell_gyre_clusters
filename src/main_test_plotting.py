@@ -210,3 +210,10 @@ class_means, class_stds = gmm.calc_class_stats(profiles)
 # plot label map
 pt.plot_label_map(ploc, profiles, n_components_selected,
                    lon_min, lon_max, lat_min, lat_max)
+
+# calculate the i-metric
+df1D = profiles.isel(depth=0)
+df1D = gmm.calc_i_metric(profiles)
+pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
+pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
+                                 lat_min, lat_max, n_components_selected)

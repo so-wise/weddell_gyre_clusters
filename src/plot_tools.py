@@ -798,7 +798,14 @@ def plot_label_map(ploc, profiles, n_components_selected,
 #####################################################################
 # Plot single i-metric map
 #####################################################################
-def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max, rr=0.66):
+def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
+        rr=0.66,bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
+
+    # load bathymetry
+    bds = io.load_bathymetry(bathy_fname)
+    bathy_lon = bds['lon'][:]
+    bathy_lat = bds['lat'][:]
+    bathy = bds['bathy'][:]
 
     # extract values as new DataArrays
     da_lon = df1D.lon
@@ -823,6 +830,13 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max, r
     plt.figure(figsize=(17, 13))
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
+
+    # add bathymetry contours
+    ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
+            linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
+            transform=ccrs.PlateCarree())
+
+    # scatter plot
     CS = plt.scatter(lons_random_sample-360,
                      lats_random_sample,
                      c=clabels_random_sample,
@@ -843,7 +857,14 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max, r
 # Plot multiple i-metric maps (one per class)
 #####################################################################
 def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
-                                    lat_min, lat_max, n_components_selected):
+        lat_min, lat_max, n_components_selected, bathy_fname="bathy.nc",
+        lev_range=range(-6000,1,500)):
+
+    # load bathymetry
+    bds = io.load_bathymetry(bathy_fname)
+    bathy_lon = bds['lon'][:]
+    bathy_lat = bds['lat'][:]
+    bathy = bds['bathy'][:]
 
     # extract values as new DataArrays
     da_lon = df1D.lon
@@ -868,6 +889,13 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         plt.figure(figsize=(17, 13))
         ax = plt.axes(projection=ccrs.PlateCarree())
         ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
+
+        # add bathymetry contours
+        ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
+                linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
+                transform=ccrs.PlateCarree())
+
+        # scatter plot
         CS = plt.scatter(lons_random_sample-360,
                          lats_random_sample,
                          c=clabels_random_sample,
