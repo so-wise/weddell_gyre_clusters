@@ -32,6 +32,9 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+import cmocean.cm as cmo
+import seaborn as sns
+from glob import glob
 ### os tools
 import os.path
 ### import dask
@@ -86,7 +89,7 @@ n_components_selected = 10
 lon_min = -65
 lon_max =  80
 lat_min = -85
-lat_max = -30
+lat_max = -50
 # depth range
 zmin = 100.0
 zmax = 1000.0
@@ -207,3 +210,10 @@ class_means, class_stds = gmm.calc_class_stats(profiles)
 # plot label map
 pt.plot_label_map(ploc, profiles, n_components_selected,
                    lon_min, lon_max, lat_min, lat_max)
+
+# calculate the i-metric
+df1D = profiles.isel(depth=0)
+df1D = gmm.calc_i_metric(profiles)
+pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
+pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
+                                 lat_min, lat_max, n_components_selected)

@@ -7,6 +7,21 @@ from sklearn import mixture
 import joblib
 
 #####################################################################
+# Import bathymetry file
+#####################################################################
+def load_bathymetry(file_name):
+
+    from netCDF4 import Dataset
+
+    print('file_io.load_bathymetry')
+
+    # import bathymetry file
+    ds = Dataset(file_name, "r", format="NETCDF4")
+
+    # return the dataset
+    return ds
+
+#####################################################################
 # Save PCA using joblib
 #####################################################################
 def save_pca(file_name, pca):
