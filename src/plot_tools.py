@@ -15,8 +15,9 @@ import seaborn as sns
 import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-from shapely.ops import cascaded_union
+import cmocean.cm as cmo
+from glob import glob
+import file_io as io
 import random
 import gsw
 
@@ -729,7 +730,14 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 # Plot class label map using cartopy
 #####################################################################
 def plot_label_map(ploc, profiles, n_components_selected,
-                   lon_min, lon_max, lat_min, lat_max):
+                   lon_min=-80, lon_max=80, lat_min=-85, lat_max=-30,
+                   bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
+
+    # load bathymetry
+    bds = io.load_bathymetry(bathy_fname)
+    bathy_lon = bds['lon'][:]
+    bathy_lat = bds['lat'][:]
+    bathy = bds['bathy'][:]
 
     # define colormap
     colormap = plt.get_cmap('tab20', n_components_selected)
@@ -759,8 +767,10 @@ def plot_label_map(ploc, profiles, n_components_selected,
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
 
-    # add background image for ocean bathymetry
-    ax.stock_img()
+    # add bathymetry contours
+    ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
+            linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
+            transform=ccrs.PlateCarree())
 
     # scatter plot
     CS = plt.scatter(lons_random_sample-360,

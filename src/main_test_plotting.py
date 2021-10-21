@@ -32,6 +32,9 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+import cmocean.cm as cmo
+import seaborn as sns
+from glob import glob
 ### os tools
 import os.path
 ### import dask
@@ -86,7 +89,7 @@ n_components_selected = 10
 lon_min = -65
 lon_max =  80
 lat_min = -85
-lat_max = -30
+lat_max = -50
 # depth range
 zmin = 100.0
 zmax = 1000.0
