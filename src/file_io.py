@@ -9,7 +9,7 @@ import joblib
 #####################################################################
 # Import bathymetry file
 #####################################################################
-def load_bathymetry(file_name):
+def load_bathymetry(file_name="bathy.nc"):
 
     from netCDF4 import Dataset
 
