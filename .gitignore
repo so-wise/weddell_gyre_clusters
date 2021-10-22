@@ -2,7 +2,6 @@
 datasets_bsose
 notebooks/exploratory/dask-worker-space
 notebooks/exploratory/processed_data
-src/ne_10m_bathymetry_all
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
