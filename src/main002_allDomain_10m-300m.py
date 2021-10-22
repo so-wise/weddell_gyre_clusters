@@ -1,11 +1,3 @@
-
-#####################################################################
-# TO BE RUN ON THE WEDDELL CLUSTER: SUB-CLUSTERING
-#####################################################################
-
-# data file
-#fname = 'models/profiles_-65to80lon_-85to-30lat_100to1000depth_12K_allDomain_density_test.nc'
-
 #####################################################################
 # These may need to be installed
 #####################################################################
@@ -22,7 +14,6 @@ import load_and_preprocess as lp
 import bic_and_aic as ba
 import plot_tools as pt
 import file_io as io
-import analysis
 import xarray
 import density
 import gmm
@@ -32,38 +23,22 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
-import cmocean.cm as cmo
-import seaborn as sns
-from glob import glob
 ### os tools
 import os.path
-### import dask
-#from dask.distributed import Client
-#import dask
-
-#####################################################################
-# Start Dask client (not working at present)
-#####################################################################
-#client = Client(n_workers=2, threads_per_worker=2, memory_limit='6GB')
-#client
 
 #####################################################################
 # Set runtime parameters (filenames, flags, ranges)
 #####################################################################
 
 # set locations and names
-descrip = 'WeddellClass_test' # extra description for filename
+descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-classified_data_location =  'models/profiles_-65to80lon_-85to-30lat_100to1000depth_12K_allDomain_density_test.nc'
-ploc = 'plots_WeddellClass_test/'
+ploc = 'plots_allDomain_10m-300m_K7/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
 if not os.path.exists(ploc):
     os.makedirs(ploc)
-
-# single class from previous effort to sub-classify
-myClass=6
 
 # calculate BIC and AIC? set max number of components
 getBIC = False
@@ -77,13 +52,13 @@ transform_method = 'pca'
 use_kernel_pca = False
 
 # save the processed output as a NetCDF file?
-saveOutput = True
+saveOutput = False
 
 # number of PCA components
-n_pca = 6
+n_pca = 3
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 10
+n_components_selected = 7
 
 #longitude and latitude range
 lon_min = -65
@@ -91,21 +66,19 @@ lon_max =  80
 lat_min = -85
 lat_max = -30
 # depth range
-zmin = 100.0
-zmax = 1000.0
+zmin = 10.0
+zmax = 300.0
 # density range
-sig0range = (26.0, 27.0)
+sig0range = (26.0, 28.0)
 
 # temperature and salinity ranges for plotting
-Trange=(-2, 20.0)
-Srange=(34.0, 38.0)
-sig0min=27.0
-sig0max=28.0
+Trange=(-2, 26.0)
+Srange=(33.0, 37.0)
 # based on the above, calculate the density range
-#sig0min = round(density.calc_scalar_density(Trange[0],Srange[0],
-#    p=0.0,lon=0.0,lat=-60),2)
-#sig0max = round(density.calc_scalar_density(Trange[1],Srange[1],
-#    p=0.0,lon=0.0,lat=-60),2)
+# sig0a = round(density.calc_scalar_density(Trange[0],Srange[0],
+#     p=0.0,lon=0.0,lat=-60),2)
+# sig0b = round(density.calc_scalar_density(Trange[1],Srange[1],
+#     p=0.0,lon=0.0,lat=-60),2)
 
 # create filename for saving GMM and saving labelled profiles
 pca_fname = dloc + 'pca_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_pca)) + descrip
@@ -123,13 +96,34 @@ colormap = plt.get_cmap('tab20', n_components_selected)
 #####################################################################
 
 # load profile subset based on ranges given above
-profiles = lp.load_single_class(classified_data_location, selected_class=myClass)
+profiles = lp.load_profile_data(data_location, lon_min, lon_max,
+                                lat_min, lat_max, zmin, zmax)
 
-# get rid of old high-z and sigma interpolation, redo it
-profiles = profiles.drop({'sa_on_highz','ct_on_highz','ct_on_sig0','sa_on_sig0'})
-profiles = profiles.drop_dims({'depth_highz','sig0_levs'})
+# preprocess date and time
+profiles = lp.preprocess_time_and_date(profiles)
+
+# calculate conservative temperature, absolute salinity, and density (sig0)
+profiles = density.calc_density(profiles)
+
+# quick prof_T and prof_S selection plots
+pt.prof_TS_sample_plots(ploc, profiles)
+
+# plot random profile
+pt.plot_profile(ploc, profiles.isel(profile=2000))
+
+# regrid onto density levels (maybe useful for plotting later?)
 profiles = lp.regrid_onto_more_vertical_levels(profiles, zmin, zmax)
 profiles = lp.regrid_onto_density_levels(profiles)
+
+# pairplot: unscaled (warning: this is very slow)
+#pt.plot_pairs(ploc,np.concatenate((profiles.prof_CT, profiles.prof_SA),axis=1),
+#              kind="hist",descr="unscaled")
+
+# select more specific density range
+#profiles = lp.select_sig0_range(profiles, sig0range=sig0range)
+
+# plot sa and ct on density levels (CRASHES)
+#pt.plot_profiles_on_density_levels(ploc, profiles)
 
 #####################################################################
 # Dimensionality reduction / transformation
@@ -204,8 +198,62 @@ profiles = gmm.apply_gmm(profiles, Xtrans, best_gmm, n_components_selected)
 class_means, class_stds = gmm.calc_class_stats(profiles)
 
 #####################################################################
+# Calculate and plot tSNE with class labels
+#####################################################################
+
+# fit and apply tsne
+tSNE_data, colors_for_tSNE = lp.fit_and_apply_tsne(profiles, Xtrans)
+
+# plot t-SNE with class labels
+pt.plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE)
+
+#####################################################################
 # Plot classification results
 #####################################################################
+
+# plot T, S vertical structure of the classes
+pt.plot_CT_class_structure(ploc, profiles, class_means,class_stds,
+                           n_components_selected, zmin, zmax,
+                           Tmin=Trange[0], Tmax=Trange[1])
+pt.plot_SA_class_structure(ploc, profiles, class_means,class_stds,
+                           n_components_selected, zmin, zmax,
+                           Smin=Srange[0], Smax=Srange[1])
+pt.plot_sig0_class_structure(ploc, profiles, class_means,class_stds,
+                           n_components_selected, zmin, zmax)
+
+# plot T, S vertical structure on sig0 surfaces
+# pt.plot_CT_class_structure_onSig(ploc, profiles, class_means,class_stds,
+#                           n_components_selected,
+#                           Tmin=Trange[0], Tmax=Trange[1])
+# pt.plot_SA_class_structure_onSig(ploc, profiles, class_means,class_stds,
+#                           n_components_selected,
+#                           Smin=Srange[0], Smax=Srange[1])
+
+# plot 3D pca structure (now with class labels)
+pt.plot_pca3D(ploc, colormap, profiles, Xtrans, frac=0.33, withLabels=True)
+
+# plot some single level T-S diagrams
+pt.plot_TS_single_lev(ploc, profiles, n_components_selected,
+                      descrip='', plev=0, PTrange=Trange,
+                      SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
+
+# plot multiple-level T-S diagrams
+pt.plot_TS_multi_lev(ploc, profiles, n_components_selected,
+                     descrip='', plev=0, PTrange=Trange,
+                     SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
+
+# plot T-S diagram (all levels shown)
+pt.plot_TS_all_lev(ploc, profiles, n_components_selected,
+                   descrip='', PTrange=Trange, SPrange=Srange,
+                   lon = -20, lat = -65, rr = 0.60)
+
+# plot T-S diagrams (by class, shaded by year and month)
+pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+                   descrip='', PTrange=Trange, SPrange=Srange,
+                   lon = -20, lat = -65, rr = 0.60, timeShading='year')
+pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+                   descrip='', PTrange=Trange, SPrange=Srange,
+                   lon = -20, lat = -65, rr = 0.60, timeShading='month')
 
 # plot label map
 pt.plot_label_map(ploc, profiles, n_components_selected,
@@ -217,3 +265,14 @@ df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
+
+#####################################################################
+# Save the profiles in a separate NetCDF file
+#####################################################################
+
+if saveOutput==True:
+    profiles.to_netcdf(fname, mode='w')
+
+#####################################################################
+# END
+#####################################################################

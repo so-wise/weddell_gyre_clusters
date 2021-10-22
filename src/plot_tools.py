@@ -25,7 +25,7 @@ import gsw
 # Plot single profile
 #####################################################################
 def plot_profile(ploc, df):
-   fig, (ax1, ax2, ax3, ax4) = plt.subplots(ncols=4, figsize=[8,5])
+   fig, (ax1, ax2, ax3, ax4) = plt.subplots(ncols=4, figsize=[24,5])
    df.prof_T.plot(ax=ax1, y='depth', yincrease=False)
    df.prof_S.plot(ax=ax2, y='depth', yincrease=False)
    df.swap_dims({'depth': 'sig0'}).prof_CT.plot(ax=ax3, y='sig0', marker='.', yincrease=False)
@@ -785,11 +785,6 @@ def plot_label_map(ploc, profiles, n_components_selected,
     ax.gridlines(color='black')
     ax.add_feature(cartopy.feature.LAND)
     #plt.colorbar(CS)
-
-    # 200 m bathymetry line
-    #bathym = cfeature.NaturalEarthFeature(name='bathymetry_J_200', scale='10m', category='physical')
-    #bathym = cascaded_union(list(bathym.geometries()))
-    #ax.add_geometries(bathym, facecolor='none', edgecolor='grey', linestyle='solid', linewidth=0.5, crs=ccrs.PlateCarree())
 
     # save figure
     plt.savefig(ploc + 'label_map.png', bbox_inches='tight')

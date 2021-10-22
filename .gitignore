@@ -3,6 +3,7 @@ datasets_bsose
 notebooks/exploratory/dask-worker-space
 notebooks/exploratory/processed_data
 archive/
+plots/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
