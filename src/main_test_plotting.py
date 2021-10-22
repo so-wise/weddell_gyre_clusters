@@ -52,7 +52,7 @@ import os.path
 #####################################################################
 
 # set locations and names
-descrip = 'WeddellClass' # extra description for filename
+descrip = 'WeddellClass_test' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location =  'models/profiles_-65to80lon_-85to-30lat_100to1000depth_12K_allDomain_density_test.nc'
 ploc = 'plots_WeddellClass_test/'
@@ -89,7 +89,7 @@ n_components_selected = 10
 lon_min = -65
 lon_max =  80
 lat_min = -85
-lat_max = -50
+lat_max = -30
 # depth range
 zmin = 100.0
 zmax = 1000.0
@@ -97,8 +97,8 @@ zmax = 1000.0
 sig0range = (26.0, 27.0)
 
 # temperature and salinity ranges for plotting
-Trange=(-2, 2.0)
-Srange=(34.0, 35.0)
+Trange=(-2, 20.0)
+Srange=(34.0, 38.0)
 sig0min=27.0
 sig0max=28.0
 # based on the above, calculate the density range
