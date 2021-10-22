@@ -185,7 +185,7 @@ prof_T_trans = grid.transform(p1.prof_T, 'Z',
                               method='linear',
                               mask_edges=False)
 
-# the above sort of works, except with one big flaw:
+# The above sort of works, except with one big flaw:
 # some profiles don't extend to bathymetry.
 
 # We need to find the first non-NaN value and scale by that.
