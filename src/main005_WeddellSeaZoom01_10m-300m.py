@@ -14,7 +14,7 @@ import load_and_preprocess as lp
 import bic_and_aic as ba
 import plot_tools as pt
 import file_io as io
-import xarray
+import xarray as xr
 import density
 import gmm
 ### plotting tools
