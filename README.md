@@ -15,7 +15,7 @@
 - matplotlib==3.4.3
 - numpy==1.21.2
 - pandas==1.3.2
-- dask==2021.8.1
+- dask==2021.11.1
 - scikit_learn==0.24.2
 - seaborn==0.11.2
 - umap==0.1.1
@@ -27,11 +27,11 @@ At present, you can use Docker to get this project installed and running. (We co
 ```
 cd <where-you-want-to-work>
 docker pull pangeo/pangeo-notebook:2021.09.08
-docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.09.08 jupyter-lab --no-browser --ip=0.0.0.0
+docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.11.09 jupyter-lab --no-browser --ip=0.0.0.0
 ```
 Note that Docker can only see "down the tree", so make sure that any data and files that you want to work with are within the tree. To test the source code in `src`, you can use this same Docker image to run `ipython`:
 ```
-docker run --rm -it -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.09.08 bash
+docker run --rm -it -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.11.09 bash
 ```
 and then run `ipython3`. 
 
