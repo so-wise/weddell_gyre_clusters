@@ -1,3 +1,10 @@
+#
+# pip install umap-learn
+# pip install cmocean
+# pip install gsw
+# pip install seaborn
+#
+
 import load_and_preprocess as lp
 import bic_and_aic as bic
 import plot_tools as pt
@@ -17,6 +24,7 @@ from sklearn import mixture
 ### xarray, numpy
 import xarray as xr
 import numpy as np
+import umap
 
 # load Reeve climatology
 ds = lp.load_reeve_climatology()
@@ -41,6 +49,10 @@ for j in range(CT.shape[1]):
     SA1 = SA[:,j]
     ax2.plot(SA1,pvals,color='grey',alpha=0.1)
 plt.savefig('allProfs.png',bbox_inches='tight')
+
+#
+# --- Training step (use all data from all three cases)
+#
 
 # try to get rid of NaN values
 CTnn = CT[:, ~np.isnan(CT).any(axis=0)].transpose()
@@ -67,9 +79,32 @@ pt.plot_aic_scores("testing", 20, aic_mean, aic_std)
 # gmm
 myGMM = gmm.train_gmm(Xpca, n_components_selected=10)
 
+#
+# --- Labelling step (_ls)
+#
+
+# The below seems to work. Next step is to get it associated with the xarray DataArrays above 
+
+scaled_CT_ls = preprocessing.scale(CT.transpose())
+scaled_SA_ls = preprocessing.scale(SA.transpose())
+Xscaled_ls = np.concatenate((scaled_CT_ls,scaled_SA_ls),axis=0)
+
+for column in Xscaled_ls:
+    if np.isnan(column).any()==True:
+        myLabel = np.nan
+        print(myLabel)
+    else:
+        myPCA = pca.transform(column.reshape(1,-1))
+        myLabel = myGMM.predict(myPCA)
+        myPost = myGMM.predict_proba(myPCA)
+        print(myLabel)
+        print(myPost)
+
+
+
 # now that GMM has been fit, let's apply it to the original dataset
 #labels = myGMM.predict(Xpca)
 #posterior_probs = myGMM.predict_proba(Xpca)
 
 # BUT WE NEED TO USE THE ORIGINAL DATASET WITH THE  NANS IN plot_aic_scores
-# SO THAT WE WILL KNOW HOW TO PLOT IT. 
+# SO THAT WE WILL KNOW HOW TO PLOT IT.
