@@ -26,7 +26,7 @@
 At present, you can use Docker to get this project installed and running. (We could go with a simpler docker container in the future). These commands work for me:
 ```
 cd <where-you-want-to-work>
-docker pull pangeo/pangeo-notebook:2021.09.08
+docker pull pangeo/pangeo-notebook:2021.11.09
 docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.11.09 jupyter-lab --no-browser --ip=0.0.0.0
 ```
 Note that Docker can only see "down the tree", so make sure that any data and files that you want to work with are within the tree. To test the source code in `src`, you can use this same Docker image to run `ipython`:
