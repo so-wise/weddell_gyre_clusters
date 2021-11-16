@@ -1,27 +1,26 @@
 #
-# pip install umap-learn
-# pip install cmocean
-# pip install gsw
-# pip install seaborn
+# --- manually for now; need to get into our own Docker image
+# pip install umap-learn cmocean gsw seaborn
 #
 
+# local code
 import load_and_preprocess as lp
 import bic_and_aic as bic
 import plot_tools as pt
 import gmm
-### plotting tools
+# plotting tools
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
-### scikit-learn
+# scikit-learn
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
 from sklearn.decomposition import KernelPCA
 from sklearn import manifold
 from sklearn import mixture
-### xarray, numpy
+# xarray, numpy, other tools
 import xarray as xr
 import numpy as np
 import umap
@@ -33,8 +32,11 @@ ds = lp.load_reeve_climatology()
 ds = ds.sel(level=slice(300,1000))
 
 # plot mean
-dbar = ds.mean(dim="profile", skipna=True)
-dbar.prof_CT.plot(y="level", yincrease=False)
+ds_mean = ds.mean(dim="profile", skipna=True)
+ds_mean.prof_CT.plot(y="level", yincrease=False)
+plt.savefig('plots_reeve/meanCT.png',bbox_inches='tight')
+ds_mean.prof_SA.plot(y="level", yincrease=False)
+plt.savefig('plots_reeve/meanSA.png',bbox_inches='tight')
 
 # convert to numpy
 pvals = ds.level.values
@@ -48,10 +50,10 @@ for j in range(CT.shape[1]):
     ax1.plot(CT1,pvals,color='grey',alpha=0.1)
     SA1 = SA[:,j]
     ax2.plot(SA1,pvals,color='grey',alpha=0.1)
-plt.savefig('allProfs.png',bbox_inches='tight')
+plt.savefig('plots_reeve/allProfs.png',bbox_inches='tight')
 
 #
-# --- Training step (use all data from all three cases)
+# Training the GMM
 #
 
 # try to get rid of NaN values
@@ -63,7 +65,7 @@ scaled_CT = preprocessing.scale(CTnn)
 scaled_SA = preprocessing.scale(SAnn)
 
 # concatenate
-Xscaled = np.concatenate((scaled_CT,scaled_SA),axis=0)
+Xscaled = np.concatenate((scaled_CT,scaled_SA),axis=1)
 
 # apply pca
 pca = PCA(n_components=6)
@@ -72,39 +74,94 @@ Xpca = pca.transform(Xscaled)
 total_variance_explained_ = np.sum(pca.explained_variance_ratio_)
 print(total_variance_explained_)
 
-bic_mean, bic_std, aic_mean, aic_std = bic.calc_bic_and_aic(Xpca, 20, max_iter=20)
-pt.plot_bic_scores("testing", 20, bic_mean, bic_std)
-pt.plot_aic_scores("testing", 20, aic_mean, aic_std)
+#bic_mean, bic_std, aic_mean, aic_std = bic.calc_bic_and_aic(Xpca, 20, max_iter=20)
+#pt.plot_bic_scores('plots_reeve/', 20, bic_mean, bic_std)
+#pt.plot_aic_scores('plots_reeve/', 20, aic_mean, aic_std)
 
 # gmm
-myGMM = gmm.train_gmm(Xpca, n_components_selected=10)
+n_components_selected = 7
+myGMM = gmm.train_gmm(Xpca, n_components_selected = n_components_selected)
 
 #
 # --- Labelling step (_ls)
 #
 
-# The below seems to work. Next step is to get it associated with the xarray DataArrays above 
+# The below seems to work. Next step is to get it associated with the xarray DataArrays above
 
 scaled_CT_ls = preprocessing.scale(CT.transpose())
 scaled_SA_ls = preprocessing.scale(SA.transpose())
-Xscaled_ls = np.concatenate((scaled_CT_ls,scaled_SA_ls),axis=0)
+Xscaled_ls = np.concatenate((scaled_CT_ls,scaled_SA_ls),axis=1)
 
+labels_ls = np.empty((Xscaled_ls.shape[0],))
+post_primus = np.empty((Xscaled_ls.shape[0],))
+post_secundo = np.empty((Xscaled_ls.shape[0],))
+iMetric = np.empty((Xscaled_ls.shape[0],))
+
+j = -1
 for column in Xscaled_ls:
+    j = j + 1
     if np.isnan(column).any()==True:
         myLabel = np.nan
-        print(myLabel)
+        labels_ls[j] = myLabel
     else:
         myPCA = pca.transform(column.reshape(1,-1))
         myLabel = myGMM.predict(myPCA)
         myPost = myGMM.predict_proba(myPCA)
-        print(myLabel)
-        print(myPost)
+        # assign label
+        labels_ls[j] = myLabel
+        # posterior probabilities
+        myPost.sort()
+        post_primus[j] = myPost[0][-1]
+        post_secundo[j] = myPost[0][-2]
+        iMetric[j] = 1 - (post_primus[j] - post_secundo[j])
 
+# sanitise
+eps = 0.0001
+post_primus[post_primus<eps] = 0.0
+post_secundo[post_secundo<eps] = 0.0
+iMetric[iMetric<eps] = 0.0
+# nans
+post_primus[np.isnan(labels_ls)] = np.nan
+post_secundo[np.isnan(labels_ls)] = np.nan
+iMetric[np.isnan(labels_ls)] = np.nan
 
+# add labels and max posterior prob. DataArrays to the Dataset
+ds['label'] = xr.DataArray(labels_ls, dims=['profile'])
 
-# now that GMM has been fit, let's apply it to the original dataset
-#labels = myGMM.predict(Xpca)
-#posterior_probs = myGMM.predict_proba(Xpca)
+### EVERYTHING WORKS FINE UNTIL I UNCOMMENT THE LINES below
+### FOR SOME REASON, THEY CLOBBER THE MULTIINDEX AND TURN IT INTO AN object
+#ds['post_primus'] = xr.DataArray(post_primus, dims=['profile'])
+#ds['post_secundo'] = xr.DataArray(post_secundo, dims=['profile'])
+#ds['iMetric'] = xr.DataArray(iMetric, dims=['profile'])
 
-# BUT WE NEED TO USE THE ORIGINAL DATASET WITH THE  NANS IN plot_aic_scores
-# SO THAT WE WILL KNOW HOW TO PLOT IT.
+# finally, unstack!
+ds = ds.unstack()
+
+#
+fig, (ax0, ax1, ax2) = plt.subplots(3, 1)
+
+c = ax0.pcolor(ds.label[0,:,:].values)
+ax0.set_title('2001-2005')
+
+c = ax1.pcolor(ds.label[1,:,:].values)
+ax1.set_title('2006-2009')
+
+c = ax2.pcolor(ds.label[2,:,:].values)
+ax2.set_title('2010-2013')
+
+fig.tight_layout()
+plt.show()
+plt.savefig('plots_reeve/map_testing.png', bbox_inches='tight')
+
+##
+fig0, ax0 = plt.subplots()
+ds.label.isel(time_period=0).plot()
+plt.savefig('plots_reeve/K07_map_0.png', bbox_inches='tight')
+
+fig1, ax1 = plt.subplots()
+ds.label.isel(time_period=1).plot()
+plt.savefig('plots_reeve/K07_map_1.png', bbox_inches='tight')
+
+fig2, ax2 = plt.subplots()
+ds.label.isel(time_period=2).plot()
+plt.savefig('plots_reeve/K07_map_2.png', bbox_inches='tight')

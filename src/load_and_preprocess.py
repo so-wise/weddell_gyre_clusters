@@ -106,11 +106,17 @@ def load_reeve_climatology(floc="../../so-chic-data/WeddellGyre_OM/"):
                     'Conservative Temperature mask based on Period2002to2013':'CTmask',
                     'Absolute Salinity mask based on Period2002to2013':'SAmask'})
 
+    # lat, lon, pressure coordinates
+    pressure = ds.plevs.values[0,:]
+    lat = ds.lat.values[0,:]
+    lon = ds.lon.values[0,:]
+    ds = ds.drop({'plevs','lat','lon'})
+
+    # assign coordinates
+    ds = ds.assign_coords({"level":pressure, "lat":lat, "lon":lon})
+
     # stack
     ds = ds.stack(profile=("time_period","lat","lon"))
-
-    # pressure as coordinate
-    ds = ds.assign_coords({"level" : ds.plevs[:,0].values})
 
     # drop some variables
     ds = ds.drop_vars({'Tmax Conservative Temperature (DegC)',
@@ -130,6 +136,9 @@ def load_reeve_climatology(floc="../../so-chic-data/WeddellGyre_OM/"):
             'Conservative Temperature mapping error (DegC)',
             'Tmax Conservative Temperature mask based on Period2002to2013',
             'Tmax Absolute Salinity mask based on Period2002to2013'})
+
+    # alter some attributes
+    ds.attrs['TimeRange']='N/A'
 
     return ds
 
