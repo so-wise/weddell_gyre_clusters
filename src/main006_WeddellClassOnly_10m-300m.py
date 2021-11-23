@@ -32,7 +32,7 @@ import os.path
 descrip = 'WeddellClassOnly' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location =  'models/profiles_-65to80lon_-85to-30lat_10to300depth_4K_allDomain.nc'
-ploc = 'plots/plots_WeddellClassOnly_10m-300m_K05/'
+ploc = 'plots/plots_WeddellClassOnly_10m-300m_K04/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -188,63 +188,55 @@ class_means, class_stds = gmm.calc_class_stats(profiles)
 # Plot classification results
 #####################################################################
 
+# simplify Dataset for plotting purposes
+dfp = profiles
+dfp = dfp.drop({'depth_highz','sig0_levs','prof_T','prof_S','ct_on_highz',
+                'sa_on_highz','sig0_on_highz','ct_on_sig0','sa_on_sig0'})
+
 # plot T, S vertical structure of the classes
-pt.plot_CT_class_structure(ploc, profiles, class_means,class_stds,
+pt.plot_CT_class_structure(ploc, dfp, class_means,class_stds,
                            n_components_selected, zmin, zmax,
                            Tmin=Trange[0], Tmax=Trange[1])
-pt.plot_SA_class_structure(ploc, profiles, class_means,class_stds,
+pt.plot_SA_class_structure(ploc, dfp, class_means,class_stds,
                            n_components_selected, zmin, zmax,
                            Smin=Srange[0], Smax=Srange[1])
-pt.plot_sig0_class_structure(ploc, profiles, class_means,class_stds,
+pt.plot_sig0_class_structure(ploc, dfp, class_means,class_stds,
                            n_components_selected, zmin, zmax,
                            sig0min=sig0range[0], sig0max=sig0range[1])
 
-# plot T, S vertical structure on sig0 surfaces
-# pt.plot_CT_class_structure_onSig(ploc, profiles, class_means,class_stds,
-#                           n_components_selected,
-#                           Tmin=Trange[0], Tmax=Trange[1])
-# pt.plot_SA_class_structure_onSig(ploc, profiles, class_means,class_stds,
-#                           n_components_selected,
-#                           Smin=Srange[0], Smax=Srange[1])
-
 # plot 3D pca structure (now with class labels)
-pt.plot_pca3D(ploc, colormap, profiles, Xtrans, frac=0.33, withLabels=True)
+pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
 
 # plot some single level T-S diagrams
-pt.plot_TS_single_lev(ploc, profiles, n_components_selected,
+pt.plot_TS_single_lev(ploc, dfp, n_components_selected,
                       descrip='', plev=0, PTrange=Trange,
                       SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
 
-## BREAK FOR DEBUGGING ------
-
-# for some reason this is crashing? Without warning
 
 # plot multiple-level T-S diagrams
-#pt.plot_TS_multi_lev(ploc, profiles, n_components_selected,
-#                     descrip='', plev=0, PTrange=Trange,
-#                     SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
+pt.plot_TS_multi_lev(ploc, dfp, n_components_selected,
+                     descrip='', plev=0, PTrange=Trange,
+                     SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagram (all levels shown)
-#pt.plot_TS_all_lev(ploc, profiles, n_components_selected,
-#                   descrip='', PTrange=Trange, SPrange=Srange,
-#                   lon = -20, lat = -65, rr = 0.33)
-
-# ok from here, maybe?
+pt.plot_TS_all_lev(ploc, dfp, n_components_selected,
+                   descrip='', PTrange=Trange, SPrange=Srange,
+                   lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagrams (by class, shaded by year and month)
-pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+pt.plot_TS_bytime(ploc, dfp, n_components_selected,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.60, timeShading='year')
-pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+pt.plot_TS_bytime(ploc, dfp, n_components_selected,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.60, timeShading='month')
 
 # plot label map
-pt.plot_label_map(ploc, profiles, n_components_selected,
+pt.plot_label_map(ploc, dfp, n_components_selected,
                    lon_min, lon_max, lat_min, lat_max)
 
 # calculate the i-metric
-df1D = profiles.isel(depth=0)
+df1D = dfp.isel(depth=0)
 df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
