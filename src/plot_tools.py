@@ -25,6 +25,7 @@ import gsw
 # Plot single profile
 #####################################################################
 def plot_profile(ploc, df):
+   print("plot_tools.plot_profiles")
    fig, (ax1, ax2, ax3, ax4) = plt.subplots(ncols=4, figsize=[24,5])
    df.prof_T.plot(ax=ax1, y='depth', yincrease=False)
    df.prof_S.plot(ax=ax2, y='depth', yincrease=False)
@@ -160,6 +161,9 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
 #####################################################################
 def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
 
+    # start message
+    print('plot_tools.plot_pca3D')
+
     # just to shorten the names
     xy=Xpca
 
@@ -215,6 +219,9 @@ def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
 #####################################################################
 def plot_pairs(ploc, dataset, kind="hist", descr=""):
 
+    # start message
+    print('plot_tools.plot_pairs')
+
     # create pandas dataframe from numpy array
     df = pd.DataFrame(data=dataset)
 
@@ -228,6 +235,9 @@ def plot_pairs(ploc, dataset, kind="hist", descr=""):
 # Plot UMAP structures (not shaded by class or anything yet)
 #####################################################################
 def plot_umap(ploc, Xtrans, frac=0.33):
+
+    # start message
+    print('plot_tools.plot_umap')
 
     # just to shorten the name
     xy=Xtrans
@@ -264,6 +274,10 @@ def plot_umap(ploc, Xtrans, frac=0.33):
 # Plot BIC scores
 #####################################################################
 def plot_bic_scores(ploc, max_N, bic_mean, bic_std):
+
+    # start message
+    print('plot_tools.plot_bic_scores')
+
     # plot the BIC scores
     n_components_range = range(2, max_N)
     plt.figure(figsize=(20, 8))
@@ -283,6 +297,10 @@ def plot_bic_scores(ploc, max_N, bic_mean, bic_std):
 # Plot AIC scores
 #####################################################################
 def plot_aic_scores(ploc, max_N, aic_mean, aic_std):
+
+    # start message
+    print('plot_tools.plot_aic_scores')
+
     # plot the AIC scores
     n_components_range = range(2, max_N)
     plt.figure(figsize=(20, 8))
@@ -302,6 +320,9 @@ def plot_aic_scores(ploc, max_N, aic_mean, aic_std):
 # Sample profile plots for T, S, CT, SA, and sig0
 #####################################################################
 def prof_TS_sample_plots(ploc, profiles):
+
+    # start message
+    print('plot_tools.plot_TS_sample_plots')
 
     # plotting subset (just a few for visualisation purposes)
     subset = range(1000,2000,1)
@@ -351,6 +372,9 @@ def prof_TS_sample_plots(ploc, profiles):
 # Plot PCA structure for temperature and salinity
 #####################################################################
 def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax):
+
+    # start message
+    print('plot_tools.plot_pca_structure')
 
     # ------- TEMPERATURE PCA COMPONENTS
     # initialize the figure
@@ -433,6 +457,8 @@ def plot_SA_class_structure(ploc, profiles, class_means,
                            class_stds, n_components_selected,
                            zmin, zmax, Smin=33.6, Smax=37.0):
 
+    print('plot_tools.plot_SA_class_structure')
+
     # select colormap
     colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
@@ -492,6 +518,8 @@ def plot_SA_class_structure(ploc, profiles, class_means,
 def plot_CT_class_structure(ploc, profiles, class_means,
                             class_stds, n_components_selected,
                             zmin, zmax, Tmin=-3, Tmax=20):
+
+    print('plot_tools.plot_CT_class_structure')
 
     # select colormap
     colormap = plt.get_cmap('tab20', n_components_selected)
@@ -553,6 +581,8 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
                            class_stds, n_components_selected,
                            Smin=33.6, Smax=37.0):
 
+    print('plot_tools.plot_SA_class_structure_onSig')
+
     # select colormap
     colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
@@ -612,6 +642,8 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
 def plot_CT_class_structure_onSig(ploc, profiles, class_means,
                             class_stds, n_components_selected,
                             Tmin=-3, Tmax=20):
+
+    print('plot_tools.plot_CT_class_structure_onSig')
 
     # select colormap
     colormap = plt.get_cmap('tab20', n_components_selected)
@@ -673,6 +705,8 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
                            class_stds, n_components_selected,
                            zmin, zmax, sig0min=24.0, sig0max=28.0):
 
+    print('plot_tools.plot_sig0_class_structure')
+
     # select colormap
     colormap = plt.get_cmap('tab20', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
@@ -732,6 +766,8 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 def plot_label_map(ploc, profiles, n_components_selected,
                    lon_min=-80, lon_max=80, lat_min=-85, lat_max=-30,
                    bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
+
+    print('plot_tools.plot_label_map')
 
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
@@ -796,6 +832,8 @@ def plot_label_map(ploc, profiles, n_components_selected,
 def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
         rr=0.66,bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
 
+    print('plot_tools.plot_i_metric_single_panel')
+
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
     bathy_lon = bds['lon'][:]
@@ -855,6 +893,8 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         lat_min, lat_max, n_components_selected, bathy_fname="bathy.nc",
         lev_range=range(-6000,1,500)):
 
+    print('plot_tools.plot_i_metric_multiple_panels')
+
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
     bathy_lon = bds['lon'][:]
@@ -913,6 +953,8 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 #####################################################################
 def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
 
+    print('plot_tools.plot_tsne')
+
     # scatterplot
     CS = plt.scatter(tSNE_data[0],
                      tSNE_data[1],
@@ -930,6 +972,8 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
 #####################################################################
 def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                        SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60):
+
+    print('plot_tools.plot_TS_single_lev')
 
     # import packages
     import gsw
@@ -995,6 +1039,8 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
                     SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.33):
 
+    print('plot_tools.plot_TS_all_lev')
+
     # make 1D by stacking and resetting index
     df1D = df.stack(z=('profile','depth')).reset_index('z')
 
@@ -1056,7 +1102,11 @@ def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
 def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                       SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60):
 
+    print('plot_tools.plot_TS_multi_lev')
+
     # make (stack and reset index)
+    # stack command kills job when using "single class only" mode
+    # dataset gets too big - maybe delete some things first?
     df1D = df.stack(z=('profile','depth')).reset_index('z')
     # now use isel to loop through labels
 
@@ -1127,6 +1177,8 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                       SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60,
                       timeShading='month'):
+
+    print('plot_tools.plot_TS_bytime')
 
     # make (stack and reset index)
     df1D = df.isel(depth=0)
@@ -1210,6 +1262,8 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 # Plot class stats, split by longitude
 #####################################################################
 def plot_lon_split(ploc, df):
+
+    print('plot_tools.plot_lon_split')
 
     fs = 28 # font size
 

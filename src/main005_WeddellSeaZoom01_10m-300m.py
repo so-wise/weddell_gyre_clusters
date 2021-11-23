@@ -33,7 +33,7 @@ import os.path
 # set locations and names
 descrip = 'WeddellSeaZoom01' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_WeddellSeaZoom01_10m-300m_K10/'
+ploc = 'plots/plots_WeddellSeaZoom01_10m-300m_K05/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -58,7 +58,7 @@ saveOutput = False
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 10
+n_components_selected = 5
 
 #longitude and latitude range
 lon_min = -70
@@ -72,7 +72,7 @@ zmax = 300.0
 sig0range = (26.75, 28.0)
 
 # temperature and salinity ranges for plotting
-Trange=(-2.2, 3.0)
+Trange=(-2.2, 6.0)
 Srange=(33.5, 35.0)
 # based on the above, calculate the density range
 # sig0a = round(density.calc_scalar_density(Trange[0],Srange[0],

@@ -33,7 +33,7 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots_allDomain_300m-1000m_K12/'
+ploc = 'plots/plots_allDomain_300m-1000m_K4/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -58,7 +58,7 @@ saveOutput = False
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 12
+n_components_selected = 4
 
 #longitude and latitude range
 lon_min = -65

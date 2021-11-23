@@ -33,7 +33,7 @@ import os.path
 # set locations and names
 descrip = 'sof50' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_sof50_10m-300m_K12/'
+ploc = 'plots/plots_sof50_10m-300m_K4/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -58,7 +58,7 @@ saveOutput = False
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 12
+n_components_selected = 4
 
 #longitude and latitude range
 lon_min = -65
@@ -69,11 +69,11 @@ lat_max = -50
 zmin = 10.0
 zmax = 300.0
 # density range
-sig0range = (26.0, 28.0)
+sig0range = (25.5, 28.5)
 
 # temperature and salinity ranges for plotting
 Trange=(-2.2, 10.0)
-Srange=(33.5, 35.5)
+Srange=(33.0, 35.0)
 # based on the above, calculate the density range
 # sig0a = round(density.calc_scalar_density(Trange[0],Srange[0],
 #     p=0.0,lon=0.0,lat=-60),2)
