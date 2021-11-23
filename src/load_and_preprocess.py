@@ -81,6 +81,68 @@ def load_profile_data(data_location, lon_min, lon_max,
     return profiles
 
 #####################################################################
+# Load Reeve climatology
+#####################################################################
+def load_reeve_climatology(floc="../../so-chic-data/WeddellGyre_OM/"):
+
+    # start message
+    print('load_and_preprocess.load_reeve_climatology')
+
+    # load all three periods
+    ds1 = xr.open_dataset(floc+"WeddellGyre_OM_Period2001to2005.nc")
+    ds2 = xr.open_dataset(floc+"WeddellGyre_OM_Period2006to2009.nc")
+    ds3 = xr.open_dataset(floc+"WeddellGyre_OM_Period2010to2013.nc")
+
+    # concatenate
+    ds = xr.concat((ds1,ds2,ds3), dim="time_period")
+
+    # do some renaming
+    ds = ds.rename({'Pressure Levels (dbar)':'plevs',
+                    'Conservative Temperature (DegC)':'prof_CT',
+                    'Absolute Salinity (gPERkg)':'prof_SA',
+                    'RHO (kgPERm3)':'rho',
+                    'Latitude (DegN)':'lat',
+                    'Longitude (DegE)':'lon',
+                    'Conservative Temperature mask based on Period2002to2013':'CTmask',
+                    'Absolute Salinity mask based on Period2002to2013':'SAmask'})
+
+    # lat, lon, pressure coordinates
+    pressure = ds.plevs.values[0,:]
+    lat = ds.lat.values[0,:]
+    lon = ds.lon.values[0,:]
+    ds = ds.drop({'plevs','lat','lon'})
+
+    # assign coordinates
+    ds = ds.assign_coords({"level":pressure, "lat":lat, "lon":lon})
+
+    # stack
+    ds = ds.stack(profile=("time_period","lat","lon"))
+
+    # drop some variables
+    ds = ds.drop_vars({'Tmax Conservative Temperature (DegC)',
+            'Tmax Absolute Salinity (gPERkg)',
+            'Tmax Pressure (dbar)',
+            'Tmax RHO (kgPERm3)',
+            'Tmax Conservative Temperature mapping error (DegC)',
+            'Tmax Conservative Temperature mask based on Period of file',
+            'Tmax Absolute Salinity mask based on Period of file',
+            'Conservative Temperature mask based on Period of file',
+            'Absolute Salinity mask based on Period of file',
+            'Tmax Absolute Salinity mapping error (gPERkg)',
+            'Tmax Pressure mapping error (dbar)',
+            'Tmax RHO mapping error (kgPERm3)',
+            'Absolute Salinity mapping error (gPERkg)',
+            'RHO mapping error (kgPERm3)',
+            'Conservative Temperature mapping error (DegC)',
+            'Tmax Conservative Temperature mask based on Period2002to2013',
+            'Tmax Absolute Salinity mask based on Period2002to2013'})
+
+    # alter some attributes
+    ds.attrs['TimeRange']='N/A'
+
+    return ds
+
+#####################################################################
 # Load single class from previously classififed data
 #####################################################################
 def load_single_class(data_location, selected_class):
