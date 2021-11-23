@@ -33,7 +33,7 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_allDomain_300m-1000m_K4/'
+ploc = 'plots/plots_allDomain_300m-1000m_K04/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -52,7 +52,7 @@ transform_method = 'pca'
 use_kernel_pca = False
 
 # save the processed output as a NetCDF file?
-saveOutput = False
+saveOutput = True 
 
 # number of PCA components
 n_pca = 6
