@@ -460,7 +460,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
     print('plot_tools.plot_SA_class_structure')
 
     # select colormap
-    colormap = plt.get_cmap('tab20', n_components_selected)
+    colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -522,7 +522,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
     print('plot_tools.plot_CT_class_structure')
 
     # select colormap
-    colormap = plt.get_cmap('tab20', n_components_selected)
+    colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -584,7 +584,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
     print('plot_tools.plot_SA_class_structure_onSig')
 
     # select colormap
-    colormap = plt.get_cmap('tab20', n_components_selected)
+    colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -646,7 +646,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
     print('plot_tools.plot_CT_class_structure_onSig')
 
     # select colormap
-    colormap = plt.get_cmap('tab20', n_components_selected)
+    colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -708,7 +708,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
     print('plot_tools.plot_sig0_class_structure')
 
     # select colormap
-    colormap = plt.get_cmap('tab20', n_components_selected)
+    colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -776,7 +776,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
     bathy = bds['bathy'][:]
 
     # define colormap
-    colormap = plt.get_cmap('tab20', n_components_selected)
+    colormap = plt.get_cmap('Set1', n_components_selected)
 
     # extract values as new DataArrays
     df1D = profiles.isel(depth=0)
@@ -982,7 +982,7 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     df1D = df.isel(depth=plev)
 
     # define colormap
-    colormap = plt.get_cmap('tab20', n_comp)
+    colormap = plt.get_cmap('Set1', n_comp)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
@@ -1045,7 +1045,7 @@ def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
     df1D = df.stack(z=('profile','depth')).reset_index('z')
 
     # define colormap
-    colormap = plt.get_cmap('tab20', n_comp)
+    colormap = plt.get_cmap('Set1', n_comp)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
