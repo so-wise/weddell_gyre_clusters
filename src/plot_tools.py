@@ -37,6 +37,34 @@ def plot_profile(ploc, df):
    plt.close()
 
 #####################################################################
+# Plot many profiles
+#####################################################################
+def plot_many_profiles(ploc, df, frac=0.01):
+
+   print("plot_tools.plot_many_profiles")
+
+   # select random samples
+   sample_size = int(frac*df.profile.size)
+   rows_id = sorted(random.sample(range(0, df.profile.size-1), rsample_size))
+   df = df.isel(profile=rows_id)
+
+   # extract DataArrays
+   z = df.depth.values
+   sig0 = df.sig0_levs.values
+   CT = df.prof_CT
+   SA = df.prof_SA
+   CTsig = df.ct_on_sig0
+   SAsig = df.sa_on_sig0
+
+   # figure
+   fig1, ax1 = plt.subplots()
+   for d in range(CT.shape[0]):
+       ax1.plot(CT[d,:], z, lw = 1, alpha = 0.01, color = 'grey'))
+
+   plt.savefig(ploc + 'many_profiles_CT.png', bbox_inches='tight')
+   plt.close()
+
+#####################################################################
 # Plot single profile
 #####################################################################
 def plot_profiles_on_density_levels(ploc, profiles, frac=0.33):
@@ -583,6 +611,9 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
 
     print('plot_tools.plot_SA_class_structure_onSig')
 
+    # should make LaTeX rendering possible
+    plt.rcParams['text.usetex'] = True
+
     # select colormap
     colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
@@ -644,6 +675,9 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
                             Tmin=-3, Tmax=20):
 
     print('plot_tools.plot_CT_class_structure_onSig')
+
+    # should make LaTeX rendering possible
+    plt.rcParams['text.usetex'] = True
 
     # select colormap
     colormap = plt.get_cmap('Set1', n_components_selected)
@@ -707,6 +741,9 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 
     print('plot_tools.plot_sig0_class_structure')
 
+    # should make LaTeX rendering possible
+    plt.rcParams['text.usetex'] = True
+
     # select colormap
     colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
@@ -749,7 +786,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
         fs = 42 # font size
         plt.xlabel('\sigma_0 (kg/m^3)', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('Class = ' + str(num), fontsize=fs)
+        plt.Set1('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
