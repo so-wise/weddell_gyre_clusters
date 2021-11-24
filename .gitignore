@@ -5,6 +5,9 @@ notebooks/exploratory/processed_data
 archive/
 plots/
 
+# Keynote reports
+*.key
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
