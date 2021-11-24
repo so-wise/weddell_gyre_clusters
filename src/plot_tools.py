@@ -39,29 +39,70 @@ def plot_profile(ploc, df):
 #####################################################################
 # Plot many profiles
 #####################################################################
-def plot_many_profiles(ploc, df, frac=0.01):
+def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
+                       sig0min=23.0, sig0max=28.0):
 
    print("plot_tools.plot_many_profiles")
 
    # select random samples
    sample_size = int(frac*df.profile.size)
-   rows_id = sorted(random.sample(range(0, df.profile.size-1), rsample_size))
-   df = df.isel(profile=rows_id)
+   rows_id = sorted(random.sample(range(0, df.profile.size-1), sample_size))
+   df1 = df.isel(profile=rows_id)
 
    # extract DataArrays
-   z = df.depth.values
-   sig0 = df.sig0_levs.values
-   CT = df.prof_CT
-   SA = df.prof_SA
-   CTsig = df.ct_on_sig0
-   SAsig = df.sa_on_sig0
+   z = df1.depth.values
+   sig0 = df1.sig0_levs.values
+   CT = df1.prof_CT.values
+   SA = df1.prof_SA.values
+   CTsig = df1.ct_on_sig0.values
+   SAsig = df1.sa_on_sig0.values
 
-   # figure
+   # figure CT
    fig1, ax1 = plt.subplots()
    for d in range(CT.shape[0]):
-       ax1.plot(CT[d,:], z, lw = 1, alpha = 0.01, color = 'grey'))
+       ax1.plot(CT[d,:], z, lw = 1, alpha = 0.05, color = 'grey')
 
+   ax1.set_ylim([ymin, ymax])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Conservative temperature (°C)')
+   plt.ylabel('Depth (m)')
    plt.savefig(ploc + 'many_profiles_CT.png', bbox_inches='tight')
+   plt.close()
+
+   # figure SA
+   fig1, ax1 = plt.subplots()
+   for d in range(SA.shape[0]):
+       ax1.plot(SA[d,:], z, lw = 1, alpha = 0.05, color = 'grey')
+
+   ax1.set_ylim([ymin, ymax])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Absolute salinity (psu)')
+   plt.ylabel('Depth (m)')
+   plt.savefig(ploc + 'many_profiles_SA.png', bbox_inches='tight')
+   plt.close()
+
+   # figure CT sig
+   fig1, ax1 = plt.subplots()
+   for d in range(CTsig.shape[0]):
+       ax1.plot(CTsig[d,:], sig0, lw = 1, alpha = 0.05, color = 'grey')
+
+   ax1.set_ylim([sig0min, sig0max])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Conservative temperature (°C)')
+   plt.ylabel('Potential density (kg/m^3)')
+   plt.savefig(ploc + 'many_profiles_CTsig.png', bbox_inches='tight')
+   plt.close()
+
+   # figure SA
+   fig1, ax1 = plt.subplots()
+   for d in range(SAsig.shape[0]):
+       ax1.plot(SAsig[d,:], sig0, lw = 1, alpha = 0.05, color = 'grey')
+
+   ax1.set_ylim([sig0min, sig0max])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Absolute salinity (psu)')
+   plt.ylabel('Potential density (kg/m^3)')
+   plt.savefig(ploc + 'many_profiles_SAsig.png', bbox_inches='tight')
    plt.close()
 
 #####################################################################
@@ -479,6 +520,106 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
     plt.close()
 
 #####################################################################
+# Plot mean and stdev CT and SA structure
+#####################################################################
+def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
+                                   class_stds, n_components_selected,
+                                   zmin, zmax,
+                                   Tmin=-3, Tmax=20,
+                                   Smin=33.6, Smax=37.0):
+
+    print('plot_tools.plot_CT_and_SA_class_structure')
+
+    # select colormap
+    colormap = plt.get_cmap('Set1', n_components_selected)
+    cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
+    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
+
+    # initialize the figure
+    fig = plt.figure(figsize=(22,16))
+    #plt.style.use('seaborn-darkgrid')
+    #palette = cmx.Paired(np.linspace(0,1,n_comp))
+
+    # vertical coordinate
+    z = profiles.depth.values
+
+    fs = 18 # font size
+
+    # iterate over groups (top row, CT)
+    num = 0
+    for nrow in range(0,n_components_selected):
+        num += 1
+        colorVal = scalarMap.to_rgba(nrow)
+
+        # extract means
+        mean_T = class_means.prof_CT[nrow,:].values
+        # extract stdevs
+        std_T = class_stds.prof_CT[nrow,:].values
+
+        # select subplot
+        ax = plt.subplot(2,n_components_selected,num)
+        plt.plot(mean_T, z, marker='', linestyle='solid', color=colorVal,
+            linewidth=6.0, alpha=0.9)
+        plt.plot(mean_T+std_T, z, marker='', linestyle='dashed', color=colorVal,
+            linewidth=6.0, alpha=0.9)
+        plt.plot(mean_T-std_T, z, marker='', linestyle='dashed', color=colorVal,
+            linewidth=6.0, alpha=0.9)
+
+        # custom grid and axes
+        plt.ylim([zmin,zmax])
+        plt.xlim([Tmin, Tmax])
+
+        #text box
+        if nrow==0:
+            #plt.xlabel('Conservative temperature (deg C)', fontsize=fs)
+            plt.ylabel('Depth (m)', fontsize=fs)
+
+        plt.title('Class = ' + str(num), fontsize=fs)
+
+        # font and axis stuff
+        plt.gca().invert_yaxis()
+        ax.tick_params(axis='x', labelsize=fs)
+        ax.tick_params(axis='y', labelsize=fs)
+
+    # iterate over groups (SA)
+    for nrow in range(0,n_components_selected):
+        num += 1
+        colorVal = scalarMap.to_rgba(nrow)
+
+        # extract means
+        mean_S = class_means.prof_SA[nrow,:].values
+        # extract stdevs
+        std_S = class_stds.prof_SA[nrow,:].values
+
+        # select subplot
+        ax = plt.subplot(2,n_components_selected,num)
+        plt.plot(mean_S, z, marker='', linestyle='solid', color=colorVal,
+            linewidth=6.0, alpha=0.9)
+        plt.plot(mean_S+std_S, z, marker='', linestyle='dashed', color=colorVal,
+            linewidth=6.0, alpha=0.9)
+        plt.plot(mean_S-std_S, z, marker='', linestyle='dashed', color=colorVal,
+            linewidth=6.0, alpha=0.9)
+
+        # custom grid and axes
+        plt.ylim([zmin, zmax])
+        plt.xlim([Smin, Smax])
+
+        #text box
+        if nrow==0:
+            #plt.xlabel('Conservative temperature (deg C)', fontsize=fs)
+            plt.ylabel('Depth (m)', fontsize=fs)
+
+        # font and axis stuff
+        plt.gca().invert_yaxis()
+        ax.tick_params(axis='x', labelsize=fs)
+        ax.tick_params(axis='y', labelsize=fs)
+
+    #fig.subplots_adjust(wspace=0.7)
+    plt.tight_layout(pad=3.0)
+    plt.savefig(ploc + 'prof_CT_and_SA_byClass.png', bbox_inches='tight')
+    plt.close()
+
+#####################################################################
 # Plot mean and stdev salinity class structure
 #####################################################################
 def plot_SA_class_structure(ploc, profiles, class_means,
@@ -612,7 +753,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
     print('plot_tools.plot_SA_class_structure_onSig')
 
     # should make LaTeX rendering possible
-    plt.rcParams['text.usetex'] = True
+    #plt.rcParams['text.usetex'] = True
 
     # select colormap
     colormap = plt.get_cmap('Set1', n_components_selected)
@@ -655,7 +796,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
        #text box
         fs = 42 # font size
         plt.xlabel('Absolute salinity (psu)', fontsize=fs)
-        plt.ylabel('$\sigma_0$ (kg/m$^3$)', fontsize=fs)
+        plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
         plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
@@ -677,7 +818,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
     print('plot_tools.plot_CT_class_structure_onSig')
 
     # should make LaTeX rendering possible
-    plt.rcParams['text.usetex'] = True
+    #plt.rcParams['text.usetex'] = True
 
     # select colormap
     colormap = plt.get_cmap('Set1', n_components_selected)
@@ -720,7 +861,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
         #text box
         fs = 42 # font size
         plt.xlabel('Conservative temperature (deg C)', fontsize=fs)
-        plt.ylabel('$\sigma_0$ (kg/m$^3$)', fontsize=fs)
+        plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
         plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
@@ -742,7 +883,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
     print('plot_tools.plot_sig0_class_structure')
 
     # should make LaTeX rendering possible
-    plt.rcParams['text.usetex'] = True
+    #plt.rcParams['text.usetex'] = True
 
     # select colormap
     colormap = plt.get_cmap('Set1', n_components_selected)
@@ -786,7 +927,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
         fs = 42 # font size
         plt.xlabel('\sigma_0 (kg/m^3)', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.Set1('Class = ' + str(num), fontsize=fs)
+        plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()

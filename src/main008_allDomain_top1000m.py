@@ -31,9 +31,9 @@ import os.path
 #####################################################################
 
 # set locations and names
-descrip = 'sof50' # extra description for filename
+descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_sof50_10m-300m_K4/'
+ploc = 'plots/plots_allDomain_top1000m_K05/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -52,33 +52,28 @@ transform_method = 'pca'
 use_kernel_pca = False
 
 # save the processed output as a NetCDF file?
-saveOutput = False
+saveOutput = True
 
 # number of PCA components
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 4
+n_components_selected = 5
 
 #longitude and latitude range
 lon_min = -65
 lon_max =  80
 lat_min = -85
-lat_max = -50
+lat_max = -30
 # depth range
-zmin = 10.0
-zmax = 300.0
+zmin = 20.0
+zmax = 1000.0
 # density range
-sig0range = (25.5, 28.5)
+sig0range = (23.0, 28.0)
 
 # temperature and salinity ranges for plotting
-Trange=(-2.2, 10.0)
-Srange=(33.0, 35.0)
-# based on the above, calculate the density range
-# sig0a = round(density.calc_scalar_density(Trange[0],Srange[0],
-#     p=0.0,lon=0.0,lat=-60),2)
-# sig0b = round(density.calc_scalar_density(Trange[1],Srange[1],
-#     p=0.0,lon=0.0,lat=-60),2)
+Trange=(-2, 25.0)
+Srange=(33.0, 37.0)
 
 # create filename for saving GMM and saving labelled profiles
 pca_fname = dloc + 'pca_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_pca)) + descrip
@@ -109,7 +104,7 @@ profiles = density.calc_density(profiles)
 pt.prof_TS_sample_plots(ploc, profiles)
 
 # plot random profile
-pt.plot_profile(ploc, profiles.isel(profile=2000))
+pt.plot_profile(ploc, profiles.isel(profile=1000))
 
 # regrid onto density levels (maybe useful for plotting later?)
 profiles = lp.regrid_onto_more_vertical_levels(profiles, zmin, zmax)
@@ -224,7 +219,8 @@ pt.plot_sig0_class_structure(ploc, profiles, class_means,class_stds,
 pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means,class_stds,
                                   n_components_selected, zmin, zmax,
                                   Tmin=Trange[0], Tmax=Trange[1],
-                                  Smin=Srange[0], Smax=Srange[1])
+                                  Smin=33.6, Smax=37.0)
+
 # plot T, S vertical structure on sig0 surfaces
 # pt.plot_CT_class_structure_onSig(ploc, profiles, class_means,class_stds,
 #                           n_components_selected,

@@ -77,6 +77,10 @@ pt.plot_profile(ploc, profiles.isel(profile=2000))
 profiles = lp.regrid_onto_more_vertical_levels(profiles, zmin, zmax)
 profiles = lp.regrid_onto_density_levels(profiles)
 
+# plot many profiles
+pt.plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
+                       sig0min=23.0 sig0max=28.0
+
 #####################################################################
 # END
 #####################################################################

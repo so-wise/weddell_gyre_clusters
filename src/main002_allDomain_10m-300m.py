@@ -221,7 +221,10 @@ pt.plot_SA_class_structure(ploc, profiles, class_means,class_stds,
 pt.plot_sig0_class_structure(ploc, profiles, class_means,class_stds,
                              n_components_selected, zmin, zmax,
                              sig0min=sig0range[0], sig0max=sig0range[1])
-
+pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means,class_stds,
+                                  n_components_selected, zmin, zmax,
+                                  Tmin=Trange[0], Tmax=Trange[1],
+                                  Smin=Srange[0], Smax=Srange[1])
 # plot T, S vertical structure on sig0 surfaces
 # pt.plot_CT_class_structure_onSig(ploc, profiles, class_means,class_stds,
 #                           n_components_selected,
