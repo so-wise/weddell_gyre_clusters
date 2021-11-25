@@ -1212,6 +1212,55 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     plt.close()
 
 #####################################################################
+# T-S with the class means (and maybe stdevs) on them
+#####################################################################
+def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, descrip='',
+                      PTrange=(-2, 27.0), SPrange=(33.5, 37.5),
+                      lon = -20, lat = -65):
+
+    print('plot_tools.plot_TS_withMeans')
+
+    # select colormap
+    colormap = plt.get_cmap('Set1', n_comp)
+    cNorm = colors.Normalize(vmin=0, vmax=n_comp)
+    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
+
+    # grid
+    pt_grid = np.linspace(PTrange[0],PTrange[1],100)
+    sp_grid = np.linspace(SPrange[0],SPrange[1],100)
+    p = class_means.depth.values[0]
+    lon = lon
+    lat = lat
+    sa_grid = gsw.SA_from_SP(sp_grid, p, lon, lat)
+    ct_grid = gsw.CT_from_pt(sa_grid, pt_grid)
+    ctg,sag = np.meshgrid(ct_grid,sa_grid)
+    sig0_grid = gsw.density.sigma0(sag, ctg)
+
+    # extract values as new DataArrays
+    CTbar = class_means.prof_CT.values
+    SAbar = class_means.prof_SA.values
+    CTstd = class_stds.prof_CT.values
+    SAstd = class_stds.prof_SA.values
+
+    # TS diagram
+    plt.figure(figsize=(13, 13))
+    CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
+    plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
+    for i in range(n_comp):
+        colorVal = scalarMap.to_rgba(i)
+        plt.plot(SAbar[i,:], CTbar[i,:],
+                 linewidth=5.0, linestyle='solid', color=colorVal)
+    plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
+    plt.xlabel('Absolute salinity [psu]', fontsize=20)
+    plt.ylim(PTrange)
+    plt.xlim(SPrange)
+    plt.yticks(fontsize=18)
+    plt.xticks(fontsize=18)
+    #plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
+    plt.savefig(ploc + 'TS_withMeans' + descrip + '.png', bbox_inches='tight')
+    plt.close()
+
+#####################################################################
 # T-S plot for all pressure levels
 #####################################################################
 def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
