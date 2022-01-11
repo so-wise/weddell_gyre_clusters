@@ -11,7 +11,7 @@ from sklearn.decomposition import KernelPCA
 from sklearn import manifold
 from xgcm import Grid
 import random
-import umap
+#import umap
 
 #####################################################################
 # Load the profile data (combined CTD, float, and seal data)

@@ -33,7 +33,7 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_allDomain_top1500m_KXX/'
+ploc = 'plots/plots_allDomain_10-300m_K04/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -58,7 +58,7 @@ saveOutput = True
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
-n_components_selected = 6
+n_components_selected = 4
 
 #longitude and latitude range
 lon_min = -65
@@ -66,8 +66,8 @@ lon_max =  80
 lat_min = -85
 lat_max = -30
 # depth range
-zmin = 20.0
-zmax = 1500.0
+zmin = 10.0
+zmax = 300.0
 # density range
 sig0range = (23.0, 28.0)
 
