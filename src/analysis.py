@@ -7,9 +7,53 @@ import numpy as np
 import xarray as xr
 
 #####################################################################
-# Split by longitude sectors
+# Select profiles within a rectangular box
+#####################################################################
+def split_single_class_by_box(df, class_split, box_edges):
+# split_single_class_by_box(df, class_split, box_edges)
+#
+# - Splits a class into those in a box and those not in the box
+#   df : xarray Dataset to be split
+#   class_split : which class will be split into sub-classes
+#   box_edges : [lon_min, lon_max, lat_min, lat_max]
+#
+
+    # display which function is being used
+    print('analysis.split_single_class_by_box')
+
+    # boolean mask with conditions based on box coordinates
+    # and also based on which class we are selecting
+    within_box = (df.lon >= box_edges[0]) & \
+                 (df.lon <= box_edges[1]) & \
+                 (df.lat >= box_edges[2]) & \
+                 (df.lat <= box_edges[3]) & \
+                 (df.label == class_split)
+
+    # use the "where" command to select "in box" and "not in box"
+    # NOTE: if this crashes, it's probably because box is empty
+    df_in = df.where(within_box, drop=True)
+    df_out = df.where(~within_box, drop=True)
+
+    # new variable indicating inside or outside box
+    df_in['in_box'] = 'yes'
+    df_out['in_box'] = 'no'
+
+    # group together into single Dataset
+    df1 = xr.concat([df_in,df_out],dim='in_box')
+
+    # include the box edges for future analysis 
+    df1['box_edges'] = box_edges
+
+    return df1
+
+#####################################################################
+# Split by longitude only
 #####################################################################
 def split_single_class_by_longitude(df, class_split, lon_split):
+# split_single_class_by_longitude(df, class_split, lon_split)
+#   df : xarray Dataset to be split
+#   class_split : which class will be split into sub-classes
+#   lon_split : which longitude should we cut the classes by
 
     print('analysis.split_by_longitude')
 

@@ -213,7 +213,9 @@ def preprocess_time_and_date(profiles):
     nsize = ntime_array_ymd.size
 
     # create array of zeros
-    time = np.zeros((nsize,), dtype='datetime64[s]')
+    time =  np.zeros((nsize,), dtype='datetime64[s]')
+    month = np.zeros((nsize,), dtype='int')
+    year =  np.zeros((nsize,), dtype='int')
 
     # loop over all values, convert do datetime64[s]
     for i in range(nsize):
@@ -232,18 +234,25 @@ def preprocess_time_and_date(profiles):
         date_str =  date_str_ymd + ' ' + date_str_hms
         # convert to datetime64 (the 's' stands for seconds)
         time[i] = np.datetime64(date_str,'s')
+        # grab the year and month, put them into place (integers)
+        year[i] = int(s_ymd[0:4])
+        month[i] = int(s_ymd[4:6])
 
     # convert to pandas datetime (may not may not end up using this)
     #time_pd = pd.to_datetime(time)
 
-    # convert time array into a DataArray
+    # convert time array into a DataArray, add to Dataset
     da = xr.DataArray(time, dims=['profile'])
-
-    # add DataArray as new data variable to DataSet
     profiles['time'] = da
 
-    # set time as a coordinate
-    profiles = profiles.set_coords('time')
+    # do the same for year and month
+    dy = xr.DataArray(year, dims=['profile'])
+    profiles['year'] = dy
+    dm = xr.DataArray(month, dims=['profile'])
+    profiles['month'] = dm
+
+    # set time, year, month as coordinates
+    profiles = profiles.set_coords({'time','year','month'})
 
     # examine Dataset again
     return profiles
