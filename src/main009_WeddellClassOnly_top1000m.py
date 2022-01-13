@@ -9,6 +9,7 @@
 
 ### modules in this package
 import load_and_preprocess as lp
+import analysis as at
 import bic_and_aic as ba
 import plot_tools as pt
 import file_io as io
@@ -31,8 +32,8 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04/'
+classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_experimental/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -246,6 +247,25 @@ df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
+
+#####################################################################
+# Further analysis of specific classes, regions, time variation
+#####################################################################
+
+# Weddell-Scotia confluence waters
+box_edges=[-64.5, 40, -67, -50]
+df_wsc, df_not_wsc = at.split_single_class_by_box(profiles, class_split=3,
+                                                  box_edges=box_edges)
+
+# Plot all the profiles in the box
+plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis/'
+pt.plot_many_profiles(plocA, df_wsc, frac=0.95, ymin=20, ymax=1000,
+                      sig0min=27.0, sig0max=28.0, alpha=0.1)
+
+# Plot all the profiles in the box
+plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_not_wsc_analysis/'
+pt.plot_many_profiles(plocA, df_not_wsc, frac=0.95, ymin=20, ymax=1000,
+                      sig0min=27.0, sig0max=28.0, alpha=0.1)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file

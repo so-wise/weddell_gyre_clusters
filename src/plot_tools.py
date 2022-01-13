@@ -40,9 +40,13 @@ def plot_profile(ploc, df):
 # Plot many profiles
 #####################################################################
 def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
-                       sig0min=23.0, sig0max=28.0):
+                       sig0min=23.0, sig0max=28.0, alpha=0.05):
 
    print("plot_tools.plot_many_profiles")
+
+   # if plot directory doesn't exist, create it
+   if not os.path.exists(ploc):
+       os.makedirs(ploc)
 
    # select random samples
    sample_size = int(frac*df.profile.size)
@@ -51,17 +55,38 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
 
    # extract DataArrays
    z = df1.depth.values
-   sig0 = df1.sig0_levs.values
+   depth_highz = df1.depth_highz.values
+   sig0_levs = df1.sig0_levs.values
    CT = df1.prof_CT.values
    SA = df1.prof_SA.values
+   sig0 = df1.sig0.values
+   sig0_on_highz = df1.sig0_on_highz.values
    CTsig = df1.ct_on_sig0.values
    SAsig = df1.sa_on_sig0.values
+
+   # 0.25 quantile
+   CT_q25 = df_wsc.prof_CT.quantile(0.25, dim='profile').values
+   SA_q25 = df_wsc.prof_SA.quantile(0.25, dim='profile').values
+   sig0_q25 = df_wsc.sig0.quantile(0.25, dim='profile').values
+
+   # median values
+   CT_median = df1.prof_CT.median(dim='profile').values
+   SA_median = df1.prof_SA.median(dim='profile').values
+   sig0_median = df1.sig0.median(dim='profile').values
+
+   # 0.75 quantile
+   CT_q75 = df_wsc.prof_CT.quantile(0.75, dim='profile').values
+   SA_q75 = df_wsc.prof_SA.quantile(0.75, dim='profile').values
+   sig0_q75 = df_wsc.sig0.quantile(0.75, dim='profile').values
 
    # figure CT
    fig1, ax1 = plt.subplots()
    for d in range(CT.shape[0]):
-       ax1.plot(CT[d,:], z, lw = 1, alpha = 0.05, color = 'grey')
+       ax1.plot(CT[d,:], z, lw = 1, alpha = alpha, color = 'grey')
 
+   ax1.plot(CT_q25, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(CT_median, z, lw = 2, color = 'black')
+   ax1.plot(CT_q75, z, lw = 2, color = 'black', linestyle='dashed')
    ax1.set_ylim([ymin, ymax])
    plt.gca().invert_yaxis()
    plt.xlabel('Conservative temperature (°C)')
@@ -72,8 +97,11 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    # figure SA
    fig1, ax1 = plt.subplots()
    for d in range(SA.shape[0]):
-       ax1.plot(SA[d,:], z, lw = 1, alpha = 0.05, color = 'grey')
+       ax1.plot(SA[d,:], z, lw = 1, alpha = alpha, color = 'grey')
 
+   ax1.plot(SA_q25, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(SA_median, z, lw = 2, color = 'black')
+   ax1.plot(SA_q75, z, lw = 2, color = 'black', linestyle='dashed')
    ax1.set_ylim([ymin, ymax])
    plt.gca().invert_yaxis()
    plt.xlabel('Absolute salinity (psu)')
@@ -81,10 +109,37 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    plt.savefig(ploc + 'many_profiles_SA.png', bbox_inches='tight')
    plt.close()
 
+   # figure sig0
+   fig1, ax1 = plt.subplots()
+   for d in range(sig0.shape[0]):
+       ax1.plot(sig0[d,:], z, lw = 1, alpha = alpha, color = 'grey')
+
+   ax1.plot(sig0_q25, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(sig0_median, z, lw = 2, color = 'black')
+   ax1.plot(sig0_q75, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.set_ylim([ymin, ymax])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Potential density (kg/m^3)')
+   plt.ylabel('Depth (m)')
+   plt.savefig(ploc + 'many_profiles_sig0.png', bbox_inches='tight')
+   plt.close()
+
+   # figure sig0 (interpolated onto high-res z)
+   fig1, ax1 = plt.subplots()
+   for d in range(sig0_on_highz.shape[0]):
+       ax1.plot(sig0_on_highz[d,:], depth_highz, lw = 1, alpha = alpha, color = 'grey')
+
+   ax1.set_ylim([ymin, ymax])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Potential density (kg/m^3)')
+   plt.ylabel('Depth (m)')
+   plt.savefig(ploc + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
+   plt.close()
+
    # figure CT sig
    fig1, ax1 = plt.subplots()
    for d in range(CTsig.shape[0]):
-       ax1.plot(CTsig[d,:], sig0, lw = 1, alpha = 0.05, color = 'grey')
+       ax1.plot(CTsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
 
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()
@@ -93,10 +148,10 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    plt.savefig(ploc + 'many_profiles_CTsig.png', bbox_inches='tight')
    plt.close()
 
-   # figure SA
+   # figure SA sig
    fig1, ax1 = plt.subplots()
    for d in range(SAsig.shape[0]):
-       ax1.plot(SAsig[d,:], sig0, lw = 1, alpha = 0.05, color = 'grey')
+       ax1.plot(SAsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
 
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()

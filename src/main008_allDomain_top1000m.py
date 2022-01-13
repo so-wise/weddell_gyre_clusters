@@ -33,7 +33,7 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_allDomain_top1000m_K05/'
+ploc = 'plots/plots_allDomain_top1000m_K05_experimental/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it

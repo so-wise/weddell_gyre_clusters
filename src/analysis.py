@@ -21,13 +21,14 @@ def split_single_class_by_box(df, class_split, box_edges):
     # display which function is being used
     print('analysis.split_single_class_by_box')
 
+    # first, just isolate the single class
+    df = df.where(df.label==class_split, drop=True)
+
     # boolean mask with conditions based on box coordinates
-    # and also based on which class we are selecting
     within_box = (df.lon >= box_edges[0]) & \
                  (df.lon <= box_edges[1]) & \
                  (df.lat >= box_edges[2]) & \
-                 (df.lat <= box_edges[3]) & \
-                 (df.label == class_split)
+                 (df.lat <= box_edges[3])
 
     # use the "where" command to select "in box" and "not in box"
     # NOTE: if this crashes, it's probably because box is empty
@@ -39,12 +40,16 @@ def split_single_class_by_box(df, class_split, box_edges):
     df_out['in_box'] = 'no'
 
     # group together into single Dataset
-    df1 = xr.concat([df_in,df_out],dim='in_box')
+    # ISSUE: this isn't working for some reason.
+    # It runs, but the resulting dataset can't be split back out
+    # even using df.sel
+    #df1 = xr.concat([df_in,df_out], dim='in_box')
 
-    # include the box edges for future analysis 
-    df1['box_edges'] = box_edges
+    # include the box edges for future analysis
+    df_in['box_edges'] = box_edges
+    df_out['box_edges'] = box_edges
 
-    return df1
+    return df_in, df_out
 
 #####################################################################
 # Split by longitude only
