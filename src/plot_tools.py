@@ -50,9 +50,6 @@ def plot_many_profiles(ploc, df, frac=0.01,
                        colorVal='black'):
 
    print("plot_tools.plot_many_profiles")
-   print("DEBUG: checking on the values of [zmin,zmax]")
-   print(str(zmin))
-   print(str(zmax))
 
    # font size
    fs = 14
