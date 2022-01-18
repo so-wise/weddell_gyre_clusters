@@ -42,7 +42,7 @@ def plot_profile(ploc, df):
 # Plot many profiles
 #####################################################################
 def plot_many_profiles(ploc, df, frac=0.01,
-                       ymin=20, ymax=1000,
+                       zmin=20, zmax=1000,
                        Tmin = -1.9, Tmax = 7.0,
                        Smin = 33.0, Smax = 35.0,
                        sig0min=23.0, sig0max=28.0,
@@ -50,9 +50,12 @@ def plot_many_profiles(ploc, df, frac=0.01,
                        colorVal='black'):
 
    print("plot_tools.plot_many_profiles")
+   print("DEBUG: checking on the values of [zmin,zmax]")
+   print(str(zmin))
+   print(str(zmax))
 
    # font size
-   fs = 16
+   fs = 14
 
    # if plot directory doesn't exist, create it
    if not os.path.exists(ploc):
@@ -64,18 +67,18 @@ def plot_many_profiles(ploc, df, frac=0.01,
    # select random samples
    sample_size = int(frac*df.profile.size)
    rows_id = sorted(random.sample(range(0, df.profile.size-1), sample_size))
-   df1 = df.isel(profile=rows_id)
+   df_sample = df.isel(profile=rows_id)
 
    # extract DataArrays
-   z = df1.depth.values
-   depth_highz = df1.depth_highz.values
-   sig0_levs = df1.sig0_levs.values
-   CT = df1.prof_CT.values
-   SA = df1.prof_SA.values
-   sig0 = df1.sig0.values
-   sig0_on_highz = df1.sig0_on_highz.values
-   CTsig = df1.ct_on_sig0.values
-   SAsig = df1.sa_on_sig0.values
+   z = df_sample.depth.values
+   depth_highz = df_sample.depth_highz.values
+   sig0_levs = df_sample.sig0_levs.values
+   CT = df_sample.prof_CT.values
+   SA = df_sample.prof_SA.values
+   sig0 = df_sample.sig0.values
+   sig0_on_highz = df_sample.sig0_on_highz.values
+   CTsig = df_sample.ct_on_sig0.values
+   SAsig = df_sample.sa_on_sig0.values
 
    # 0.25 quantile
    CT_q25 = df.prof_CT.quantile(0.25, dim='profile').values
@@ -107,7 +110,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.plot(CT_median, z, lw = 2, color = colorVal)
    ax1.plot(CT_q75, z, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Tmin, Tmax])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Conservative temperature (°C)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -128,7 +131,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.plot(SA_median, z, lw = 2, color = colorVal)
    ax1.plot(SA_q75, z, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Smin, Smax])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Absolute salinity (psu)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -149,7 +152,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.plot(sig0_median, z, lw = 2, color = colorVal)
    ax1.plot(sig0_q75, z, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([sig0min, sig0max])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -167,7 +170,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
        ax1.plot(sig0_on_highz[d,:], depth_highz, lw = 1, alpha = alpha, color = 'grey')
 
    ax1.set_xlim([sig0min, sig0max])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Potential density (kg/m^3)')
    plt.ylabel('Depth (m)')
@@ -761,7 +764,7 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected,
 
         # call routine to plot many profiles
         plot_many_profiles(ploc, df1_singleClass, frac=0.10,
-                           ymin=zmin, ymax=zmax,
+                           zmin=zmin, zmax=zmax,
                            Tmin=Tmin, Tmax=Tmax,
                            Smin=Smin, Smax=Smax,
                            sig0min=sig0min, sig0max=sig0max,
