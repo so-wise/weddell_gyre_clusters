@@ -49,7 +49,7 @@ if not os.path.exists(ploc):
 myClass=1
 
 # calculate BIC and AIC? set max number of components
-getBIC = True
+getBIC = False
 max_N = 20
 
 # transformation method (pca, umap)
@@ -60,7 +60,7 @@ transform_method = 'pca'
 use_kernel_pca = False
 
 # save the processed output as a NetCDF file?
-saveOutput = True
+saveOutput = False
 
 # number of PCA components
 n_pca = 6
@@ -201,9 +201,10 @@ dfp = dfp.drop({'depth_highz','sig0_levs','prof_T','prof_S','ct_on_highz',
 # plot T, S vertical structure of the classes
 pt.plot_class_vertical_structures(ploc, profiles, n_components_selected,
                                   zmin=zmax, zmax=zmax,
-                                  Tmin=Tmin, Tmax=Tmax,
-                                  Smin=Smin, Smax=Smax,
-                                  sig0min=sig0min, sig0max=sig0max, frac=0.33)
+                                  Tmin=Trange[0], Tmax=Trange[1],
+                                  Smin=Srange[0], Smax=Srange[1],
+                                  sig0min=sig0range[0], sig0max=sig0range[1],
+                                  frac=0.33)
 
 # TS diagram just showing the mean values
 pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected,

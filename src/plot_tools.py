@@ -737,12 +737,13 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
 #####################################################################
 # Plot vertical structure of a single class (CT, SA, sigma0)
 #####################################################################
-def plot_class_vertical_structures(ploc, profiles, n_components_selected,
+def plot_class_vertical_structures(ploc, df1, n_components_selected,
                                    zmin=20, zmax=1000,
                                    Tmin=-3, Tmax=20,
                                    Smin=33.6, Smax=37.0,
-                                   sig0min=26.0, sig0max=28.0, frac=0.33):
-# note: the input 'profiles' should contain only a single class/label!
+                                   sig0min=26.0, sig0max=28.0,
+                                   frac=0.33):
+# note: the input 'df1' should contain only a single class/label!
 
     print('plot_tools.plot_class_vertical_structures')
 
@@ -756,11 +757,11 @@ def plot_class_vertical_structures(ploc, profiles, n_components_selected,
         colorVal = scalarMap.to_rgba(nrow)
 
         # just select single class/label
-        df1 = profiles.where(df.label==nrow, drop=True)
+        df1_singleClass = df1.where(df1.label==nrow, drop=True)
 
         # call routine to plot many profiles
-        plot_many_profiles(ploc, df1, frac=0.10,
-                           ymin=ymin, ymax=ymax,
+        plot_many_profiles(ploc, df1_singleClass, frac=0.10,
+                           ymin=zmin, ymax=zmax,
                            Tmin=Tmin, Tmax=Tmax,
                            Smin=Smin, Smax=Smax,
                            sig0min=sig0min, sig0max=sig0max,
