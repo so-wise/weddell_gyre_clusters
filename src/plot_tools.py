@@ -1449,8 +1449,8 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     df1D = df.stack(z=('profile','depth')).reset_index('z')
     # now use isel to loop through labels
 
-    # define colormap
-    colormap = plt.get_cmap('cividis', n_comp)
+    # define colormap (fixed: 10 intervals in depth)
+    colormap = plt.get_cmap('cividis', 10)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
@@ -1471,12 +1471,12 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     labels = df1D.label.values
     depths = df1D.depth.values
 
-    # for each class, create new plot
+    # for each class, create new plot (shaded by depth)
     for nclass in range(n_comp):
 
         T1 = T[labels==nclass]
         S1 = S[labels==nclass]
-        c1 = depths[labels==nclass]
+        c1 = depths[labels==nclass] # shade by depth
 
         # size of random sample (all profiles by now)
         random_sample_size = int(np.ceil(rr*T1.size))

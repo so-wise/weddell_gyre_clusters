@@ -37,7 +37,7 @@ warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_experimental/'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_temporary/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
