@@ -5,6 +5,7 @@
 # import pakcages
 import numpy as np
 import xarray as xr
+import plot_tools as pt
 
 #####################################################################
 # Select profiles within a rectangular box
@@ -109,3 +110,50 @@ def split_single_class_by_longitude(df, class_split, lon_split):
     df1 = xr.Dataset({'CT':CT, 'SA':SA, 'sig0':sig0, 'CT_onsig':CT_onsig, 'SA_onsig':SA_onsig})
 
     return df1
+
+#####################################################################
+# Plot profile statistics grouped by label/class and year
+#####################################################################
+def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
+                                         ymin=20, ymax=1000, \
+                                         Tmin = -1.9, Tmax = 7.0, \
+                                         Smin = 33.0, Smax = 35.0, \
+                                         sig0min = 27.0, sig0max = 28.0, \
+                                         alpha=0.1):
+
+    print('analysis.examine_prof_stats_by_label_and_year')
+
+    # Use original profile dataset for interannual variability
+    yMin = int(df.year.values.min())
+    yMax = int(df.year.values.max())
+    labelMax = int(df.label.values.max())
+
+    # Loop over classes and years
+    for k in range(0, labelMax + 1):
+
+        print('analysis.examine_prof_stats_by_label_and_year : class ' + str(k))
+
+        for yr in range(yMin, yMax + 1):
+
+            print('analysis.examine_prof_stats_by_label_and_year : year ' + str(yr))
+
+            # construct the mask
+            myMask = (df.year==yr) & (df.label==k)
+
+            # only plot if there are profiles in this set
+            if (myMask.max()==True):
+
+                # use mask to select profiles
+                df1y = df.where(myMask, drop=True)
+
+                # dynamic directory (where the plots are located)
+                modPloc = ploc + '/stats/K' + str(k) + '/'
+                modStr = str(yr)
+
+                # plot profiles and statistics for this year and class
+                pt.plot_many_profiles(modPloc, df1y, frac=frac, \
+                                      ymin=ymin, ymax=ymax, \
+                                      Tmin=Tmin, Tmax=Tmax, \
+                                      Smin=Smin, Smax=Smax, \
+                                      sig0min=sig0min, sig0max=sig0max, \
+                                      alpha=alpha, modStr=modStr)

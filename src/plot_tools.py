@@ -16,6 +16,8 @@ import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean.cm as cmo
+### os tools
+import os.path
 from glob import glob
 import file_io as io
 import random
@@ -40,13 +42,20 @@ def plot_profile(ploc, df):
 # Plot many profiles
 #####################################################################
 def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
-                       sig0min=23.0, sig0max=28.0, alpha=0.05):
+                       Tmin = -1.9, Tmax = 7.0, Smin = 33.0, Smax = 35.0,
+                       sig0min=23.0, sig0max=28.0, alpha=0.05, modStr=''):
 
    print("plot_tools.plot_many_profiles")
+
+   # font size
+   fs = 16
 
    # if plot directory doesn't exist, create it
    if not os.path.exists(ploc):
        os.makedirs(ploc)
+
+   # number of profiles
+   Nprof = df.profile.values.size
 
    # select random samples
    sample_size = int(frac*df.profile.size)
@@ -65,19 +74,25 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    SAsig = df1.sa_on_sig0.values
 
    # 0.25 quantile
-   CT_q25 = df_wsc.prof_CT.quantile(0.25, dim='profile').values
-   SA_q25 = df_wsc.prof_SA.quantile(0.25, dim='profile').values
-   sig0_q25 = df_wsc.sig0.quantile(0.25, dim='profile').values
+   CT_q25 = df.prof_CT.quantile(0.25, dim='profile').values
+   SA_q25 = df.prof_SA.quantile(0.25, dim='profile').values
+   sig0_q25 = df.sig0.quantile(0.25, dim='profile').values
+   CTsig_q25 = df.ct_on_sig0.quantile(0.25, dim='profile').values
+   SAsig_q25 = df.sa_on_sig0.quantile(0.25, dim='profile').values
 
    # median values
-   CT_median = df1.prof_CT.median(dim='profile').values
-   SA_median = df1.prof_SA.median(dim='profile').values
-   sig0_median = df1.sig0.median(dim='profile').values
+   CT_median = df.prof_CT.quantile(0.50, dim='profile').values
+   SA_median = df.prof_SA.quantile(0.50, dim='profile').values
+   sig0_median = df.sig0.quantile(0.50, dim='profile').values
+   CTsig_median = df.ct_on_sig0.quantile(0.50, dim='profile').values
+   SAsig_median = df.sa_on_sig0.quantile(0.50, dim='profile').values
 
    # 0.75 quantile
-   CT_q75 = df_wsc.prof_CT.quantile(0.75, dim='profile').values
-   SA_q75 = df_wsc.prof_SA.quantile(0.75, dim='profile').values
-   sig0_q75 = df_wsc.sig0.quantile(0.75, dim='profile').values
+   CT_q75 = df.prof_CT.quantile(0.75, dim='profile').values
+   SA_q75 = df.prof_SA.quantile(0.75, dim='profile').values
+   sig0_q75 = df.sig0.quantile(0.75, dim='profile').values
+   CTsig_q75 = df.ct_on_sig0.quantile(0.75, dim='profile').values
+   SAsig_q75 = df.sa_on_sig0.quantile(0.75, dim='profile').values
 
    # figure CT
    fig1, ax1 = plt.subplots()
@@ -87,11 +102,17 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    ax1.plot(CT_q25, z, lw = 2, color = 'black', linestyle='dashed')
    ax1.plot(CT_median, z, lw = 2, color = 'black')
    ax1.plot(CT_q75, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.set_xlim([Tmin, Tmax])
    ax1.set_ylim([ymin, ymax])
    plt.gca().invert_yaxis()
-   plt.xlabel('Conservative temperature (°C)')
-   plt.ylabel('Depth (m)')
-   plt.savefig(ploc + 'many_profiles_CT.png', bbox_inches='tight')
+   plt.xlabel('Conservative temperature (°C)', fontsize=fs)
+   plt.ylabel('Depth (m)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.savefig(ploc + modStr + 'many_profiles_CT.png', bbox_inches='tight')
    plt.close()
 
    # figure SA
@@ -102,11 +123,17 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    ax1.plot(SA_q25, z, lw = 2, color = 'black', linestyle='dashed')
    ax1.plot(SA_median, z, lw = 2, color = 'black')
    ax1.plot(SA_q75, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([ymin, ymax])
    plt.gca().invert_yaxis()
-   plt.xlabel('Absolute salinity (psu)')
-   plt.ylabel('Depth (m)')
-   plt.savefig(ploc + 'many_profiles_SA.png', bbox_inches='tight')
+   plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+   plt.ylabel('Depth (m)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.savefig(ploc + modStr + 'many_profiles_SA.png', bbox_inches='tight')
    plt.close()
 
    # figure sig0
@@ -117,11 +144,17 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    ax1.plot(sig0_q25, z, lw = 2, color = 'black', linestyle='dashed')
    ax1.plot(sig0_median, z, lw = 2, color = 'black')
    ax1.plot(sig0_q75, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.set_xlim([sig0min, sig0max])
    ax1.set_ylim([ymin, ymax])
    plt.gca().invert_yaxis()
-   plt.xlabel('Potential density (kg/m^3)')
-   plt.ylabel('Depth (m)')
-   plt.savefig(ploc + 'many_profiles_sig0.png', bbox_inches='tight')
+   plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
+   plt.ylabel('Depth (m)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.savefig(ploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
    plt.close()
 
    # figure sig0 (interpolated onto high-res z)
@@ -129,11 +162,17 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(sig0_on_highz.shape[0]):
        ax1.plot(sig0_on_highz[d,:], depth_highz, lw = 1, alpha = alpha, color = 'grey')
 
+   ax1.set_xlim([sig0min, sig0max])
    ax1.set_ylim([ymin, ymax])
    plt.gca().invert_yaxis()
    plt.xlabel('Potential density (kg/m^3)')
    plt.ylabel('Depth (m)')
-   plt.savefig(ploc + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.savefig(ploc + modStr + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
    plt.close()
 
    # figure CT sig
@@ -141,11 +180,20 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(CTsig.shape[0]):
        ax1.plot(CTsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
 
+   ax1.plot(CTsig_q25, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(CTsig_median, sig0_levs, lw = 2, color = 'black')
+   ax1.plot(CTsig_q75, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
+   ax1.set_xlim([Tmin, Tmax])
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()
-   plt.xlabel('Conservative temperature (°C)')
-   plt.ylabel('Potential density (kg/m^3)')
-   plt.savefig(ploc + 'many_profiles_CTsig.png', bbox_inches='tight')
+   plt.xlabel('Conservative temperature (°C)', fontsize=fs)
+   plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.savefig(ploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
    plt.close()
 
    # figure SA sig
@@ -153,11 +201,20 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(SAsig.shape[0]):
        ax1.plot(SAsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
 
+   ax1.plot(SAsig_q25, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(SAsig_median, sig0_levs, lw = 2, color = 'black')
+   ax1.plot(SAsig_q75, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
+   ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()
-   plt.xlabel('Absolute salinity (psu)')
-   plt.ylabel('Potential density (kg/m^3)')
-   plt.savefig(ploc + 'many_profiles_SAsig.png', bbox_inches='tight')
+   plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+   plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.savefig(ploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
    plt.close()
 
 #####################################################################

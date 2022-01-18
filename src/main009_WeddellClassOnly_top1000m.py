@@ -25,6 +25,10 @@ import matplotlib as mpl
 ### os tools
 import os.path
 
+# Suppress a particular warning
+import warnings
+warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
+
 #####################################################################
 # Set runtime parameters (filenames, flags, ranges)
 #####################################################################
@@ -262,10 +266,21 @@ plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis/'
 pt.plot_many_profiles(plocA, df_wsc, frac=0.95, ymin=20, ymax=1000,
                       sig0min=27.0, sig0max=28.0, alpha=0.1)
 
-# Plot all the profiles in the box
-plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_not_wsc_analysis/'
-pt.plot_many_profiles(plocA, df_not_wsc, frac=0.95, ymin=20, ymax=1000,
-                      sig0min=27.0, sig0max=28.0, alpha=0.1)
+# Visualize profile stats by class and year (all profiles)
+at.examine_prof_stats_by_label_and_year(plocA, df_wsc, frac = 0.95, \
+                                         ymin=20, ymax=1000, \
+                                         Tmin = -1.9, Tmax = 7.0, \
+                                         Smin = 33.5, Smax = 35.0, \
+                                         sig0min = 26.8, sig0max = 28.0, \
+                                         alpha=0.1)
+
+# Visualize profile stats by class and year (all profiles)
+at.examine_prof_stats_by_label_and_year(ploc, profiles, frac = 0.95, \
+                                         ymin=20, ymax=1000, \
+                                         Tmin = -1.9, Tmax = 7.0, \
+                                         Smin = 33.5, Smax = 35.0, \
+                                         sig0min = 26.8, sig0max = 28.0, \
+                                         alpha=0.1)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file
