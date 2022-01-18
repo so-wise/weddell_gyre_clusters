@@ -200,7 +200,7 @@ dfp = dfp.drop({'depth_highz','sig0_levs','prof_T','prof_S','ct_on_highz',
 
 # plot T, S vertical structure of the classes
 pt.plot_class_vertical_structures(ploc, profiles, n_components_selected,
-                                  zmin=zmax, zmax=zmax,
+                                  zmin=zmin, zmax=zmax,
                                   Tmin=Trange[0], Tmax=Trange[1],
                                   Smin=Srange[0], Smax=Srange[1],
                                   sig0min=sig0range[0], sig0max=sig0range[1],
@@ -273,7 +273,7 @@ df_wsc, df_not_wsc = at.split_single_class_by_box(profiles, class_split=3,
 
 # Plot all the profiles in the box
 plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis/'
-pt.plot_many_profiles(plocA, df_wsc, frac=0.95, ymin=20, ymax=1000,
+pt.plot_many_profiles(plocA, df_wsc, frac=0.95, zmin=20, zmax=1000,
                       sig0min=27.0, sig0max=28.0, alpha=0.1)
 
 # Visualize profile stats by class and year (all profiles)
