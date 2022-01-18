@@ -199,8 +199,17 @@ dfp = dfp.drop({'depth_highz','sig0_levs','prof_T','prof_S','ct_on_highz',
                 'sa_on_highz','sig0_on_highz','ct_on_sig0','sa_on_sig0'})
 
 # plot T, S vertical structure of the classes
+pt.plot_class_vertical_structures(ploc, profiles, n_components_selected,
+                                  zmin=zmax, zmax=zmax,
+                                  Tmin=Tmin, Tmax=Tmax,
+                                  Smin=Smin, Smax=Smax,
+                                  sig0min=sig0min, sig0max=sig0max, frac=0.33)
+
+# TS diagram just showing the mean values
 pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected,
                      PTrange=Trange, SPrange=Srange)
+
+# CT, SA, and sig0 class structure (means and standard deviation)
 pt.plot_CT_class_structure(ploc, dfp, class_means,class_stds,
                            n_components_selected, zmin, zmax,
                            Tmin=Trange[0], Tmax=Trange[1])
@@ -214,6 +223,7 @@ pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means,class_stds,
                                   n_components_selected, zmin, zmax,
                                   Tmin=Trange[0], Tmax=Trange[1],
                                   Smin=Srange[0], Smax=Srange[1])
+
 # plot 3D pca structure (now with class labels)
 pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
 
@@ -221,7 +231,6 @@ pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
 pt.plot_TS_single_lev(ploc, dfp, n_components_selected,
                       descrip='', plev=0, PTrange=Trange,
                       SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
-
 
 # plot multiple-level T-S diagrams
 pt.plot_TS_multi_lev(ploc, dfp, n_components_selected,
