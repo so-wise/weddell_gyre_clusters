@@ -115,7 +115,7 @@ def split_single_class_by_longitude(df, class_split, lon_split):
 # Plot profile statistics grouped by label/class and year
 #####################################################################
 def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
-                                         ymin=20, ymax=1000, \
+                                         zmin=20, zmax=1000, \
                                          Tmin = -1.9, Tmax = 7.0, \
                                          Smin = 33.0, Smax = 35.0, \
                                          sig0min = 27.0, sig0max = 28.0, \
@@ -124,8 +124,8 @@ def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
     print('analysis.examine_prof_stats_by_label_and_year')
 
     # Use original profile dataset for interannual variability
-    yMin = int(df.year.values.min())
-    yMax = int(df.year.values.max())
+    yearMin = int(df.year.values.min())
+    yearMax = int(df.year.values.max())
     labelMax = int(df.label.values.max())
 
     # Loop over classes and years
@@ -133,7 +133,7 @@ def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
 
         print('analysis.examine_prof_stats_by_label_and_year : class ' + str(k))
 
-        for yr in range(yMin, yMax + 1):
+        for yr in range(yearMin, yearMax + 1):
 
             print('analysis.examine_prof_stats_by_label_and_year : year ' + str(yr))
 
@@ -152,7 +152,7 @@ def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
 
                 # plot profiles and statistics for this year and class
                 pt.plot_many_profiles(modPloc, df1y, frac=frac, \
-                                      ymin=ymin, ymax=ymax, \
+                                      zmin=zmin, zmax=zmax, \
                                       Tmin=Tmin, Tmax=Tmax, \
                                       Smin=Smin, Smax=Smax, \
                                       sig0min=sig0min, sig0max=sig0max, \
