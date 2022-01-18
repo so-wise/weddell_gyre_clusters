@@ -632,13 +632,14 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
     plt.close()
 
 #####################################################################
-# Plot mean and stdev CT and SA structure
+# Plot mean and stdev CT and SA structure (and density)
 #####################################################################
 def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
                                    class_stds, n_components_selected,
-                                   zmin, zmax,
+                                   zmin=20, zmax=1000,
                                    Tmin=-3, Tmax=20,
-                                   Smin=33.6, Smax=37.0):
+                                   Smin=33.6, Smax=37.0,
+                                   sig0min=26.0, sig0max=28.0, frac=0.33):
 
     print('plot_tools.plot_CT_and_SA_class_structure')
 
@@ -647,13 +648,24 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
+    # select random samples
+    sample_size = int(frac*df.profile.size)
+    rows_id = sorted(random.sample(range(0, df.profile.size-1), sample_size))
+    df1 = df.isel(profile=rows_id)
+
     # initialize the figure
     fig = plt.figure(figsize=(22,16))
-    #plt.style.use('seaborn-darkgrid')
-    #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
-    # vertical coordinate
+    # extract DataArrays
     z = profiles.depth.values
+    depth_highz = profiles.depth_highz.values
+    sig0_levs = profiles.sig0_levs.values
+    CT = profiles.prof_CT.values
+    SA = profiles.prof_SA.values
+    sig0 = profiles.sig0.values
+    sig0_on_highz = profiles.sig0_on_highz.values
+    CTsig = profiles.ct_on_sig0.values
+    SAsig = profiles.sa_on_sig0.values
 
     fs = 18 # font size
 
