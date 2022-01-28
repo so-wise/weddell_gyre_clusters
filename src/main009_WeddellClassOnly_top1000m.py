@@ -89,7 +89,7 @@ gmm_fname = dloc + 'gmm_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_
 fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip + '.nc'
 
 # colormap
-colormap = plt.get_cmap('tab20', n_components_selected)
+colormap = plt.get_cmap('Set1', n_components_selected)
 
 #####################################################################
 # Run the standard analysis stuff
@@ -184,10 +184,10 @@ class_means, class_stds = gmm.calc_class_stats(profiles)
 #####################################################################
 
 # fit and apply tsne
-#tSNE_data, colors_for_tSNE = lp.fit_and_apply_tsne(profiles, Xtrans)
+tSNE_data, colors_for_tSNE = lp.fit_and_apply_tsne(profiles, Xtrans)
 
 # plot t-SNE with class labels
-#pt.plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE)
+pt.plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE)
 
 #####################################################################
 # Plot classification results
@@ -199,7 +199,7 @@ dfp = dfp.drop({'depth_highz','sig0_levs','prof_T','prof_S','ct_on_highz',
                 'sa_on_highz','sig0_on_highz','ct_on_sig0','sa_on_sig0'})
 
 # plot T, S vertical structure of the classes
-pt.plot_class_vertical_structures(ploc, profiles, n_components_selected,
+pt.plot_class_vertical_structures(ploc, profiles, n_components_selected, colormap,
                                   zmin=zmin, zmax=zmax,
                                   Tmin=Trange[0], Tmax=Trange[1],
                                   Smin=Srange[0], Smax=Srange[1],
@@ -207,21 +207,21 @@ pt.plot_class_vertical_structures(ploc, profiles, n_components_selected,
                                   frac=0.33)
 
 # TS diagram just showing the mean values
-pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected,
+pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected, colormap,
                      PTrange=Trange, SPrange=Srange)
 
 # CT, SA, and sig0 class structure (means and standard deviation)
-pt.plot_CT_class_structure(ploc, dfp, class_means,class_stds,
-                           n_components_selected, zmin, zmax,
+pt.plot_CT_class_structure(ploc, dfp, class_means, class_stds,
+                           n_components_selected, colormap, zmin, zmax,
                            Tmin=Trange[0], Tmax=Trange[1])
-pt.plot_SA_class_structure(ploc, dfp, class_means,class_stds,
-                           n_components_selected, zmin, zmax,
+pt.plot_SA_class_structure(ploc, dfp, class_means, class_stds,
+                           n_components_selected, colormap, zmin, zmax,
                            Smin=Srange[0], Smax=Srange[1])
-pt.plot_sig0_class_structure(ploc, dfp, class_means,class_stds,
-                           n_components_selected, zmin, zmax,
+pt.plot_sig0_class_structure(ploc, dfp, class_means, class_stds,
+                           n_components_selected, colormap, zmin, zmax,
                            sig0min=sig0range[0], sig0max=sig0range[1])
-pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means,class_stds,
-                                  n_components_selected, zmin, zmax,
+pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means, class_stds,
+                                  n_components_selected, colormap, zmin, zmax,
                                   Tmin=Trange[0], Tmax=Trange[1],
                                   Smin=Srange[0], Smax=Srange[1])
 
@@ -229,17 +229,17 @@ pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means,class_stds,
 pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
 
 # plot some single level T-S diagrams
-pt.plot_TS_single_lev(ploc, dfp, n_components_selected,
+pt.plot_TS_single_lev(ploc, dfp, n_components_selected, colormap,
                       descrip='', plev=0, PTrange=Trange,
                       SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
 
 # plot multiple-level T-S diagrams
-pt.plot_TS_multi_lev(ploc, dfp, n_components_selected,
+pt.plot_TS_multi_lev(ploc, dfp, n_components_selected, colormap,
                      descrip='', plev=0, PTrange=Trange,
                      SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagram (all levels shown)
-pt.plot_TS_all_lev(ploc, dfp, n_components_selected,
+pt.plot_TS_all_lev(ploc, dfp, n_components_selected, colormap,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.33)
 
@@ -252,7 +252,7 @@ pt.plot_TS_bytime(ploc, dfp, n_components_selected,
                    lon = -20, lat = -65, rr = 0.60, timeShading='month')
 
 # plot label map
-pt.plot_label_map(ploc, dfp, n_components_selected,
+pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
                    lon_min, lon_max, lat_min, lat_max)
 
 # calculate the i-metric
@@ -282,15 +282,7 @@ at.examine_prof_stats_by_label_and_year(plocA, df_wsc, frac = 0.95, \
                                          Tmin = -1.9, Tmax = 7.0, \
                                          Smin = 33.5, Smax = 35.0, \
                                          sig0min = 26.8, sig0max = 28.0, \
-                                         alpha=0.1)
-
-# Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(ploc, profiles, frac = 0.95, \
-                                         ymin=20, ymax=1000, \
-                                         Tmin = -1.9, Tmax = 7.0, \
-                                         Smin = 33.5, Smax = 35.0, \
-                                         sig0min = 26.8, sig0max = 28.0, \
-                                         alpha=0.1)
+                                         alpha=0.1, colormap)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file

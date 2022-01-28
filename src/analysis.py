@@ -119,7 +119,7 @@ def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
                                          Tmin = -1.9, Tmax = 7.0, \
                                          Smin = 33.0, Smax = 35.0, \
                                          sig0min = 27.0, sig0max = 28.0, \
-                                         alpha=0.1):
+                                         alpha=0.1, colormap):
 
     print('analysis.examine_prof_stats_by_label_and_year')
 
@@ -132,6 +132,8 @@ def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
     for k in range(0, labelMax + 1):
 
         print('analysis.examine_prof_stats_by_label_and_year : class ' + str(k))
+
+        colorVal = colormap(k)
 
         for yr in range(yearMin, yearMax + 1):
 
@@ -156,4 +158,5 @@ def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
                                       Tmin=Tmin, Tmax=Tmax, \
                                       Smin=Smin, Smax=Smax, \
                                       sig0min=sig0min, sig0max=sig0max, \
-                                      alpha=alpha, modStr=modStr)
+                                      alpha=alpha, modStr=modStr, \
+                                      colorVal=colorVal)

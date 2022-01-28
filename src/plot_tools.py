@@ -41,7 +41,7 @@ def plot_profile(ploc, df):
 #####################################################################
 # Plot many profiles
 #####################################################################
-def plot_many_profiles(ploc, df, frac=0.01,
+def plot_many_profiles(ploc, df, frac=0.10,
                        zmin=20, zmax=1000,
                        Tmin = -1.9, Tmax = 7.0,
                        Smin = 33.0, Smax = 35.0,
@@ -640,15 +640,16 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
 #####################################################################
 def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
                                    class_stds, n_components_selected,
+                                   colormap,
                                    zmin=20, zmax=1000,
                                    Tmin=-3, Tmax=20,
                                    Smin=33.6, Smax=37.0,
                                    sig0min=26.0, sig0max=28.0, frac=0.33):
 
-    print('plot_tools.plot_CT_and_SA_class_structure')
+    print('plot_tools.N')
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -737,7 +738,7 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
 #####################################################################
 # Plot vertical structure of a single class (CT, SA, sigma0)
 #####################################################################
-def plot_class_vertical_structures(ploc, df1, n_components_selected,
+def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                                    zmin=20, zmax=1000,
                                    Tmin=-3, Tmax=20,
                                    Smin=33.6, Smax=37.0,
@@ -748,7 +749,7 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected,
     print('plot_tools.plot_class_vertical_structures')
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -772,13 +773,13 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected,
 # Plot mean and stdev salinity class structure
 #####################################################################
 def plot_SA_class_structure(ploc, profiles, class_means,
-                           class_stds, n_components_selected,
+                           class_stds, n_components_selected, colormap,
                            zmin, zmax, Smin=33.6, Smax=37.0):
 
     print('plot_tools.plot_SA_class_structure')
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -834,13 +835,13 @@ def plot_SA_class_structure(ploc, profiles, class_means,
 # Plot mean and stdev conservative temperature class structure
 #####################################################################
 def plot_CT_class_structure(ploc, profiles, class_means,
-                            class_stds, n_components_selected,
+                            class_stds, n_components_selected, colormap,
                             zmin, zmax, Tmin=-3, Tmax=20):
 
     print('plot_tools.plot_CT_class_structure')
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -896,7 +897,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
 # Plot mean and stdev salinity class structure (on sigma)
 #####################################################################
 def plot_SA_class_structure_onSig(ploc, profiles, class_means,
-                           class_stds, n_components_selected,
+                           class_stds, n_components_selected, colormap,
                            Smin=33.6, Smax=37.0):
 
     print('plot_tools.plot_SA_class_structure_onSig')
@@ -905,7 +906,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
     #plt.rcParams['text.usetex'] = True
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -961,7 +962,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
 # Plot mean and stdev conservative temperature class structure
 #####################################################################
 def plot_CT_class_structure_onSig(ploc, profiles, class_means,
-                            class_stds, n_components_selected,
+                            class_stds, n_components_selected, colormap,
                             Tmin=-3, Tmax=20):
 
     print('plot_tools.plot_CT_class_structure_onSig')
@@ -970,7 +971,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
     #plt.rcParams['text.usetex'] = True
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -1026,7 +1027,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
 # Plot mean and stdev density class structure
 #####################################################################
 def plot_sig0_class_structure(ploc, profiles, class_means,
-                           class_stds, n_components_selected,
+                           class_stds, n_components_selected, colormap,
                            zmin, zmax, sig0min=24.0, sig0max=28.0):
 
     print('plot_tools.plot_sig0_class_structure')
@@ -1035,7 +1036,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
     #plt.rcParams['text.usetex'] = True
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -1090,7 +1091,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 #####################################################################
 # Plot class label map using cartopy
 #####################################################################
-def plot_label_map(ploc, profiles, n_components_selected,
+def plot_label_map(ploc, profiles, n_components_selected, colormap,
                    lon_min=-80, lon_max=80, lat_min=-85, lat_max=-30,
                    bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
 
@@ -1103,7 +1104,7 @@ def plot_label_map(ploc, profiles, n_components_selected,
     bathy = bds['bathy'][:]
 
     # define colormap
-    colormap = plt.get_cmap('Set1', n_components_selected)
+    #colormap = plt.get_cmap('Set1', n_components_selected)
 
     # extract values as new DataArrays
     df1D = profiles.isel(depth=0)
@@ -1297,7 +1298,7 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
 #####################################################################
 # T-S plot for a single pressure level
 #####################################################################
-def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
+def plot_TS_single_lev(ploc, df, n_comp, colromap, descrip='', plev=0, PTrange=(-2, 27.0),
                        SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60):
 
     print('plot_tools.plot_TS_single_lev')
@@ -1309,7 +1310,7 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     df1D = df.isel(depth=plev)
 
     # define colormap
-    colormap = plt.get_cmap('Set1', n_comp)
+    #colormap = plt.get_cmap('Set1', n_comp)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
@@ -1363,14 +1364,14 @@ def plot_TS_single_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 #####################################################################
 # T-S with the class means (and maybe stdevs) on them
 #####################################################################
-def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, descrip='',
+def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, colormap, descrip='',
                       PTrange=(-2, 27.0), SPrange=(33.5, 37.5),
                       lon = -20, lat = -65):
 
     print('plot_tools.plot_TS_withMeans')
 
     # select colormap
-    colormap = plt.get_cmap('Set1', n_comp)
+    #colormap = plt.get_cmap('Set1', n_comp)
     cNorm = colors.Normalize(vmin=0, vmax=n_comp)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
@@ -1412,7 +1413,7 @@ def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, descrip='',
 #####################################################################
 # T-S plot for all pressure levels
 #####################################################################
-def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
+def plot_TS_all_lev(ploc, df, n_comp, colormap, descrip='', PTrange=(-2, 27.0),
                     SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.33):
 
     print('plot_tools.plot_TS_all_lev')
@@ -1421,7 +1422,7 @@ def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
     df1D = df.stack(z=('profile','depth')).reset_index('z')
 
     # define colormap
-    colormap = plt.get_cmap('Set1', n_comp)
+    #colormap = plt.get_cmap('Set1', n_comp)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
@@ -1475,7 +1476,7 @@ def plot_TS_all_lev(ploc, df, n_comp, descrip='', PTrange=(-2, 27.0),
 #####################################################################
 # T-S plot for a multiple pressure levels (one for each class)
 #####################################################################
-def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
+def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-2, 27.0),
                       SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60):
 
     print('plot_tools.plot_TS_multi_lev')
@@ -1487,7 +1488,7 @@ def plot_TS_multi_lev(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
     # now use isel to loop through labels
 
     # define colormap (fixed: 10 intervals in depth)
-    colormap = plt.get_cmap('cividis', 10)
+    #colormap = plt.get_cmap('cividis', 10)
 
     # grid
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)

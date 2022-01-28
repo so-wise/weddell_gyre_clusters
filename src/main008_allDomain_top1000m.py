@@ -1,9 +1,7 @@
 #####################################################################
 # These may need to be installed
 #####################################################################
-# pip install umap-learn
-# pip install seaborn
-# pip install gsw
+# pip install umap-learn seaborn gsw cmocean
 
 #####################################################################
 # Import packages
@@ -11,6 +9,7 @@
 
 ### modules in this package
 import load_and_preprocess as lp
+import analysis as at
 import bic_and_aic as ba
 import plot_tools as pt
 import file_io as io
@@ -26,6 +25,10 @@ import matplotlib as mpl
 ### os tools
 import os.path
 
+# Suppress a particular warning
+import warnings
+warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
+
 #####################################################################
 # Set runtime parameters (filenames, flags, ranges)
 #####################################################################
@@ -33,7 +36,7 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_allDomain_top1000m_K05_experimental/'
+ploc = 'plots/plots_allDomain_top1000m_K05_forOSM22/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -55,6 +58,7 @@ use_kernel_pca = False
 saveOutput = True
 
 # number of PCA components
+# --- EXPLAINED VARIANCE Is = 0.99
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
@@ -80,8 +84,10 @@ pca_fname = dloc + 'pca_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_
 gmm_fname = dloc + 'gmm_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip
 fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip + '.nc'
 
-# colormap
-colormap = plt.get_cmap('tab20', n_components_selected)
+#
+# colormap (to be used across all plots)
+#
+colormap = plt.get_cmap('Set1', n_components_selected)
 
 #####################################################################
 # Run the standard analysis stuff
@@ -197,74 +203,104 @@ class_means, class_stds = gmm.calc_class_stats(profiles)
 #####################################################################
 
 # fit and apply tsne
-tSNE_data, colors_for_tSNE = lp.fit_and_apply_tsne(profiles, Xtrans)
+tSNE_data, labels_for_tSNE = lp.fit_and_apply_tsne(profiles, Xtrans)
 
 # plot t-SNE with class labels
-pt.plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE)
+pt.plot_tsne(ploc, colormap, tSNE_data, labels_for_tSNE)
 
 #####################################################################
-# Plot classification results
+# Plot classification results (vertical structures)
 #####################################################################
+
+# simplify Dataset for plotting purposes
+dfp = profiles
+dfp = dfp.drop({'depth_highz','sig0_levs','prof_T','prof_S','ct_on_highz',
+                'sa_on_highz','sig0_on_highz','ct_on_sig0','sa_on_sig0'})
 
 # plot T, S vertical structure of the classes
-pt.plot_CT_class_structure(ploc, profiles, class_means,class_stds,
-                           n_components_selected, zmin, zmax,
+pt.plot_class_vertical_structures(ploc, profiles, n_components_selected,
+                                  colormap, zmin=zmin, zmax=zmax,
+                                  Tmin=Trange[0], Tmax=Trange[1],
+                                  Smin=Srange[0], Smax=Srange[1],
+                                  sig0min=sig0range[0], sig0max=sig0range[1],
+                                  frac=0.33)
+
+# TS diagram just showing the mean values
+pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected,
+                     colormap, PTrange=Trange, SPrange=Srange)
+
+# CT, SA, and sig0 class structure (means and standard deviation)
+# these may be redundant now ---
+pt.plot_CT_class_structure(ploc, dfp, class_means, class_stds,
+                           n_components_selected, colormap, zmin, zmax,
                            Tmin=Trange[0], Tmax=Trange[1])
-pt.plot_SA_class_structure(ploc, profiles, class_means,class_stds,
-                           n_components_selected, zmin, zmax,
+pt.plot_SA_class_structure(ploc, dfp, class_means,class_stds,
+                           n_components_selected, colormap, zmin, zmax,
                            Smin=Srange[0], Smax=Srange[1])
-pt.plot_sig0_class_structure(ploc, profiles, class_means,class_stds,
-                             n_components_selected, zmin, zmax,
-                             sig0min=sig0range[0], sig0max=sig0range[1])
-pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means,class_stds,
-                                  n_components_selected, zmin, zmax,
+pt.plot_sig0_class_structure(ploc, dfp, class_means, class_stds,
+                           n_components_selected, colormap, zmin, zmax,
+                           sig0min=sig0range[0], sig0max=sig0range[1])
+pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means, class_stds,
+                                  n_components_selected, colormap, zmin, zmax,
                                   Tmin=Trange[0], Tmax=Trange[1],
                                   Smin=Srange[0], Smax=Srange[1])
 
-# plot T, S vertical structure on sig0 surfaces
-# pt.plot_CT_class_structure_onSig(ploc, profiles, class_means,class_stds,
-#                           n_components_selected,
-#                           Tmin=Trange[0], Tmax=Trange[1])
-# pt.plot_SA_class_structure_onSig(ploc, profiles, class_means,class_stds,
-#                           n_components_selected,
-#                           Smin=Srange[0], Smax=Srange[1])
-
 # plot 3D pca structure (now with class labels)
-pt.plot_pca3D(ploc, colormap, profiles, Xtrans, frac=0.33, withLabels=True)
+pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
 
 # plot some single level T-S diagrams
-pt.plot_TS_single_lev(ploc, profiles, n_components_selected,
+pt.plot_TS_single_lev(ploc, dfp, n_components_selected, colormap,
                       descrip='', plev=0, PTrange=Trange,
                       SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
 
 # plot multiple-level T-S diagrams
-pt.plot_TS_multi_lev(ploc, profiles, n_components_selected,
+pt.plot_TS_multi_lev(ploc, dfp, n_components_selected, colormap,
                      descrip='', plev=0, PTrange=Trange,
-                     SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
+                     SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagram (all levels shown)
-pt.plot_TS_all_lev(ploc, profiles, n_components_selected,
+pt.plot_TS_all_lev(ploc, dfp, n_components_selected, colormap,
                    descrip='', PTrange=Trange, SPrange=Srange,
-                   lon = -20, lat = -65, rr = 0.60)
+                   lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagrams (by class, shaded by year and month)
-pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+pt.plot_TS_bytime(ploc, dfp, n_components_selected,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.60, timeShading='year')
-pt.plot_TS_bytime(ploc, profiles, n_components_selected,
+pt.plot_TS_bytime(ploc, dfp, n_components_selected,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.60, timeShading='month')
 
+#####################################################################
+# Label map, showing all profiles and their classes
+#####################################################################
+
 # plot label map
-pt.plot_label_map(ploc, profiles, n_components_selected,
+pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
                    lon_min, lon_max, lat_min, lat_max)
 
+#####################################################################
+# I-metric plots
+#####################################################################
+
 # calculate the i-metric
-df1D = profiles.isel(depth=0)
+df1D = dfp.isel(depth=0)
 df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
+
+#####################################################################
+# Further analysis of time variation
+#####################################################################
+
+# Visualize profile stats by class and year (all profiles)
+at.examine_prof_stats_by_label_and_year(ploc, df_wsc, frac = 0.95, \
+                                         ymin=20, ymax=1000, \
+                                         Tmin = -1.9, Tmax = 7.0, \
+                                         Smin = 33.5, Smax = 35.0, \
+                                         sig0min = 26.8, sig0max = 28.0, \
+                                         alpha=0.1, colormap)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file
