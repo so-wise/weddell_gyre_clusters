@@ -41,14 +41,18 @@ def plot_profile(ploc, df):
 #####################################################################
 # Plot many profiles
 #####################################################################
-def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
-                       Tmin = -1.9, Tmax = 7.0, Smin = 33.0, Smax = 35.0,
-                       sig0min=23.0, sig0max=28.0, alpha=0.05, modStr=''):
+def plot_many_profiles(ploc, df, frac=0.01,
+                       zmin=20, zmax=1000,
+                       Tmin = -1.9, Tmax = 7.0,
+                       Smin = 33.0, Smax = 35.0,
+                       sig0min=23.0, sig0max=28.0,
+                       alpha=0.05, modStr='',
+                       colorVal='black'):
 
    print("plot_tools.plot_many_profiles")
 
    # font size
-   fs = 16
+   fs = 14
 
    # if plot directory doesn't exist, create it
    if not os.path.exists(ploc):
@@ -60,18 +64,18 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    # select random samples
    sample_size = int(frac*df.profile.size)
    rows_id = sorted(random.sample(range(0, df.profile.size-1), sample_size))
-   df1 = df.isel(profile=rows_id)
+   df_sample = df.isel(profile=rows_id)
 
    # extract DataArrays
-   z = df1.depth.values
-   depth_highz = df1.depth_highz.values
-   sig0_levs = df1.sig0_levs.values
-   CT = df1.prof_CT.values
-   SA = df1.prof_SA.values
-   sig0 = df1.sig0.values
-   sig0_on_highz = df1.sig0_on_highz.values
-   CTsig = df1.ct_on_sig0.values
-   SAsig = df1.sa_on_sig0.values
+   z = df_sample.depth.values
+   depth_highz = df_sample.depth_highz.values
+   sig0_levs = df_sample.sig0_levs.values
+   CT = df_sample.prof_CT.values
+   SA = df_sample.prof_SA.values
+   sig0 = df_sample.sig0.values
+   sig0_on_highz = df_sample.sig0_on_highz.values
+   CTsig = df_sample.ct_on_sig0.values
+   SAsig = df_sample.sa_on_sig0.values
 
    # 0.25 quantile
    CT_q25 = df.prof_CT.quantile(0.25, dim='profile').values
@@ -99,18 +103,18 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(CT.shape[0]):
        ax1.plot(CT[d,:], z, lw = 1, alpha = alpha, color = 'grey')
 
-   ax1.plot(CT_q25, z, lw = 2, color = 'black', linestyle='dashed')
-   ax1.plot(CT_median, z, lw = 2, color = 'black')
-   ax1.plot(CT_q75, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(CT_q25, z, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(CT_median, z, lw = 2, color = colorVal)
+   ax1.plot(CT_q75, z, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Tmin, Tmax])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Conservative temperature (°C)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_CT.png', bbox_inches='tight')
    plt.close()
@@ -120,18 +124,18 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(SA.shape[0]):
        ax1.plot(SA[d,:], z, lw = 1, alpha = alpha, color = 'grey')
 
-   ax1.plot(SA_q25, z, lw = 2, color = 'black', linestyle='dashed')
-   ax1.plot(SA_median, z, lw = 2, color = 'black')
-   ax1.plot(SA_q75, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(SA_q25, z, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(SA_median, z, lw = 2, color = colorVal)
+   ax1.plot(SA_q75, z, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Smin, Smax])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Absolute salinity (psu)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_SA.png', bbox_inches='tight')
    plt.close()
@@ -141,18 +145,18 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(sig0.shape[0]):
        ax1.plot(sig0[d,:], z, lw = 1, alpha = alpha, color = 'grey')
 
-   ax1.plot(sig0_q25, z, lw = 2, color = 'black', linestyle='dashed')
-   ax1.plot(sig0_median, z, lw = 2, color = 'black')
-   ax1.plot(sig0_q75, z, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(sig0_q25, z, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(sig0_median, z, lw = 2, color = colorVal)
+   ax1.plot(sig0_q75, z, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([sig0min, sig0max])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
    plt.close()
@@ -163,14 +167,14 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
        ax1.plot(sig0_on_highz[d,:], depth_highz, lw = 1, alpha = alpha, color = 'grey')
 
    ax1.set_xlim([sig0min, sig0max])
-   ax1.set_ylim([ymin, ymax])
+   ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
    plt.xlabel('Potential density (kg/m^3)')
    plt.ylabel('Depth (m)')
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
    plt.close()
@@ -180,9 +184,9 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(CTsig.shape[0]):
        ax1.plot(CTsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
 
-   ax1.plot(CTsig_q25, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
-   ax1.plot(CTsig_median, sig0_levs, lw = 2, color = 'black')
-   ax1.plot(CTsig_q75, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(CTsig_q25, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(CTsig_median, sig0_levs, lw = 2, color = colorVal)
+   ax1.plot(CTsig_q75, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Tmin, Tmax])
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()
@@ -191,7 +195,7 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
    plt.close()
@@ -201,9 +205,9 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    for d in range(SAsig.shape[0]):
        ax1.plot(SAsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
 
-   ax1.plot(SAsig_q25, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
-   ax1.plot(SAsig_median, sig0_levs, lw = 2, color = 'black')
-   ax1.plot(SAsig_q75, sig0_levs, lw = 2, color = 'black', linestyle='dashed')
+   ax1.plot(SAsig_q25, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(SAsig_median, sig0_levs, lw = 2, color = colorVal)
+   ax1.plot(SAsig_q75, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()
@@ -212,7 +216,7 @@ def plot_many_profiles(ploc, df, frac=0.01, ymin=20, ymax=1000,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
    plt.close()
@@ -632,7 +636,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
     plt.close()
 
 #####################################################################
-# Plot mean and stdev CT and SA structure (and density)
+# Plot mean and stdev CT and SA structure
 #####################################################################
 def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
                                    class_stds, n_components_selected,
@@ -648,24 +652,11 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
 
-    # select random samples
-    sample_size = int(frac*df.profile.size)
-    rows_id = sorted(random.sample(range(0, df.profile.size-1), sample_size))
-    df1 = df.isel(profile=rows_id)
-
     # initialize the figure
     fig = plt.figure(figsize=(22,16))
 
     # extract DataArrays
     z = profiles.depth.values
-    depth_highz = profiles.depth_highz.values
-    sig0_levs = profiles.sig0_levs.values
-    CT = profiles.prof_CT.values
-    SA = profiles.prof_SA.values
-    sig0 = profiles.sig0.values
-    sig0_on_highz = profiles.sig0_on_highz.values
-    CTsig = profiles.ct_on_sig0.values
-    SAsig = profiles.sa_on_sig0.values
 
     fs = 18 # font size
 
@@ -742,6 +733,40 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
     plt.tight_layout(pad=3.0)
     plt.savefig(ploc + 'prof_CT_and_SA_byClass.png', bbox_inches='tight')
     plt.close()
+
+#####################################################################
+# Plot vertical structure of a single class (CT, SA, sigma0)
+#####################################################################
+def plot_class_vertical_structures(ploc, df1, n_components_selected,
+                                   zmin=20, zmax=1000,
+                                   Tmin=-3, Tmax=20,
+                                   Smin=33.6, Smax=37.0,
+                                   sig0min=26.0, sig0max=28.0,
+                                   frac=0.33):
+# note: the input 'df1' should contain only a single class/label!
+
+    print('plot_tools.plot_class_vertical_structures')
+
+    # select colormap
+    colormap = plt.get_cmap('Set1', n_components_selected)
+    cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
+    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
+
+    # iterate over groups (top row, CT)
+    for nrow in range(0,n_components_selected):
+        colorVal = scalarMap.to_rgba(nrow)
+
+        # just select single class/label
+        df1_singleClass = df1.where(df1.label==nrow, drop=True)
+
+        # call routine to plot many profiles
+        plot_many_profiles(ploc, df1_singleClass, frac=0.10,
+                           zmin=zmin, zmax=zmax,
+                           Tmin=Tmin, Tmax=Tmax,
+                           Smin=Smin, Smax=Smax,
+                           sig0min=sig0min, sig0max=sig0max,
+                           alpha=0.05, modStr='class'+str(nrow+1),
+                           colorVal=colorVal)
 
 #####################################################################
 # Plot mean and stdev salinity class structure

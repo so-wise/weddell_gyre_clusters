@@ -49,7 +49,7 @@ if not os.path.exists(ploc):
 myClass=1
 
 # calculate BIC and AIC? set max number of components
-getBIC = True
+getBIC = False
 max_N = 20
 
 # transformation method (pca, umap)
@@ -60,7 +60,7 @@ transform_method = 'pca'
 use_kernel_pca = False
 
 # save the processed output as a NetCDF file?
-saveOutput = True
+saveOutput = False
 
 # number of PCA components
 n_pca = 6
@@ -199,8 +199,18 @@ dfp = dfp.drop({'depth_highz','sig0_levs','prof_T','prof_S','ct_on_highz',
                 'sa_on_highz','sig0_on_highz','ct_on_sig0','sa_on_sig0'})
 
 # plot T, S vertical structure of the classes
+pt.plot_class_vertical_structures(ploc, profiles, n_components_selected,
+                                  zmin=zmin, zmax=zmax,
+                                  Tmin=Trange[0], Tmax=Trange[1],
+                                  Smin=Srange[0], Smax=Srange[1],
+                                  sig0min=sig0range[0], sig0max=sig0range[1],
+                                  frac=0.33)
+
+# TS diagram just showing the mean values
 pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected,
                      PTrange=Trange, SPrange=Srange)
+
+# CT, SA, and sig0 class structure (means and standard deviation)
 pt.plot_CT_class_structure(ploc, dfp, class_means,class_stds,
                            n_components_selected, zmin, zmax,
                            Tmin=Trange[0], Tmax=Trange[1])
@@ -214,6 +224,7 @@ pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means,class_stds,
                                   n_components_selected, zmin, zmax,
                                   Tmin=Trange[0], Tmax=Trange[1],
                                   Smin=Srange[0], Smax=Srange[1])
+
 # plot 3D pca structure (now with class labels)
 pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
 
@@ -221,7 +232,6 @@ pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
 pt.plot_TS_single_lev(ploc, dfp, n_components_selected,
                       descrip='', plev=0, PTrange=Trange,
                       SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
-
 
 # plot multiple-level T-S diagrams
 pt.plot_TS_multi_lev(ploc, dfp, n_components_selected,
@@ -263,7 +273,7 @@ df_wsc, df_not_wsc = at.split_single_class_by_box(profiles, class_split=3,
 
 # Plot all the profiles in the box
 plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis/'
-pt.plot_many_profiles(plocA, df_wsc, frac=0.95, ymin=20, ymax=1000,
+pt.plot_many_profiles(plocA, df_wsc, frac=0.95, zmin=20, zmax=1000,
                       sig0min=27.0, sig0max=28.0, alpha=0.1)
 
 # Visualize profile stats by class and year (all profiles)
