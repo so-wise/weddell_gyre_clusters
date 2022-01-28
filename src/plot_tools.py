@@ -114,7 +114,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_CT.png', bbox_inches='tight')
    plt.close()
@@ -135,7 +135,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_SA.png', bbox_inches='tight')
    plt.close()
@@ -156,7 +156,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
    plt.close()
@@ -174,7 +174,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
    plt.close()
@@ -195,7 +195,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
    plt.close()
@@ -216,7 +216,7 @@ def plot_many_profiles(ploc, df, frac=0.01,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.text(0.9, 0.1, 'No. of profiles = ' + str(Nprof), \
+   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
    plt.close()
