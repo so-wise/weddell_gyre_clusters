@@ -114,12 +114,12 @@ def split_single_class_by_longitude(df, class_split, lon_split):
 #####################################################################
 # Plot profile statistics grouped by label/class and year
 #####################################################################
-def examine_prof_stats_by_label_and_year(ploc, df, frac = 0.95, \
+def examine_prof_stats_by_label_and_year(ploc, df, colormap, frac = 0.95, \
                                          zmin=20, zmax=1000, \
                                          Tmin = -1.9, Tmax = 7.0, \
                                          Smin = 33.0, Smax = 35.0, \
                                          sig0min = 27.0, sig0max = 28.0, \
-                                         alpha=0.1, colormap):
+                                         alpha=0.1):
 
     print('analysis.examine_prof_stats_by_label_and_year')
 

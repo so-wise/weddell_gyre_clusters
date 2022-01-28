@@ -295,12 +295,12 @@ pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 #####################################################################
 
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(ploc, df_wsc, frac = 0.95, \
+at.examine_prof_stats_by_label_and_year(ploc, df_wsc, colormap, frac = 0.95, \
                                          ymin=20, ymax=1000, \
                                          Tmin = -1.9, Tmax = 7.0, \
                                          Smin = 33.5, Smax = 35.0, \
                                          sig0min = 26.8, sig0max = 28.0, \
-                                         alpha=0.1, colormap)
+                                         alpha=0.1)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file
