@@ -16,12 +16,75 @@ import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean.cm as cmo
+from xhistogram.xarray import histogram
 ### os tools
 import os.path
 from glob import glob
 import file_io as io
 import random
 import gsw
+
+#####################################################################
+# Plot histogram of profile locations
+#####################################################################
+def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
+                                        source='all', binsize=1,
+                                        bathy_fname="bathy.nc",
+                                        lev_range=range(-6000,1,500),
+                                        myPlotLevels=30):
+#
+# source : may be 'argo', 'ctd', 'seal', or 'all'
+# binsize : size of  lat-lon bins in degrees
+#
+
+    # print
+    print("plot_tools.plot_histogram_of_profile_locations")
+
+    # select
+    if source=='all':
+        df = profiles
+    else:
+        df = profiles.where(profiles.source==source, drop=True)
+
+    # bins
+    lon_bins = np.arange(lon_range[0], lon_range[1], binsize)
+    lat_bins = np.arange(lat_range[0], lat_range[1], binsize)
+
+    # histogram
+    hLatLon = histogram(df.lon, df.lat, bins=[lon_bins, lat_bins])
+
+    # basic plot (not cartopy)
+    plt.figure(figsize=(20, 10))
+    hLatLon.T.plot(levels=myPlotLevels)
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.savefig(ploc + 'histogram_lat_lon_simple_' + source + '.png', bbox_inches='tight')
+    plt.close()
+
+    # load bathymetry
+    bds = io.load_bathymetry(bathy_fname)
+    bathy_lon = bds['lon'][:]
+    bathy_lat = bds['lat'][:]
+    bathy = bds['bathy'][:]
+
+    # cartopy plot
+    plt.figure(figsize=(17, 13))
+    ax = plt.axes(projection=ccrs.PlateCarree())
+    ax.set_extent([lon_range[0], lon_range[1], lat_range[0], lat_range[1]],
+                   ccrs.PlateCarree())
+
+    # add bathymetry contours
+    #ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
+    #        linewidths=0.5, alpha=0.5, colors="white", linestyles='-',
+    #        transform=ccrs.PlateCarree())
+
+    # colormesh histogram
+    plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, transform=ccrs.PlateCarree())
+    ax.coastlines(resolution='50m',color='white')
+    ax.gridlines(color='black')
+    ax.add_feature(cartopy.feature.LAND)
+    plt.savefig(ploc + 'histogram_lat_lon_map_' + source + '.png', bbox_inches='tight')
+    plt.close()
 
 #####################################################################
 # Plot single profile
@@ -77,6 +140,10 @@ def plot_many_profiles(ploc, df, frac=0.10,
    CTsig = df_sample.ct_on_sig0.values
    SAsig = df_sample.sa_on_sig0.values
 
+   # Rechunk into a single dask array chunk along the "profile" dimension
+   # --- this was necessary to get rid of a "core dimension" error
+   df = df.chunk(dict(profile=-1))
+
    # 0.25 quantile
    CT_q25 = df.prof_CT.quantile(0.25, dim='profile').values
    SA_q25 = df.prof_SA.quantile(0.25, dim='profile').values
@@ -113,7 +180,8 @@ def plot_many_profiles(ploc, df, frac=0.10,
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
-   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_CT.png', bbox_inches='tight')
@@ -134,7 +202,8 @@ def plot_many_profiles(ploc, df, frac=0.10,
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
-   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_SA.png', bbox_inches='tight')
@@ -155,7 +224,8 @@ def plot_many_profiles(ploc, df, frac=0.10,
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
-   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
@@ -173,7 +243,8 @@ def plot_many_profiles(ploc, df, frac=0.10,
    plt.ylabel('Depth (m)')
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
-   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
@@ -194,7 +265,8 @@ def plot_many_profiles(ploc, df, frac=0.10,
    plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
-   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
@@ -215,7 +287,8 @@ def plot_many_profiles(ploc, df, frac=0.10,
    plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
-   plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+   plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(ploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
@@ -766,7 +839,7 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                            Tmin=Tmin, Tmax=Tmax,
                            Smin=Smin, Smax=Smax,
                            sig0min=sig0min, sig0max=sig0max,
-                           alpha=0.05, modStr='class'+str(nrow+1),
+                           alpha=0.05, modStr='Class '+str(nrow+1),
                            colorVal=colorVal)
 
 #####################################################################
@@ -1158,12 +1231,12 @@ def plot_label_map(ploc, profiles, n_components_selected, colormap,
 # Plot single i-metric map
 #####################################################################
 def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
-        rr=0.66,bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
+        rr=0.66,str="bathy.nc", lev_range=range(-6000,1,500)):
 
     print('plot_tools.plot_i_metric_single_panel')
 
     # load bathymetry
-    bds = io.load_bathymetry(bathy_fname)
+    bds = io.load_bathymetry(str)
     bathy_lon = bds['lon'][:]
     bathy_lat = bds['lat'][:]
     bathy = bds['bathy'][:]
@@ -1298,7 +1371,7 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
 #####################################################################
 # T-S plot for a single pressure level
 #####################################################################
-def plot_TS_single_lev(ploc, df, n_comp, colromap, descrip='', plev=0, PTrange=(-2, 27.0),
+def plot_TS_single_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-2, 27.0),
                        SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60):
 
     print('plot_tools.plot_TS_single_lev')
@@ -1450,7 +1523,7 @@ def plot_TS_all_lev(ploc, df, n_comp, colormap, descrip='', PTrange=(-2, 27.0),
     S_random_sample = S[rows_id]
     clabels_random_sample = clabels[rows_id]
 
-    #colormap with Historical data
+    # T/S scatterplot where colors are class labels
     plt.figure(figsize=(13, 13))
     CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
     plt.clabel(CL, fontsize=24, inline=False, fmt='%.1f')
@@ -1634,6 +1707,44 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
         plt.title('Class ' + str(nclass) , fontsize=22)
         plt.savefig(ploc + 'TS_by' + timeShading + '_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
         plt.close()
+
+#####################################################################
+# Volume histogram in T/S space
+#####################################################################
+def calc_and_plot_volume_histogram_TS(ploc, df,
+                                      sbins = np.arange(31, 38, 0.025),
+                                      tbins = np.arange(-2, 32, 0.1),
+                                      modStr=''):
+
+    # print statement
+    print('plot_tools.calc_and_plot_volume_histogram_TS')
+
+    # import packages
+    import gsw
+
+    # T-S grid for density reference lines
+    ctg, sag = np.meshgrid(tbins , sbins)
+    sig0_grid = gsw.density.sigma0(sag, ctg)
+
+    # create histogram
+    histTS = histogram(df.prof_SA, df.prof_CT, bins=[sbins,tbins])
+
+    # scale the histogram (log10, transpose, scale by maximum)
+    histTS_scaled = np.log10(histTS.T)
+    histTS_scaled = histTS_scaled/histTS_scaled.max()
+
+    # --- plot histogram
+    plt.figure(figsize=(10,10))
+    # now superimpose T-S contours
+    histTS_scaled.plot(levels=30)
+    CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
+    plt.clabel(CL, fontsize=14, inline=False, fmt='%.1f')
+    plt.xlabel('Absolute salinity (psu)')
+    plt.ylabel('Conservative temperature (°C)')
+    plt.savefig(ploc + 'histogram_TS' + modStr + '.png', bbox_inches='tight')
+    plt.close()
+
+    return histTS_scaled
 
 #####################################################################
 # Plot class stats, split by longitude

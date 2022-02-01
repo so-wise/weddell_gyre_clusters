@@ -13,6 +13,7 @@ import analysis as at
 import bic_and_aic as ba
 import plot_tools as pt
 import file_io as io
+import numpy as np
 import xarray
 import density
 import gmm
@@ -37,7 +38,7 @@ warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_temporary/'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -89,11 +90,12 @@ gmm_fname = dloc + 'gmm_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_
 fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip + '.nc'
 
 # colormap
-colormap = plt.get_cmap('Set1', n_components_selected)
+colormap = plt.get_cmap('tab10', n_components_selected)
 
 #####################################################################
 # Run the standard analysis stuff
 #####################################################################
+
 #####################################################################
 # Data loading and preprocessing
 #####################################################################
@@ -262,9 +264,29 @@ pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
 
+# some T-S histograms
+sbins = np.arange(Srange[0], Srange[1], 0.025)
+tbins = np.arange(Trange[0], Trange[1], 0.1)
+df_select = dfp.where(dfp.label==0, drop=True)
+histTS_class1 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class1')
+df_select = dfp.where(dfp.label==1, drop=True)
+histTS_class2 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class2')
+df_select = dfp.where(dfp.label==2, drop=True)
+histTS_class3 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class3')
+df_select = dfp.where(dfp.label==3, drop=True)
+histTS_class4 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class4')
+
 #####################################################################
 # Further analysis of specific classes, regions, time variation
 #####################################################################
+
+# Visualize profile stats by class and year (all profiles)
+at.examine_prof_stats_by_label_and_year(ploc, profiles, colormap, frac = 0.95, \
+                                        zmin=20, zmax=1000, \
+                                        Tmin = Trange[0], Tmax = Trange[1], \
+                                        Smin = Srange[0], Smax = Srange[1], \
+                                        sig0min = sig0range[0], sig0max = sig0range[1], \
+                                        alpha=0.1)
 
 # Weddell-Scotia confluence waters
 box_edges=[-64.5, 40, -67, -50]
@@ -277,12 +299,12 @@ pt.plot_many_profiles(plocA, df_wsc, frac=0.95, zmin=20, zmax=1000,
                       sig0min=27.0, sig0max=28.0, alpha=0.1)
 
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(plocA, df_wsc, frac = 0.95, \
-                                         ymin=20, ymax=1000, \
-                                         Tmin = -1.9, Tmax = 7.0, \
-                                         Smin = 33.5, Smax = 35.0, \
-                                         sig0min = 26.8, sig0max = 28.0, \
-                                         alpha=0.1, colormap)
+at.examine_prof_stats_by_label_and_year(plocA, df_wsc, colormap, frac = 0.95, \
+                                        zmin=20, zmax=1000, \
+                                        Tmin = -1.9, Tmax = 7.0, \
+                                        Smin = 33.5, Smax = 35.0, \
+                                        sig0min = 26.8, sig0max = 28.0, \
+                                        alpha=0.1)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file

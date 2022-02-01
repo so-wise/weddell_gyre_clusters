@@ -32,7 +32,7 @@ def load_profile_data(data_location, lon_min, lon_max,
 
     # add variable to indicate data source
     ctds['source'] = 'ctd'
-    floats['source'] = 'float'
+    floats['source'] = 'argo'
     seals['source'] = 'seal'
 
     # combine into single xarray.Dataset object
@@ -58,7 +58,8 @@ def load_profile_data(data_location, lon_min, lon_max,
     profiles = profiles.set_coords({'lon','lat'})
 
     # only keep a subset of the data variables, as we don't need them all
-    profiles = profiles.get(['prof_date','prof_YYYYMMDD','prof_HHMMSS','prof_T','prof_S'])
+    profiles = profiles.get(['prof_date','prof_YYYYMMDD','prof_HHMMSS',
+                             'prof_T','prof_S','source'])
 
     # either use the z-scaling (no discarded profiles) or use geometric bounds
     # for discarding profiles

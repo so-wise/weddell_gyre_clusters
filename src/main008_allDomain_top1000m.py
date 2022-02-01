@@ -55,7 +55,7 @@ transform_method = 'pca'
 use_kernel_pca = False
 
 # save the processed output as a NetCDF file?
-saveOutput = True
+saveOutput = False
 
 # number of PCA components
 # --- EXPLAINED VARIANCE Is = 0.99
@@ -87,7 +87,7 @@ fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon
 #
 # colormap (to be used across all plots)
 #
-colormap = plt.get_cmap('Set1', n_components_selected)
+colormap = plt.get_cmap('tab10', n_components_selected)
 
 #####################################################################
 # Run the standard analysis stuff
@@ -115,6 +115,18 @@ pt.plot_profile(ploc, profiles.isel(profile=1000))
 # regrid onto density levels (maybe useful for plotting later?)
 profiles = lp.regrid_onto_more_vertical_levels(profiles, zmin, zmax)
 profiles = lp.regrid_onto_density_levels(profiles)
+
+# print some values : how many profiles?
+n_argo = profiles.where(profiles.source=='argo',drop=True).profile.size
+n_ctd = profiles.where(profiles.source=='ctd',drop=True).profile.size
+n_seal = profiles.where(profiles.source=='seal',drop=True).profile.size
+n_profiles = n_argo + n_ctd + n_seal
+print('******************************************************************')
+print('Number of Argo profiles after selection applied = ' + str(n_argo))
+print('Number of CTD profiles after selection applied = ' + str(n_ctd))
+print('Number of seal profiles after selection applied = ' + str(n_seal))
+print('******************************************************************')
+print('Total number of profiles after selection applied = ' + str(n_profiles))
 
 # pairplot: unscaled (warning: this is very slow)
 #pt.plot_pairs(ploc,np.concatenate((profiles.prof_CT, profiles.prof_SA),axis=1),
@@ -295,12 +307,12 @@ pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 #####################################################################
 
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(ploc, df_wsc, colormap, frac = 0.95, \
-                                         ymin=20, ymax=1000, \
-                                         Tmin = -1.9, Tmax = 7.0, \
-                                         Smin = 33.5, Smax = 35.0, \
-                                         sig0min = 26.8, sig0max = 28.0, \
-                                         alpha=0.1)
+at.examine_prof_stats_by_label_and_year(ploc, profiles, colormap, frac = 0.95, \
+                                        zmin=20, zmax=1000, \
+                                        Tmin = Trange[0], Tmax = Trange[1], \
+                                        Smin = Srange[0], Smax = Srange[1], \
+                                        sig0min = sig0range[0], sig0max = sig0range[1], \
+                                        alpha=0.1)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file
