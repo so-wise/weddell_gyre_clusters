@@ -1242,6 +1242,12 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
     bathy_lat = bds['lat'][:]
     bathy = bds['bathy'][:]
 
+    # load fronts
+    pf = io.load_front("fronts/pf_kim.txt")
+    saccf = io.load_front("fronts/saccf_kim.txt")
+    saf = io.load_front("fronts/saf_kim.txt")
+    sbdy = io.load_front("fronts/sbdy_kim.txt")
+
     # extract values as new DataArrays
     da_lon = df1D.lon
     da_lat = df1D.lat
@@ -1280,6 +1286,14 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
                      s=10.0,
                      transform=ccrs.Geodetic(),
                      )
+
+    # fronts
+    plt.plot(saf[:,0], saf[:,1], color="black", linewidth=2.0, transform=ccrs.Geodetic())
+    plt.plot(pf[:,0], pf[:,1], color="blue", linewidth=2.0, transform=ccrs.Geodetic())
+    plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
+    plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
+
+    # coastlines and gridlines
     ax.coastlines(resolution='50m')
     ax.gridlines(color='black')
     ax.add_feature(cartopy.feature.LAND)
@@ -1302,6 +1316,12 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
     bathy_lon = bds['lon'][:]
     bathy_lat = bds['lat'][:]
     bathy = bds['bathy'][:]
+
+    # load fronts
+    pf = io.load_front("fronts/pf_kim.txt")
+    saccf = io.load_front("fronts/saccf_kim.txt")
+    saf = io.load_front("fronts/saf_kim.txt")
+    sbdy = io.load_front("fronts/sbdy_kim.txt")
 
     # extract values as new DataArrays
     da_lon = df1D.lon
@@ -1341,6 +1361,13 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                          s=10.0,
                          transform=ccrs.Geodetic(),
                          )
+
+        # fronts
+        plt.plot(saf[:,0], saf[:,1], color="black", linewidth=2.0, transform=ccrs.Geodetic())
+        plt.plot(pf[:,0], pf[:,1], color="blue", linewidth=2.0, transform=ccrs.Geodetic())
+        plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
+        plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
+
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
         ax.gridlines(color='black')
