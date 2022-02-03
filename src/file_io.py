@@ -22,6 +22,17 @@ def load_bathymetry(file_name="bathy.nc"):
     return ds
 
 #####################################################################
+# Load front
+#####################################################################
+def load_front(file_name):
+
+    # load a single front
+    FRONT = None
+    FRONT = np.loadtxt(file_name)
+
+    return FRONT
+
+#####################################################################
 # Save PCA using joblib
 #####################################################################
 def save_pca(file_name, pca):
