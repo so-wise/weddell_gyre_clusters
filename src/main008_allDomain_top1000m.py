@@ -58,7 +58,7 @@ use_kernel_pca = False
 saveOutput = False
 
 # number of PCA components
-# --- EXPLAINED VARIANCE Is = 0.99
+# --- EXPLAINED VARIANCE Is = 0.95
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)

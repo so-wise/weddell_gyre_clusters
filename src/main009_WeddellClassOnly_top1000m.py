@@ -35,7 +35,7 @@ warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
 #####################################################################
 
 # set locations and names
-descrip = 'allDomain' # extra description for filename
+descrip = 'WeddellOnly' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
 ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22/'
@@ -91,6 +91,7 @@ fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon
 
 # colormap
 colormap = plt.get_cmap('tab10', n_components_selected)
+colormap_cividis = plt.get_cmap('cividis', 20)
 
 #####################################################################
 # Run the standard analysis stuff
@@ -235,13 +236,13 @@ pt.plot_TS_single_lev(ploc, dfp, n_components_selected, colormap,
                       descrip='', plev=0, PTrange=Trange,
                       SPrange=Srange, lon = -20, lat = -65, rr = 0.60)
 
-# plot multiple-level T-S diagrams
-pt.plot_TS_multi_lev(ploc, dfp, n_components_selected, colormap,
+# plot multiple-level T-S diagrams (one for each class)
+pt.plot_TS_multi_lev(ploc, dfp, n_components_selected, colormap=colormap_cividis,
                      descrip='', plev=0, PTrange=Trange,
                      SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagram (all levels shown)
-pt.plot_TS_all_lev(ploc, dfp, n_components_selected, colormap,
+pt.plot_TS_all_lev(ploc, dfp, n_components_selected, str,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.33)
 
@@ -254,7 +255,7 @@ pt.plot_TS_bytime(ploc, dfp, n_components_selected,
                    lon = -20, lat = -65, rr = 0.60, timeShading='month')
 
 # plot label map
-pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
+pt.plot_label_map(ploc, dfp, n_components_selected, str,
                    lon_min, lon_max, lat_min, lat_max)
 
 # calculate the i-metric
@@ -281,7 +282,7 @@ histTS_class4 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, 
 #####################################################################
 
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(ploc, profiles, colormap, frac = 0.95, \
+at.examine_prof_stats_by_label_and_year(ploc, profiles, str, frac = 0.95, \
                                         zmin=20, zmax=1000, \
                                         Tmin = Trange[0], Tmax = Trange[1], \
                                         Smin = Srange[0], Smax = Srange[1], \
@@ -299,7 +300,7 @@ pt.plot_many_profiles(plocA, df_wsc, frac=0.95, zmin=20, zmax=1000,
                       sig0min=27.0, sig0max=28.0, alpha=0.1)
 
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(plocA, df_wsc, colormap, frac = 0.95, \
+at.examine_prof_stats_by_label_and_year(plocA, df_wsc, str, frac = 0.95, \
                                         zmin=20, zmax=1000, \
                                         Tmin = -1.9, Tmax = 7.0, \
                                         Smin = 33.5, Smax = 35.0, \

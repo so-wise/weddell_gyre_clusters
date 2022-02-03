@@ -31,7 +31,7 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
                                         source='all', binsize=1,
                                         bathy_fname="bathy.nc",
                                         lev_range=range(-6000,1,500),
-                                        myPlotLevels=30):
+                                        myPlotLevels=30, vmin=0, vmax=200):
 #
 # source : may be 'argo', 'ctd', 'seal', or 'all'
 # binsize : size of  lat-lon bins in degrees
@@ -79,7 +79,8 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
     #        transform=ccrs.PlateCarree())
 
     # colormesh histogram
-    plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, transform=ccrs.PlateCarree())
+    CS = plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, transform=ccrs.PlateCarree())
+    plt.clim(vmin, vmax)
     ax.coastlines(resolution='50m',color='white')
     ax.gridlines(color='black')
     ax.add_feature(cartopy.feature.LAND)
@@ -104,13 +105,13 @@ def plot_profile(ploc, df):
 #####################################################################
 # Plot many profiles
 #####################################################################
-def plot_many_profiles(ploc, df, frac=0.10,
-                       zmin=20, zmax=1000,
+def plot_many_profiles(ploc, df, frac = 0.10,
+                       zmin = 20, zmax = 1000,
                        Tmin = -1.9, Tmax = 7.0,
                        Smin = 33.0, Smax = 35.0,
-                       sig0min=23.0, sig0max=28.0,
-                       alpha=0.05, modStr='',
-                       colorVal='black'):
+                       sig0min = 23.0, sig0max = 28.0,
+                       alpha = 0.05, modStr = '',
+                       colorVal = 'black'):
 
    print("plot_tools.plot_many_profiles")
 
@@ -1563,7 +1564,7 @@ def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-
     # define colormap (fixed: 10 intervals in depth)
     #colormap = plt.get_cmap('cividis', 10)
 
-    # grid
+    # grid for TS diagram
     pt_grid = np.linspace(PTrange[0],PTrange[1],100)
     sp_grid = np.linspace(SPrange[0],SPrange[1],100)
     p = df.depth.values[plev]
@@ -1605,10 +1606,10 @@ def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-
         SC = plt.scatter(S_random_sample,
                          T_random_sample,
                          c = clabels_random_sample,
-                         marker='o',
-                         cmap= colormap,
-                         s=8.0,
-                         zorder=2,
+                         marker = 'o',
+                         cmap = colormap,
+                         s = 8.0,
+                         zorder = 2,
                          )
         plt.colorbar(SC)
         plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
