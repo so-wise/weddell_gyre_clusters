@@ -9,6 +9,9 @@ plots/
 # Keynote reports
 *.key
 
+# Matlab data files
+*.mat
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
