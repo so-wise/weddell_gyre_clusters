@@ -4,6 +4,7 @@
 
 import numpy as np
 from sklearn import mixture
+import xarray as xr
 import joblib
 
 #####################################################################
@@ -31,6 +32,22 @@ def load_front(file_name):
     FRONT = np.loadtxt(file_name)
 
     return FRONT
+
+#####################################################################
+# Load SOSE seaice freezing file (winter mean)
+#####################################################################
+def load_sose_SIfreeze(file_name="seaice/SIfreeze_SOSE.nc"):
+
+    # load sea ice files
+    ds = xr.open_dataset(file_name)
+
+    # change longitude convention from [0,360] to [-180,180]
+    ds = ds.assign_coords({"lon": (((ds.lon + 180) % 360) - 180)})
+
+    # sort by longitude
+    ds = ds.sortby("lon")
+
+    return ds
 
 #####################################################################
 # Save PCA using joblib

@@ -1378,6 +1378,43 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         plt.close()
 
 #####################################################################
+# Plot sea ice freezing and fronts
+#####################################################################
+def plot_seaice_freezing(ploc=" ", lon_min=-65, lon_max=80, lat_min=-70, lat_max=-45):
+
+    # print statement
+    print('plot_tools.plot_seaice_freezing')
+
+    # load winter sea ice freezing maps
+    dp = io.load_sose_SIfreeze()
+
+    # load fronts
+    pf = io.load_front("fronts/pf_kim.txt")
+    saccf = io.load_front("fronts/saccf_kim.txt")
+    saf = io.load_front("fronts/saf_kim.txt")
+    sbdy = io.load_front("fronts/sbdy_kim.txt")
+
+    # make plot
+    plt.figure(figsize=(17, 13))
+    ax = plt.axes(projection=ccrs.PlateCarree())
+    ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
+    # sea ice freezing
+    h = ax.contourf(dp.lon, dp.lat, dp.SIfreeze,
+                    levels=[0.0, 2e-5, 4e-5, 6e-5, 8e-5, 10e-5],
+                    transform=ccrs.PlateCarree(), vmin=0.0, vmax=10e-5,
+                    cmap=cm.get_cmap("bone"))
+    # fronts
+    #plt.plot(pf[:,0], pf[:,1], color="blue", linewidth=2.0, transform=ccrs.Geodetic())
+    plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
+    plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
+    ax.coastlines(resolution='50m')
+    ax.gridlines(color='black')
+    ax.add_feature(cartopy.feature.LAND)
+
+    # save figure
+    plt.savefig(ploc+"SeaIceFreezing_SOSE_winter.png", bbox_inches="tight")
+
+#####################################################################
 # Plot t-SNE
 #####################################################################
 def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
