@@ -32,8 +32,8 @@ docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work dannes/weddell-clusters 
 Note that Docker can only see "down the tree", so make sure that any data and files that you want to work with are within the tree. To test the source code in `src`, you can use this same Docker image to run `ipython`:
 ```
 docker run --rm -it -v $PWD:/work -w /work dannes/weddell-clusters bash
+ipython3
 ```
-and then run `ipython3`. 
 
 ### Singularity container (NOT WORKING AT PRESENT)
 NOTE: I'm having a shell issue. I have to run `source .cshrc` when I log on in order for my aliases to be defined. 
