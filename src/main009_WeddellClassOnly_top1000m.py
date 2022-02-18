@@ -38,7 +38,7 @@ warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
 descrip = 'WeddellOnly' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22/'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22_dev/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -242,7 +242,7 @@ pt.plot_TS_multi_lev(ploc, dfp, n_components_selected, colormap=colormap_cividis
                      SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagram (all levels shown)
-pt.plot_TS_all_lev(ploc, dfp, n_components_selected, str,
+pt.plot_TS_all_lev(ploc, dfp, n_components_selected, colormap,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.33)
 
@@ -255,7 +255,7 @@ pt.plot_TS_bytime(ploc, dfp, n_components_selected,
                    lon = -20, lat = -65, rr = 0.60, timeShading='month')
 
 # plot label map
-pt.plot_label_map(ploc, dfp, n_components_selected, str,
+pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
                    lon_min, lon_max, lat_min, lat_max)
 
 # calculate the i-metric
@@ -264,48 +264,62 @@ df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
+pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
+                                 lat_min, lat_max, n_components_selected)
+
+# i-metric, multiple panels, histogram style
+pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
+                                 lat_min, lat_max, n_components_selected)
+
+# surface temperatures and surface salinities, histogram style
+pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
+                       lat_min, lat_max, n_components_selected)
+pt.plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
+                       lat_min, lat_max, n_components_selected)
 
 # some T-S histograms
 sbins = np.arange(Srange[0], Srange[1], 0.025)
 tbins = np.arange(Trange[0], Trange[1], 0.1)
 df_select = dfp.where(dfp.label==0, drop=True)
-histTS_class1 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class1')
+histTS_class1 = pt.calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class1')
 df_select = dfp.where(dfp.label==1, drop=True)
-histTS_class2 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class2')
+histTS_class2 = pt.calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class2')
 df_select = dfp.where(dfp.label==2, drop=True)
-histTS_class3 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class3')
+histTS_class3 = pt.calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class3')
 df_select = dfp.where(dfp.label==3, drop=True)
-histTS_class4 = calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class4')
+histTS_class4 = pt.calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbins, tbins=tbins, modStr='class4')
 
 #####################################################################
 # Further analysis of specific classes, regions, time variation
 #####################################################################
 
+# THIS STUFF NOT WORKING AT PRESENT 
+
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(ploc, profiles, str, frac = 0.95, \
-                                        zmin=20, zmax=1000, \
-                                        Tmin = Trange[0], Tmax = Trange[1], \
-                                        Smin = Srange[0], Smax = Srange[1], \
-                                        sig0min = sig0range[0], sig0max = sig0range[1], \
-                                        alpha=0.1)
+#at.examine_prof_stats_by_label_and_year(ploc, profiles, str, frac = 0.95, \
+#                                        zmin=20, zmax=1000, \
+#                                        Tmin = Trange[0], Tmax = Trange[1], \
+#                                        Smin = Srange[0], Smax = Srange[1], \
+#                                        sig0min = sig0range[0], sig0max = sig0range[1], \
+#                                        alpha=0.1)
 
 # Weddell-Scotia confluence waters
-box_edges=[-64.5, 40, -67, -50]
-df_wsc, df_not_wsc = at.split_single_class_by_box(profiles, class_split=3,
-                                                  box_edges=box_edges)
+#box_edges=[-64.5, 40, -67, -50]
+#df_wsc, df_not_wsc = at.split_single_class_by_box(profiles, class_split=3,
+#                                                  box_edges=box_edges)
 
 # Plot all the profiles in the box
-plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis/'
-pt.plot_many_profiles(plocA, df_wsc, frac=0.95, zmin=20, zmax=1000,
-                      sig0min=27.0, sig0max=28.0, alpha=0.1)
+#plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis_dev/'
+#pt.plot_many_profiles(plocA, df_wsc, frac=0.95, zmin=20, zmax=1000,
+#                      sig0min=27.0, sig0max=28.0, alpha=0.1)
 
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(plocA, df_wsc, str, frac = 0.95, \
-                                        zmin=20, zmax=1000, \
-                                        Tmin = -1.9, Tmax = 7.0, \
-                                        Smin = 33.5, Smax = 35.0, \
-                                        sig0min = 26.8, sig0max = 28.0, \
-                                        alpha=0.1)
+#at.examine_prof_stats_by_label_and_year(plocA, df_wsc, str, frac = 0.95, \
+#                                        zmin=20, zmax=1000, \
+#                                        Tmin = -1.9, Tmax = 7.0, \
+#                                        Smin = 33.5, Smax = 35.0, \
+#                                        sig0min = 26.8, sig0max = 28.0, \
+#                                        alpha=0.1)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file
