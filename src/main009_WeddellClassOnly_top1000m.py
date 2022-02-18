@@ -1,9 +1,4 @@
 #####################################################################
-# These may need to be installed
-#####################################################################
-# pip install umap-learn seaborn gsw cmocean
-
-#####################################################################
 # Import packages
 #####################################################################
 
@@ -293,7 +288,7 @@ histTS_class4 = pt.calc_and_plot_volume_histogram_TS(ploc, df_select, sbins=sbin
 # Further analysis of specific classes, regions, time variation
 #####################################################################
 
-# THIS STUFF NOT WORKING AT PRESENT 
+# THIS STUFF NOT WORKING AT PRESENT
 
 # Visualize profile stats by class and year (all profiles)
 #at.examine_prof_stats_by_label_and_year(ploc, profiles, str, frac = 0.95, \
