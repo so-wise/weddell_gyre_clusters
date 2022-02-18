@@ -26,16 +26,16 @@
 At present, you can use Docker to get this project installed and running. (We could go with a simpler docker container in the future). These commands work for me:
 ```
 cd <where-you-want-to-work>
-docker pull pangeo/pangeo-notebook:2021.11.09
-docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.11.09 jupyter-lab --no-browser --ip=0.0.0.0
+docker pull dannes/weddell-clusters
+docker run --rm -it -p 8888:8888 -v $PWD:/work -w /work dannes/weddell-clusters jupyter-lab --no-browser --ip=0.0.0.0
 ```
 Note that Docker can only see "down the tree", so make sure that any data and files that you want to work with are within the tree. To test the source code in `src`, you can use this same Docker image to run `ipython`:
 ```
-docker run --rm -it -v $PWD:/work -w /work pangeo/pangeo-notebook:2021.11.09 bash
+docker run --rm -it -v $PWD:/work -w /work dannes/weddell-clusters bash
 ```
 and then run `ipython3`. 
 
-### Singularity container
+### Singularity container (NOT WORKING AT PRESENT)
 NOTE: I'm having a shell issue. I have to run `source .cshrc` when I log on in order for my aliases to be defined. 
 
 If you're working on an HPC platform (e.g for access to more memory or GPUs), you'll probably need to run singularity instead. These commands seem to basically work on BAS HPC:
@@ -44,7 +44,7 @@ $ cd <where-you-want-to-work>
 $ singularity pull docker://pangeo/pangeo-notebook:2021.09.08
 $ singularity shell --bind /data/expose/so-wise/:/mnt pangeo-notebook_2021.09.08.sif -nv 
 Singularity> source activate notebook
-(notebook) Singularity> pip install seaborn gsw umap-learn 
+(notebook) Singularity> pip install seaborn gsw umap-learn cmocean
 (notebook) Singularity> ipython
 cd /mnt
 ```
