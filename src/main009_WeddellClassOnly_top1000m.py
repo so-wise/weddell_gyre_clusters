@@ -38,7 +38,7 @@ warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
 descrip = 'WeddellOnly' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22/'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22_dev/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -242,7 +242,7 @@ pt.plot_TS_multi_lev(ploc, dfp, n_components_selected, colormap=colormap_cividis
                      SPrange=Srange, lon = -20, lat = -65, rr = 0.33)
 
 # plot T-S diagram (all levels shown)
-pt.plot_TS_all_lev(ploc, dfp, n_components_selected, str,
+pt.plot_TS_all_lev(ploc, dfp, n_components_selected, colormap,
                    descrip='', PTrange=Trange, SPrange=Srange,
                    lon = -20, lat = -65, rr = 0.33)
 
@@ -264,6 +264,18 @@ df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
+pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
+                                 lat_min, lat_max, n_components_selected)
+
+# i-metric, multiple panels, histogram style
+pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
+                                 lat_min, lat_max, n_components_selected)
+
+# surface temperatures and surface salinities, histogram style
+pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
+                       lat_min, lat_max, n_components_selected)
+pt.plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
+                       lat_min, lat_max, n_components_selected)
 
 # some T-S histograms
 sbins = np.arange(Srange[0], Srange[1], 0.025)
@@ -295,7 +307,7 @@ df_wsc, df_not_wsc = at.split_single_class_by_box(profiles, class_split=3,
                                                   box_edges=box_edges)
 
 # Plot all the profiles in the box
-plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis/'
+plocA = 'plots/plots_WeddellClassOnly_top1000m_K04_wsc_analysis_dev/'
 pt.plot_many_profiles(plocA, df_wsc, frac=0.95, zmin=20, zmax=1000,
                       sig0min=27.0, sig0max=28.0, alpha=0.1)
 
