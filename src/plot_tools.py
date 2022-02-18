@@ -2005,7 +2005,7 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 def calc_and_plot_volume_histogram_TS(ploc, df,
                                       sbins = np.arange(31, 38, 0.025),
                                       tbins = np.arange(-2, 32, 0.1),
-                                      modStr=''):
+                                      modStr='', binsize=1):
 
     # print statement
     print('plot_tools.calc_and_plot_volume_histogram_TS')
@@ -2013,12 +2013,33 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
     # import packages
     import gsw
 
+    # df1D (new)
+    df1D = df.stack(z=('profile','depth')).reset_index('z')
+    # drop unecessary variables for speed/efficiency
+    df1D = df1D.drop({'time','year','month','CLASS','prof_date','prof_YYYYMMDD',
+                      'prof_HHMMSS','sig0','label','posteriors'})
+
     # T-S grid for density reference lines
     ctg, sag = np.meshgrid(tbins , sbins)
     sig0_grid = gsw.density.sigma0(sag, ctg)
 
     # create histogram
-    histTS = histogram(df.prof_SA, df.prof_CT, bins=[sbins,tbins])
+    histTS = histogram(df1D.prof_SA, df1D.prof_CT, bins=[sbins,tbins])
+
+    # histogram ()
+    # --
+    # --at present, this uses too much memory, causing a crash
+    # --
+    #dA = (binsize*110e3)*(binsize*110e3*np.cos(df.lat*np.pi/180))
+    #hist_denominator = histogram(df1D.prof_SA,
+    #                             df1D.prof_CT,
+    #                             bins=[sbins, tbins],
+    #                             weights=dA)
+    #hist_numerator = histogram(df1D.prof_SA,
+    #                           df1D.prof_CT,
+    #                           bins=[sbins, tbins],
+    #                           weights=df1D.depth*dA)
+    #histTS_depth = hist_numerator/hist_denominator
 
     # scale the histogram (log10, transpose, scale by maximum)
     histTS_scaled = np.log10(histTS.T)
@@ -2032,7 +2053,7 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
     plt.clabel(CL, fontsize=14, inline=False, fmt='%.1f')
     plt.xlabel('Absolute salinity (psu)')
     plt.ylabel('Conservative temperature (°C)')
-    plt.savefig(ploc + 'histogram_TS' + modStr + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'histogram_depth' + modStr + '.png', bbox_inches='tight')
     plt.close()
 
     return histTS_scaled
