@@ -550,6 +550,7 @@ def plot_bic_scores(ploc, max_N, bic_mean, bic_std):
     spl.set_ylabel('BIC score',fontsize=18)
     # save figure
     plt.savefig(ploc + 'bic_scores.png', bbox_inches='tight')
+    plt.show()
     plt.close()
 
 #####################################################################
@@ -573,6 +574,7 @@ def plot_aic_scores(ploc, max_N, aic_mean, aic_std):
     spl.set_ylabel('AIC score',fontsize=18)
     # save figure
     plt.savefig(ploc + 'aic_scores.png', bbox_inches='tight')
+    plt.show()
     plt.close()
 
 #####################################################################
