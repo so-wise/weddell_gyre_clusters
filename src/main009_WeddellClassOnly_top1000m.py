@@ -276,6 +276,13 @@ dfp['imetric'] = df_imetric.i_metric
 # select the top pressure level for plotting purposes
 df1D = dfp.isel(depth=0)
 
+# histogram map (imetric)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=(0,1),
+                 vartype='imetric',
+                 colormap=plt.get_cmap('cividis'))
+
 # histogram map (Tsurf)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
