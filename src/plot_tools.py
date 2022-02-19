@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+import matplotlib.patches as mpatches
 import pandas as pd
 from sklearn import manifold
 import seaborn as sns
@@ -1492,7 +1493,7 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
                   vartype='imetric',
                   colormap=plt.get_cmap('cividis'),
                   binsize=1,
-                  bathy_fname="bathy.nc",
+                  bathy_fname='bathy.nc',
                   lev_range=range(-6000,1,500)):
 
     # print out
@@ -1509,10 +1510,6 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
     saccf = io.load_front("fronts/saccf_kim.txt")
     saf = io.load_front("fronts/saf_kim.txt")
     sbdy = io.load_front("fronts/sbdy_kim.txt")
-
-    # colormap
-    #colormap = plt.get_cmap('coolwarm')
-    #colormap = colormap
 
     # loop over classes, create one histogram plot per class
     for iclass in range(n_components_selected):
@@ -1555,7 +1552,7 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
         elif vartype=="sig0max":
             myVar = df1.sig0max
         elif vartype=="imetric":
-            myVar = df1.i_metric
+            myVar = df1.imetric
         else:
             print("Options include: Tsurf, Ssurf, sig0surf, Tmin, Smin, sig0min, \
                    Tmax, Smax, sig0max, imetric")
@@ -1578,10 +1575,19 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
         plt.clim(c_range[0],c_range[1])
 
         # fronts
-        plt.plot(saf[:,0], saf[:,1], color="black", linewidth=2.0, transform=ccrs.Geodetic())
-        plt.plot(pf[:,0], pf[:,1], color="blue", linewidth=2.0, transform=ccrs.Geodetic())
-        plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
-        plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
+        h_saf = plt.plot(saf[:,0], saf[:,1], color="black", linewidth=2.0, transform=ccrs.Geodetic())
+        h_pf = plt.plot(pf[:,0], pf[:,1], color="blue", linewidth=2.0, transform=ccrs.Geodetic())
+        h_saccf = plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
+        h_sbdy = plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
+
+        # make two proxy artists to add to a legend
+        l_saf = mpatches.Rectangle((0, 0), 1, 1, facecolor="black")
+        l_pf = mpatches.Rectangle((0, 0), 1, 1, facecolor="blue")
+        l_saccf = mpatches.Rectangle((0, 0), 1, 1, facecolor="green")
+        l_sbdy = mpatches.Rectangle((0, 0), 1, 1, facecolor="yellow")
+        labels = ['SAF', 'PF', 'SACCF', 'SBDY']
+        plt.legend([l_saf, l_pf, l_saccf, l_sbdy], labels,
+                   loc='lower right', fancybox=True)
 
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
@@ -1590,7 +1596,7 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
-        plt.savefig(ploc + 'hist_' +vartype + '_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.savefig(ploc + 'hist_' + vartype + '_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
         plt.close()
 
         # separate colorbar

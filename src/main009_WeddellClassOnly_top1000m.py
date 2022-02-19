@@ -256,13 +256,13 @@ pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
                    lon_min, lon_max, lat_min, lat_max)
 
 # calculate the i-metric
-df1D = gmm.calc_i_metric(profiles)
+df_imetric = gmm.calc_i_metric(profiles)
 
 # plot i-metric
-pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
-pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
+pt.plot_i_metric_single_panel(ploc, df_imetric, lon_min, lon_max, lat_min, lat_max)
+pt.plot_i_metric_multiple_panels(ploc, df_imetric, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
-pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
+pt.plot_i_metric_multiple_panels_hist(ploc, df_imetric, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
 
 # Calc Tmin, Tmax, Smin, Smax
@@ -272,6 +272,7 @@ dfp['Smin'] = dfp.prof_SA.min(dim='depth')
 dfp['Smax'] = dfp.prof_SA.max(dim='depth')
 dfp['sig0min'] = dfp.sig0.min(dim='depth')
 dfp['sig0max'] = dfp.sig0.max(dim='depth')
+dfp['imetric'] = df_imetric.i_metric
 # select the top pressure level for plotting purposes
 df1D = dfp.isel(depth=0)
 
@@ -312,7 +313,6 @@ pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  c_range=Srange,
                  vartype='Smin',
                  colormap=plt.get_cmap('coolwarm'))
-
 
 # histogram map (sig0surf)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
