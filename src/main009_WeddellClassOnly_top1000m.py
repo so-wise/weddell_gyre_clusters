@@ -253,9 +253,15 @@ pt.plot_TS_bytime(ploc, dfp, n_components_selected,
 pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
                    lon_min, lon_max, lat_min, lat_max)
 
+# Calc Tmin, Tmax, Smin, Smax
+dfp['Tmin'] = dfp.prof_CT.min(dim='depth')
+dfp['Tmax'] = dfp.prof_CT.max(dim='depth')
+
 # calculate the i-metric
 df1D = dfp.isel(depth=0)
 df1D = gmm.calc_i_metric(profiles)
+
+# plot i-metric
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
@@ -266,12 +272,13 @@ pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
 
-# ALTERNATIVELY, something like this 
-#dfp.prof_CT.min(dim='depth')
-
 # surface temperatures and surface salinities, histogram style
+# --- could probably replace with a single function that can be called by
+# --- a text keyword for T, S, min, max, etc. (simple if conditoinal) 
 pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
                        lat_min, lat_max, n_components_selected)
+pt.plot_hist_map_Tmax(ploc, df1D, lon_min, lon_max,
+                      lat_min, lat_max, n_components_selected)
 pt.plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
                        lat_min, lat_max, n_components_selected)
 

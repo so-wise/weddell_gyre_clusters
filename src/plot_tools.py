@@ -1535,6 +1535,84 @@ def plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
         plt.close()
 
 #####################################################################
+# Plot multiple histogram maps (surface temperature!)
+#####################################################################
+def plot_hist_map_Tmax(ploc, df1D, lon_min, lon_max,
+        lat_min, lat_max, n_components_selected, binsize=1,
+        bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
+
+    print('plot_tools.plot_hist_map_Tmax')
+
+    # load bathymetry
+    bds = io.load_bathymetry(bathy_fname)
+    bathy_lon = bds['lon'][:]
+    bathy_lat = bds['lat'][:]
+    bathy = bds['bathy'][:]
+
+    # load fronts
+    pf = io.load_front("fronts/pf_kim.txt")
+    saccf = io.load_front("fronts/saccf_kim.txt")
+    saf = io.load_front("fronts/saf_kim.txt")
+    sbdy = io.load_front("fronts/sbdy_kim.txt")
+
+    # colormap
+    colormap = plt.get_cmap('coolwarm')
+
+    # loop over classes, create one histogram plot per class
+    for iclass in range(n_components_selected):
+
+        # random sample for plotting
+        df1 = df1D.where(df1D.label==iclass, drop=True)
+
+        #colormap with Historical data
+        plt.figure(figsize=(17, 13))
+        ax = plt.axes(projection=ccrs.PlateCarree())
+        ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
+
+        # add bathymetry contours
+        ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
+                linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
+                transform=ccrs.PlateCarree())
+
+        # define histogram, calculate mean i-metric value in each bin
+        lon_bins = np.arange(lon_min, lon_max, binsize)
+        lat_bins = np.arange(lat_min, lat_max, binsize)
+
+        # histogram ()
+        dA = (binsize*110e3)*(binsize*110e3*np.cos(df1.lat*np.pi/180))
+        hist_denominator = histogram(df1.lon,
+                                     df1.lat,
+                                     bins=[lon_bins, lat_bins],
+                                     weights=dA)
+        hist_numerator = histogram(df1.lon,
+                                   df1.lat,
+                                   bins=[lon_bins, lat_bins],
+                                   weights=df1.Tmax*dA)
+        hiTmin = hist_numerator/hist_denominator
+
+        # colormesh histogram
+        CS = plt.pcolormesh(lon_bins, lat_bins, hiTmin.T,
+                            transform=ccrs.PlateCarree(), cmap=colormap)
+        plt.clim(-1, 4)
+        #plt.colorbar()
+
+        # fronts
+        plt.plot(saf[:,0], saf[:,1], color="black", linewidth=2.0, transform=ccrs.Geodetic())
+        plt.plot(pf[:,0], pf[:,1], color="blue", linewidth=2.0, transform=ccrs.Geodetic())
+        plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
+        plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
+
+        #plt.colorbar(CS)
+        ax.coastlines(resolution='50m')
+        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                     linewidth=2, color='gray', alpha=0.5, linestyle='--')
+        ax.add_feature(cartopy.feature.LAND)
+
+        # save figure
+        plt.savefig(ploc + 'hist_Tmax_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.close()
+
+#####################################################################
 # Plot multiple histogram maps (surface salinity!)
 #####################################################################
 def plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
