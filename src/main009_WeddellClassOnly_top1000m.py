@@ -255,17 +255,6 @@ pt.plot_TS_bytime(ploc, dfp, n_components_selected,
 pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
                    lon_min, lon_max, lat_min, lat_max)
 
-# Calc Tmin, Tmax, Smin, Smax
-dfp['Tmin'] = dfp.prof_CT.min(dim='depth')
-dfp['Tmax'] = dfp.prof_CT.max(dim='depth')
-dfp['Smin'] = dfp.prof_SA.min(dim='depth')
-dfp['Smax'] = dfp.prof_SA.max(dim='depth')
-dfp['sig0min'] = dfp.sig0.min(dim='depth')
-dfp['sig0max'] = dfp.sig0.max(dim='depth')
-
-# select the top pressure level for plotting purposes
-df1D = dfp.isel(depth=0)
-
 # calculate the i-metric
 df1D = gmm.calc_i_metric(profiles)
 
@@ -273,34 +262,75 @@ df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
-pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
-                                 lat_min, lat_max, n_components_selected)
-
-# i-metric, multiple panels, histogram style
 pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
 
-# surface temperatures and surface salinities, histogram style
-# --- could probably replace with a single function that can be called by
-# --- a text keyword for T, S, min, max, etc. (simple if conditoinal)
-#pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
-#                       lat_min, lat_max, n_components_selected)
-#pt.plot_hist_map_Tmax(ploc, df1D, lon_min, lon_max,
-#                      lat_min, lat_max, n_components_selected)
-#pt.plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
-#                       lat_min, lat_max, n_components_selected)
+# Calc Tmin, Tmax, Smin, Smax
+dfp['Tmin'] = dfp.prof_CT.min(dim='depth')
+dfp['Tmax'] = dfp.prof_CT.max(dim='depth')
+dfp['Smin'] = dfp.prof_SA.min(dim='depth')
+dfp['Smax'] = dfp.prof_SA.max(dim='depth')
+dfp['sig0min'] = dfp.sig0.min(dim='depth')
+dfp['sig0max'] = dfp.sig0.max(dim='depth')
+# select the top pressure level for plotting purposes
+df1D = dfp.isel(depth=0)
 
-# histogram map
+# histogram map (Tsurf)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=(-2,2),
                  vartype='Tsurf',
                  colormap=plt.get_cmap('coolwarm'))
-
+# histogram map (Tmax)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=(0,3),
                  vartype='Tmax',
+                 colormap=plt.get_cmap('coolwarm'))
+# histogram map (Tmin)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=(-2,2),
+                 vartype='Tmin',
+                 colormap=plt.get_cmap('coolwarm'))
+
+# histogram map (Ssurf)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=Srange,
+                 vartype='Ssurf',
+                 colormap=plt.get_cmap('coolwarm'))
+# histogram map (Smax)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=Srange,
+                 vartype='Smax',
+                 colormap=plt.get_cmap('coolwarm'))
+# histogram map (Smin)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=Srange,
+                 vartype='Smin',
+                 colormap=plt.get_cmap('coolwarm'))
+
+
+# histogram map (sig0surf)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=sig0range,
+                 vartype='sig0surf',
+                 colormap=plt.get_cmap('coolwarm'))
+# histogram map (sig0max)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=sig0range,
+                 vartype='sig0max',
+                 colormap=plt.get_cmap('coolwarm'))
+# histogram map (sig0min)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=sig0range,
+                 vartype='sig0min',
                  colormap=plt.get_cmap('coolwarm'))
 
 # some T-S histograms
