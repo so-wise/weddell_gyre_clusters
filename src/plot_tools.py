@@ -82,7 +82,8 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
     CS = plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, transform=ccrs.PlateCarree())
     plt.clim(vmin, vmax)
     ax.coastlines(resolution='50m',color='white')
-    ax.gridlines(color='black')
+    ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
     ax.add_feature(cartopy.feature.LAND)
     plt.savefig(ploc + 'histogram_lat_lon_map_' + source + '.png', bbox_inches='tight')
     plt.close()
@@ -1222,7 +1223,8 @@ def plot_label_map(ploc, profiles, n_components_selected, colormap,
                      transform=ccrs.Geodetic(),
                      )
     ax.coastlines(resolution='50m')
-    ax.gridlines(color='black')
+    ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
     ax.add_feature(cartopy.feature.LAND)
     #plt.colorbar(CS)
 
@@ -1297,7 +1299,8 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
 
     # coastlines and gridlines
     ax.coastlines(resolution='50m')
-    ax.gridlines(color='black')
+    ax.(crs=ccrs.PlateCarree(), draw_labels=True,
+                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
     ax.add_feature(cartopy.feature.LAND)
 
     # save figure
@@ -1372,7 +1375,8 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
-        ax.gridlines(color='black')
+    ax.(crs=ccrs.PlateCarree(), draw_labels=True,
+                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
@@ -1444,7 +1448,8 @@ def plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
 
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
-        ax.gridlines(color='black')
+    ax.(crs=ccrs.PlateCarree(), draw_labels=True,
+                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
@@ -1521,7 +1526,8 @@ def plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
 
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
-        ax.gridlines(color='black')
+        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                     linewidth=2, color='gray', alpha=0.5, linestyle='--')
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
@@ -1598,7 +1604,8 @@ def plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
 
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
-        ax.gridlines(color='black')
+        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                     linewidth=2, color='gray', alpha=0.5, linestyle='--')
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
@@ -1636,7 +1643,8 @@ def plot_seaice_freezing(ploc=" ", lon_min=-65, lon_max=80, lat_min=-70, lat_max
     plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
     plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
     ax.coastlines(resolution='50m')
-    ax.gridlines(color='black')
+    ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
     ax.add_feature(cartopy.feature.LAND)
 
     # save figure
