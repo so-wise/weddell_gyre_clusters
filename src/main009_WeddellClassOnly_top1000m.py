@@ -76,6 +76,8 @@ zmax = 1000.0
 sig0range = (26.6, 28.0)
 
 # temperature and salinity ranges for plotting
+lon_range=(lon_min, lon_max)
+lat_range=(lat_min, lat_max)
 Trange=(-2.2, 6.0)
 Srange=(33.5, 35.0)
 
@@ -261,8 +263,10 @@ dfp['Smax'] = dfp.prof_SA.max(dim='depth')
 dfp['sig0min'] = dfp.sig0.min(dim='depth')
 dfp['sig0max'] = dfp.sig0.max(dim='depth')
 
-# calculate the i-metric
+# select the top pressure level for plotting purposes
 df1D = dfp.isel(depth=0)
+
+# calculate the i-metric
 df1D = gmm.calc_i_metric(profiles)
 
 # plot i-metric
@@ -279,12 +283,25 @@ pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
 # surface temperatures and surface salinities, histogram style
 # --- could probably replace with a single function that can be called by
 # --- a text keyword for T, S, min, max, etc. (simple if conditoinal)
-pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
-                       lat_min, lat_max, n_components_selected)
-pt.plot_hist_map_Tmax(ploc, df1D, lon_min, lon_max,
-                      lat_min, lat_max, n_components_selected)
-pt.plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
-                       lat_min, lat_max, n_components_selected)
+#pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
+#                       lat_min, lat_max, n_components_selected)
+#pt.plot_hist_map_Tmax(ploc, df1D, lon_min, lon_max,
+#                      lat_min, lat_max, n_components_selected)
+#pt.plot_hist_map_Ssurf(ploc, df1D, lon_min, lon_max,
+#                       lat_min, lat_max, n_components_selected)
+
+# histogram map
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=(-2,2),
+                 vartype='Tsurf',
+                 colormap=plt.get_cmap('coolwarm'))
+
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=(0,3),
+                 vartype='Tmax',
+                 colormap=plt.get_cmap('coolwarm'))
 
 # some T-S histograms
 sbins = np.arange(Srange[0], Srange[1], 0.025)
