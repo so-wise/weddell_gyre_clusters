@@ -258,11 +258,9 @@ pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
 # calculate the i-metric
 df_imetric = gmm.calc_i_metric(profiles)
 
-# plot i-metric
+# plot i-metric (point plots) 
 pt.plot_i_metric_single_panel(ploc, df_imetric, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df_imetric, lon_min, lon_max,
-                                 lat_min, lat_max, n_components_selected)
-pt.plot_i_metric_multiple_panels_hist(ploc, df_imetric, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
 
 # Calc Tmin, Tmax, Smin, Smax
