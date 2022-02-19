@@ -266,6 +266,9 @@ pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
 
+# ALTERNATIVELY, something like this 
+#dfp.prof_CT.min(dim='depth')
+
 # surface temperatures and surface salinities, histogram style
 pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
                        lat_min, lat_max, n_components_selected)

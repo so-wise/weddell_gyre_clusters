@@ -301,18 +301,21 @@ df1D = gmm.calc_i_metric(profiles)
 pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
+# i-metric, multiple panels, histogram style
+pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
+                                 lat_min, lat_max, n_components_selected)
 
 #####################################################################
 # Further analysis of time variation
 #####################################################################
 
 # Visualize profile stats by class and year (all profiles)
-at.examine_prof_stats_by_label_and_year(ploc, profiles, colormap, frac = 0.95, \
-                                        zmin=20, zmax=1000, \
-                                        Tmin = Trange[0], Tmax = Trange[1], \
-                                        Smin = Srange[0], Smax = Srange[1], \
-                                        sig0min = sig0range[0], sig0max = sig0range[1], \
-                                        alpha=0.1)
+#at.examine_prof_stats_by_label_and_year(ploc, profiles, colormap, frac = 0.95, \
+#                                        zmin=20, zmax=1000, \
+#                                        Tmin = Trange[0], Tmax = Trange[1], \
+#                                        Smin = Srange[0], Smax = Srange[1], \
+#                                        sig0min = sig0range[0], sig0max = sig0range[1], \
+#                                        alpha=0.1)
 
 #####################################################################
 # Save the profiles in a separate NetCDF file

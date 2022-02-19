@@ -33,7 +33,7 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_allDomain_top1000m_K05_forOSM22/'
+ploc = 'plots/plots_allDomain_top1000m_K05_forOSM22_dev/'
 
 # if plot directory doesn't exist, create it
 if not os.path.exists(ploc):
@@ -115,7 +115,7 @@ pt.plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range, sou
 descrip = 'WeddellOnly' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22/'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22_dev/'
 dloc = 'models/'
 
 # single class from previous effort to sub-classify
@@ -130,18 +130,26 @@ lat_max = -45
 # depth range
 zmin = 20.0
 zmax = 1000.0
-# density range
-sig0range = (26.6, 28.0)
+
+# ranges
+lon_range = (lon_min, lon_max)
+lat_range = (lat_min, lat_max)
+depth_range = (zmin, zmax)
 
 # temperature and salinity ranges for plotting
 Trange=(-2.2, 6.0)
 Srange=(33.5, 35.0)
+sig0range = (26.6, 28.0)
 
 # load single class (just the Weddell One)
 profiles_antarctic = lp.load_single_class(classified_data_location, selected_class=myClass)
 
 # histogram of profile locations
 pt.plot_histogram_of_profile_locations(ploc, profiles_antarctic, lon_range, lat_range, source='all', binsize=2)
+
+# -- the saved dataset doesn't have the "source" variabile, unfortunately (it's mostly Argo, anyway)
+#pt.plot_histogram_of_profile_locations(ploc, profiles_antarctic, lon_range, lat_range, source='ctd', binsize=2)
+#pt.plot_histogram_of_profile_locations(ploc, profiles_antarctic, lon_range, lat_range, source='argo', binsize=2)
 
 # make the "all profiles" plot
 pt.plot_many_profiles(ploc, profiles_antarctic, frac = 0.10,
