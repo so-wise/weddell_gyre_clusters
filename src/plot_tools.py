@@ -86,6 +86,21 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
                  linewidth=2, color='gray', alpha=0.5, linestyle='--')
     ax.add_feature(cartopy.feature.LAND)
     plt.savefig(ploc + 'histogram_lat_lon_map_' + source + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'histogram_lat_lon_map_' + source + '.pdf', bbox_inches='tight')
+    plt.show()
+    plt.close()
+
+    # separate colorbar
+    a = np.array([[vmin,vmax]])
+    plt.figure(figsize=(9, 1.5))
+    img = plt.imshow(a, cmap="viridis")
+    plt.gca().set_visible(False)
+    cax = plt.axes([0.1, 0.2, 0.8, 0.6])
+    cbar = plt.colorbar(orientation="horizontal", cax=cax)
+    cbar.ax.tick_params(labelsize=22)
+    plt.savefig(ploc + 'histogram_latlon_map_colorbar.png', bbox_inches='tight')
+    plt.savefig(ploc + 'histogram_latlon_map_colorbar.pdf', bbox_inches='tight')
+    plt.show()
     plt.close()
 
 #####################################################################
@@ -1299,8 +1314,8 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
 
     # coastlines and gridlines
     ax.coastlines(resolution='50m')
-    ax.(crs=ccrs.PlateCarree(), draw_labels=True,
-                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
+    ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                     linewidth=2, color='gray', alpha=0.5, linestyle='--')
     ax.add_feature(cartopy.feature.LAND)
 
     # save figure
@@ -1446,14 +1461,26 @@ def plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
         plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
         plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
 
-        #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
-    ax.(crs=ccrs.PlateCarree(), draw_labels=True,
-                 linewidth=2, color='gray', alpha=0.5, linestyle='--')
+        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                     linewidth=2, color='gray', alpha=0.5, linestyle='--')
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
         plt.savefig(ploc + 'hist_i-metric_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.close()
+
+        # separate colorbar
+        a = np.array([[0.0, 1.0]])
+        plt.figure(figsize=(9, 1.5))
+        img = plt.imshow(a, cmap="viridis")
+        plt.gca().set_visible(False)
+        cax = plt.axes([0.1, 0.2, 0.8, 0.6])
+        cbar = plt.colorbar(orientation="horizontal", cax=cax)
+        cbar.ax.tick_params(labelsize=22)
+        plt.savefig(ploc + 'i-metric_colorbar.png', bbox_inches='tight')
+        plt.savefig(ploc + 'i-metric_colorbar.pdf', bbox_inches='tight')
+        plt.show()
         plt.close()
 
 #####################################################################
@@ -1532,6 +1559,19 @@ def plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
 
         # save figure
         plt.savefig(ploc + 'hist_Tsurf_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.close()
+
+        # separate colorbar
+        a = np.array([[-2.0, 5.0]])
+        plt.figure(figsize=(9, 1.5))
+        img = plt.imshow(a, cmap="viridis")
+        plt.gca().set_visible(False)
+        cax = plt.axes([0.1, 0.2, 0.8, 0.6])
+        cbar = plt.colorbar(orientation="horizontal", cax=cax)
+        cbar.ax.tick_params(labelsize=22)
+        plt.savefig(ploc + 'Tsurf_colorbar.png', bbox_inches='tight')
+        plt.savefig(ploc + 'Tsurf_colorbar.pdf', bbox_inches='tight')
+        plt.show()
         plt.close()
 
 #####################################################################

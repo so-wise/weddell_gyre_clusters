@@ -256,6 +256,10 @@ pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
 # Calc Tmin, Tmax, Smin, Smax
 dfp['Tmin'] = dfp.prof_CT.min(dim='depth')
 dfp['Tmax'] = dfp.prof_CT.max(dim='depth')
+dfp['Smin'] = dfp.prof_SA.min(dim='depth')
+dfp['Smax'] = dfp.prof_SA.max(dim='depth')
+dfp['sig0min'] = dfp.sig0.min(dim='depth')
+dfp['sig0max'] = dfp.sig0.max(dim='depth')
 
 # calculate the i-metric
 df1D = dfp.isel(depth=0)
@@ -274,7 +278,7 @@ pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
 
 # surface temperatures and surface salinities, histogram style
 # --- could probably replace with a single function that can be called by
-# --- a text keyword for T, S, min, max, etc. (simple if conditoinal) 
+# --- a text keyword for T, S, min, max, etc. (simple if conditoinal)
 pt.plot_hist_map_Tsurf(ploc, df1D, lon_min, lon_max,
                        lat_min, lat_max, n_components_selected)
 pt.plot_hist_map_Tmax(ploc, df1D, lon_min, lon_max,
