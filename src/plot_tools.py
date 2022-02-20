@@ -136,9 +136,10 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    # font size
    fs = 14
 
-   # if plot directory doesn't exist, create it
-   if not os.path.exists(ploc):
-       os.makedirs(ploc)
+    # p = 20 dbar
+    dploc = ploc + 'profile_stats/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
    # number of profiles
    Nprof = df.profile.values.size
@@ -203,7 +204,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(ploc + modStr + 'many_profiles_CT.png', bbox_inches='tight')
+   plt.savefig(dploc + modStr + 'many_profiles_CT.png', bbox_inches='tight')
    plt.close()
 
    # figure SA
@@ -225,7 +226,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(ploc + modStr + 'many_profiles_SA.png', bbox_inches='tight')
+   plt.savefig(dploc + modStr + 'many_profiles_SA.png', bbox_inches='tight')
    plt.close()
 
    # figure sig0
@@ -247,7 +248,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(ploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
+   plt.savefig(dploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
    plt.close()
 
    # figure sig0 (interpolated onto high-res z)
@@ -266,7 +267,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(ploc + modStr + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
+   plt.savefig(dploc + modStr + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
    plt.close()
 
    # figure CT sig
@@ -288,7 +289,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(ploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
+   plt.savefig(dploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
    plt.close()
 
    # figure SA sig
@@ -310,7 +311,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(ploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
+   plt.savefig(dploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
    plt.close()
 
 #####################################################################
@@ -321,16 +322,21 @@ def plot_profiles_on_density_levels(ploc, profiles, frac=0.33):
     # start message
     print('plot_tools.plot_profiles_on_density_levels')
 
+    # subdirectory
+    dploc = ploc + 'profile_stats/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+
     # conservative temp
     plt.figure(figsize=(30, 30))
     profiles.ct_on_sig0.plot()
-    plt.savefig(ploc + 'ct_on_sig0.png', bbox_inches='tight')
+    plt.savefig(dploc + 'ct_on_sig0.png', bbox_inches='tight')
     plt.close()
 
     # absolute salinity
     plt.figure(figsize=(30, 30))
     profiles.sa_on_sig0.plot()
-    plt.savefig(ploc + 'sa_on_sig0.png', bbox_inches='tight')
+    plt.savefig(dploc + 'sa_on_sig0.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################
@@ -603,48 +609,53 @@ def prof_TS_sample_plots(ploc, profiles):
     # start message
     print('plot_tools.plot_TS_sample_plots')
 
+    # subdirectory
+    dploc = ploc + 'sample_plot_and_hist/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+
     # plotting subset (just a few for visualisation purposes)
     subset = range(1000,2000,1)
     # temperature plots
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_T[subset].plot(y='depth', yincrease=False)
-    plt.savefig(ploc + 'prof_T_subset.png', bbox_inches='tight')
+    plt.savefig(dploc + 'prof_T_subset.png', bbox_inches='tight')
     plt.close()
     # salinity plots
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_S[subset].plot(y='depth', yincrease=False)
-    plt.savefig(ploc + 'prof_S_subset.png', bbox_inches='tight')
+    plt.savefig(dploc + 'prof_S_subset.png', bbox_inches='tight')
     plt.close()
     # conservative temperature plots
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_CT[subset].plot(y='depth', yincrease=False)
-    plt.savefig(ploc + 'prof_CT_subset.png', bbox_inches='tight')
+    plt.savefig(dploc + 'prof_CT_subset.png', bbox_inches='tight')
     plt.close()
     # absolute salinity plots
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.prof_SA[subset].plot(y='depth', yincrease=False)
-    plt.savefig(ploc + 'prof_SA_subset.png', bbox_inches='tight')
+    plt.savefig(dploc + 'prof_SA_subset.png', bbox_inches='tight')
     plt.close()
     # sigma0 density
     fig, ax = plt.subplots(figsize=(15,10))
     profiles.sig0[subset].plot(y='depth', yincrease=False)
-    plt.savefig(ploc + 'sig0_subset.png', bbox_inches='tight')
+    plt.savefig(dploc + 'sig0_subset.png', bbox_inches='tight')
     plt.close()
     # histograms
     xr.plot.hist(profiles.prof_T,figsize=(15,10))
-    plt.savefig(ploc + 'hist_prof_T.png', bbox_inches='tight')
+    plt.savefig(dploc + 'hist_prof_T.png', bbox_inches='tight')
     plt.close()
     xr.plot.hist(profiles.prof_S,figsize=(15,10))
-    plt.savefig(ploc + 'hist_prof_S.png', bbox_inches='tight')
+    plt.savefig(dploc + 'hist_prof_S.png', bbox_inches='tight')
     plt.close()
     xr.plot.hist(profiles.prof_CT,figsize=(15,10))
-    plt.savefig(ploc + 'hist_prof_CT.png', bbox_inches='tight')
+    plt.savefig(dploc + 'hist_prof_CT.png', bbox_inches='tight')
     plt.close()
     xr.plot.hist(profiles.prof_SA,figsize=(15,10))
-    plt.savefig(ploc + 'hist_prof_SA.png', bbox_inches='tight')
+    plt.savefig(dploc + 'hist_prof_SA.png', bbox_inches='tight')
     plt.close()
     xr.plot.hist(profiles.sig0,figsize=(15,10))
-    plt.savefig(ploc + 'hist_sig0.png', bbox_inches='tight')
+    plt.savefig(dploc + 'hist_sig0.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################
@@ -1257,6 +1268,11 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
 
     print('plot_tools.plot_i_metric_single_panel')
 
+    # subdirectory
+    dploc = ploc + 'imetric_scatter/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+
     # load bathymetry
     bds = io.load_bathymetry(str)
     bathy_lon = bds['lon'][:]
@@ -1321,7 +1337,7 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
     ax.add_feature(cartopy.feature.LAND)
 
     # save figure
-    plt.savefig(ploc + 'i-metric_single.png', bbox_inches='tight')
+    plt.savefig(dploc + 'i-metric_single.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################
@@ -1332,6 +1348,11 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         lev_range=range(-6000,1,500)):
 
     print('plot_tools.plot_i_metric_multiple_panels')
+
+    # subdirectory
+    dploc = ploc + 'imetric_scatter/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
@@ -1397,7 +1418,7 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
-        plt.savefig(ploc + 'i-metric_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.savefig(dploc + 'i-metric_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
         plt.close()
 
 #############################################################################
@@ -1649,6 +1670,11 @@ def plot_TS_single_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(
 
     print('plot_tools.plot_TS_single_lev')
 
+    # subdirectory
+    dploc = ploc + 'TSdiagrams/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+
     # import packages
     import gsw
 
@@ -1704,7 +1730,7 @@ def plot_TS_single_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(
     plt.yticks(fontsize=18)
     plt.xticks(fontsize=18)
     plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
-    plt.savefig(ploc + 'TS_single_lev_' + str(int(p)) + 'dbar' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'TS_single_lev_' + str(int(p)) + 'dbar' + descrip + '.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################
@@ -1715,6 +1741,11 @@ def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, colormap, descrip='
                       lon = -20, lat = -65):
 
     print('plot_tools.plot_TS_withMeans')
+
+    # subdirectory
+    dploc = ploc + 'TSdiagrams/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
     # select colormap
     #colormap = plt.get_cmap('Set1', n_comp)
@@ -1753,7 +1784,7 @@ def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, colormap, descrip='
     plt.yticks(fontsize=18)
     plt.xticks(fontsize=18)
     #plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
-    plt.savefig(ploc + 'TS_withMeans' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'TS_withMeans' + descrip + '.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################
@@ -1763,6 +1794,11 @@ def plot_TS_all_lev(ploc, df, n_comp, colormap, descrip='', PTrange=(-2, 27.0),
                     SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.33):
 
     print('plot_tools.plot_TS_all_lev')
+
+    # subdirectory
+    dploc = ploc + 'TSdiagrams/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
     # make 1D by stacking and resetting index
     df1D = df.stack(z=('profile','depth')).reset_index('z')
@@ -1816,7 +1852,7 @@ def plot_TS_all_lev(ploc, df, n_comp, colormap, descrip='', PTrange=(-2, 27.0),
     plt.yticks(fontsize=18)
     plt.xticks(fontsize=18)
     #plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
-    plt.savefig(ploc + 'TS_all_levs' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'TS_all_levs' + descrip + '.png', bbox_inches='tight')
     plt.close()
 
 #####################################################################
@@ -1826,6 +1862,11 @@ def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-
                       SPrange=(33.5, 37.5), lon = -20, lat = -65, rr = 0.60):
 
     print('plot_tools.plot_TS_multi_lev')
+
+    # subdirectory
+    dploc = ploc + 'TSdiagrams/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
     # make (stack and reset index)
     # stack command kills job when using "single class only" mode
@@ -1891,7 +1932,7 @@ def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-
         plt.yticks(fontsize=18)
         plt.xticks(fontsize=18)
         plt.title('Class ' + str(nclass) , fontsize=22)
-        plt.savefig(ploc + 'TS_multilev_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
+        plt.savefig(dploc + 'TS_multilev_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
         plt.close()
 
 #####################################################################
@@ -1902,6 +1943,11 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                       timeShading='month'):
 
     print('plot_tools.plot_TS_bytime')
+
+    # subdirectory
+    dploc = ploc + 'TSdiagrams/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
     # make (stack and reset index)
     df1D = df.isel(depth=0)
@@ -1978,7 +2024,7 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
         plt.yticks(fontsize=18)
         plt.xticks(fontsize=18)
         plt.title('Class ' + str(nclass) , fontsize=22)
-        plt.savefig(ploc + 'TS_by' + timeShading + '_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
+        plt.savefig(dploc + 'TS_by' + timeShading + '_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
         plt.close()
 
 #####################################################################
@@ -1991,6 +2037,11 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
 
     # print statement
     print('plot_tools.calc_and_plot_volume_histogram_TS')
+
+    # subdirectory
+    dploc = ploc + 'TSdiagrams/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
     # import packages
     import gsw
@@ -2035,7 +2086,7 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
     plt.clabel(CL, fontsize=14, inline=False, fmt='%.1f')
     plt.xlabel('Absolute salinity (psu)')
     plt.ylabel('Conservative temperature (°C)')
-    plt.savefig(ploc + 'histogram_depth' + modStr + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'histogram_depth' + modStr + '.png', bbox_inches='tight')
     plt.close()
 
     return histTS_scaled
