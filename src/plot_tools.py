@@ -22,6 +22,7 @@ from xhistogram.xarray import histogram
 import os.path
 from glob import glob
 import file_io as io
+import density
 import random
 import gsw
 
@@ -1249,7 +1250,7 @@ def plot_label_map(ploc, profiles, n_components_selected, colormap,
     plt.close()
 
 #####################################################################
-# Plot single i-metric map
+# Scatter plot single i-metric map
 #####################################################################
 def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
         rr=0.66,str="bathy.nc", lev_range=range(-6000,1,500)):
@@ -1324,7 +1325,7 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
     plt.close()
 
 #####################################################################
-# Plot multiple i-metric maps (one per class)
+# Scatter plot multiple i-metric maps (one per class)
 #####################################################################
 def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         lat_min, lat_max, n_components_selected, bathy_fname="bathy.nc",
@@ -1399,95 +1400,59 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         plt.savefig(ploc + 'i-metric_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
         plt.close()
 
-#####################################################################
-# Plot multiple i-metric maps (one per class, histogram style)
-#####################################################################
-def plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
-        lat_min, lat_max, n_components_selected, binsize=1,
-        bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
+#############################################################################
+# Wrapper for plotting dynamic height maps (each class, each pressure level)
+#############################################################################
+def plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selected):
 
-    print('plot_tools.plot_i_metric_multiple_panels_hist')
+    # print
+    print('plot_tools.plot_dynamic_height_maps')
 
-    # load bathymetry
-    bds = io.load_bathymetry(bathy_fname)
-    bathy_lon = bds['lon'][:]
-    bathy_lat = bds['lat'][:]
-    bathy = bds['bathy'][:]
+    # p = 20 dbar
+    dploc = ploc + 'dynamic_height/p0020dbar/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+    # single pressure level
+    dp1 = dfp.isel(depth=0)
+    plot_hist_map(dploc, dp1, lon_range, lat_range, n_components_selected,
+                  c_range=[dp1.dyn_height.min().values, dp1.dyn_height.max().values],
+                  vartype='dyn_height')
 
-    # load fronts
-    pf = io.load_front("fronts/pf_kim.txt")
-    saccf = io.load_front("fronts/saccf_kim.txt")
-    saf = io.load_front("fronts/saf_kim.txt")
-    sbdy = io.load_front("fronts/sbdy_kim.txt")
+    # p = 100 dbar
+    dploc = ploc + 'dynamic_height/p0100dbar/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+    # single pressure level
+    dp1 = dfp.isel(depth=4)
+    plot_hist_map(dploc, dp1, lon_range, lat_range, n_components_selected,
+                  c_range=[dp1.dyn_height.min().values, dp1.dyn_height.max().values],
+                  vartype='dyn_height')
 
-    # loop over classes, create one histogram plot per class
-    for iclass in range(n_components_selected):
+    # p = 500 dbar
+    dploc = ploc + 'dynamic_height/p0500dbar/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+    # single pressure level
+    dp1 = dfp.isel(depth=14)
+    plot_hist_map(dploc, dp1, lon_range, lat_range, n_components_selected,
+                  c_range=[dp1.dyn_height.min().values, dp1.dyn_height.max().values],
+                   vartype='dyn_height')
 
-        # random sample for plotting
-        df1 = df1D.where(df1D.label==iclass, drop=True)
-
-        #colormap with Historical data
-        plt.figure(figsize=(17, 13))
-        ax = plt.axes(projection=ccrs.PlateCarree())
-        ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
-
-        # add bathymetry contours
-        ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-                linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
-                transform=ccrs.PlateCarree())
-
-        # define histogram, calculate mean i-metric value in each bin
-        lon_bins = np.arange(lon_min, lon_max, binsize)
-        lat_bins = np.arange(lat_min, lat_max, binsize)
-
-        # histogram ()
-        dA = (binsize*110e3)*(binsize*110e3*np.cos(df1.lat*np.pi/180))
-        hist_denominator = histogram(df1.lon,
-                                     df1.lat,
-                                     bins=[lon_bins, lat_bins],
-                                     weights=dA)
-        hist_numerator = histogram(df1.lon,
-                                   df1.lat,
-                                   bins=[lon_bins, lat_bins],
-                                   weights=df1.i_metric*dA)
-        hiMetric = hist_numerator/hist_denominator
-
-        # colormesh histogram
-        CS = plt.pcolormesh(lon_bins, lat_bins, hiMetric.T, transform=ccrs.PlateCarree())
-        plt.clim(0, 1)
-
-        # fronts
-        plt.plot(saf[:,0], saf[:,1], color="black", linewidth=2.0, transform=ccrs.Geodetic())
-        plt.plot(pf[:,0], pf[:,1], color="blue", linewidth=2.0, transform=ccrs.Geodetic())
-        plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
-        plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
-
-        ax.coastlines(resolution='50m')
-        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
-                     linewidth=2, color='gray', alpha=0.5, linestyle='--')
-        ax.add_feature(cartopy.feature.LAND)
-
-        # save figure
-        plt.savefig(ploc + 'hist_i-metric_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
-        plt.close()
-
-        # separate colorbar
-        a = np.array([[0.0, 1.0]])
-        plt.figure(figsize=(9, 1.5))
-        img = plt.imshow(a, cmap="viridis")
-        plt.gca().set_visible(False)
-        cax = plt.axes([0.1, 0.2, 0.8, 0.6])
-        cbar = plt.colorbar(orientation="horizontal", cax=cax)
-        cbar.ax.tick_params(labelsize=22)
-        plt.savefig(ploc + 'i-metric_colorbar.png', bbox_inches='tight')
-        plt.savefig(ploc + 'i-metric_colorbar.pdf', bbox_inches='tight')
-        plt.show()
-        plt.close()
+    # p = 1000 dbar
+    dploc = ploc + 'dynamic_height/p1000dbar/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+    # single pressure level
+    dp1 = dfp.isel(depth=20)
+    plot_hist_map(dploc, dp1, lon_range, lat_range, n_components_selected,
+                  c_range=[dp1.dyn_height.min().values, dp1.dyn_height.max().values],
+                  vartype='dyn_height')
 
 #####################################################################
 # Plot a histogram map for each class
 #####################################################################
-def plot_hist_map(ploc, df1D, lon_range, lat_range,
+def plot_hist_map(ploc, df1D,
+                  lon_range, lat_range,
                   n_components_selected,
                   c_range=[0,1],
                   vartype='imetric',
@@ -1498,6 +1463,11 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
 
     # print out
     print('plot_tools.plot_hist_map')
+
+    # if plot sub directory doesn't exist, create it
+    dploc = ploc + 'histogram_maps/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
 
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
@@ -1553,9 +1523,11 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
             myVar = df1.sig0max
         elif vartype=="imetric":
             myVar = df1.imetric
+        elif vartype=="dyn_height":
+            myVar = df1.dyn_height
         else:
             print("Options include: Tsurf, Ssurf, sig0surf, Tmin, Smin, sig0min, \
-                   Tmax, Smax, sig0max, imetric")
+                   Tmax, Smax, sig0max, imetric, dyn_height")
 
         # histogram ()
         dA = (binsize*110e3)*(binsize*110e3*np.cos(df1.lat*np.pi/180))
@@ -1596,7 +1568,7 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
-        plt.savefig(ploc + 'hist_' + vartype + '_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.savefig(dploc + 'hist_' + vartype + '_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
         plt.close()
 
         # separate colorbar
@@ -1607,8 +1579,8 @@ def plot_hist_map(ploc, df1D, lon_range, lat_range,
         cax = plt.axes([0.1, 0.2, 0.8, 0.6])
         cbar = plt.colorbar(orientation="horizontal", cax=cax)
         cbar.ax.tick_params(labelsize=22)
-        plt.savefig(ploc + 'hist_' + vartype + 'colorbar.png', bbox_inches='tight')
-        plt.savefig(ploc + 'hist_' + vartype + 'colorbar.png', bbox_inches='tight')
+        plt.savefig(dploc + 'hist_' + vartype + 'colorbar.png', bbox_inches='tight')
+        plt.savefig(dploc + 'hist_' + vartype + 'colorbar.png', bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -1648,7 +1620,7 @@ def plot_seaice_freezing(ploc=" ", lon_min=-65, lon_max=80, lat_min=-70, lat_max
     ax.add_feature(cartopy.feature.LAND)
 
     # save figure
-    plt.savefig(ploc+"SeaIceFreezing_SOSE_winter.png", bbox_inches="tight")
+    plt.savefig(ploc+"seaice/SeaIceFreezing_SOSE_winter.png", bbox_inches="tight")
 
 #####################################################################
 # Plot t-SNE

@@ -258,10 +258,14 @@ pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
 # calculate the i-metric
 df_imetric = gmm.calc_i_metric(profiles)
 
-# plot i-metric (point plots) 
+# plot i-metric (point plot style)
 pt.plot_i_metric_single_panel(ploc, df_imetric, lon_min, lon_max, lat_min, lat_max)
 pt.plot_i_metric_multiple_panels(ploc, df_imetric, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
+
+# Calc and plot dynamic height
+dfp['dyn_height'] = density.calc_dynamic_height(dfp)
+plt.plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selected)
 
 # Calc Tmin, Tmax, Smin, Smax
 dfp['Tmin'] = dfp.prof_CT.min(dim='depth')

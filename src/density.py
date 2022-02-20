@@ -34,12 +34,12 @@ def calc_density(profiles):
     return profiles
 
 #####################################################################
-# Calculate dynamic height anomaly, N2,
+# Calculate dynamic height anomaly
 #####################################################################
-def calc_geostropic_currents(profiles):
+def calc_dynamic_height(profiles):
 
     # display
-    print('density.calc_geostrophic_currents')
+    print('density.calc_dynamic_height')
 
     # extract a few variables
     sa = profiles.prof_SA.T
@@ -52,14 +52,41 @@ def calc_geostropic_currents(profiles):
     dynamic_height = xr.apply_ufunc(gsw.geostrophy.geo_strf_dyn_height,
         sa, ct, p, dask='parallelized', output_dtypes=[sa.dtype])
 
-    # geostrophic velocity
-    #geo_vel, mid_lon, mid_lat = xr.apply_ufunc(gsw.geostrophy.geostrophic_velocity,
-    #    dynamic_height, lon, lat, dask='parallelized', output_dtypes=[sa.dtype])
+    return dynamic_height
 
-    #Nsquared = xr.apply_ufunc(gsw.stability.Nsquared, sa, ct, p,
-    #    dask='parallelized', output_dtypes=[sa.dtype])
+#####################################################################
+# Buoyancy frequency (stability)  [NOT YET WORKING!!!!!!!!!!!!!!!!!!!!!!]
+#####################################################################
+def calc_Nsquared(profiles):
 
-    return dynamic_height 
+    # extract a few variables
+    sa = profiles.prof_SA.T
+    ct = profiles.prof_CT.T
+    p = profiles.depth
+    lon = profiles.lon
+    lat = profiles.lat
+
+    # buoyuancy freuqnecy (single one just for testing)
+    iprof = 1000
+    Nsquared1, p_mid1 = gsw.stability.Nsquared(sa.isel(profile=iprof),
+                                               ct.isel(profile=iprof),
+                                               p)
+
+    Nsquared, p_mid = xr.apply_ufunc(gsw.stability.Nsquared,
+                                     sa, ct, p)
+
+    # buoyancy frequency (still need to sort out broadcasting issues)
+    Nsquared, p_mid = xr.apply_ufunc(gsw.stability.Nsquared,
+                                     sa, ct, p,
+                                     dask='parallelized',
+                                     input_core_dims=[['profile','depth'],
+                                                      ['profile','depth'],
+                                                      ['depth']],
+                                     output_core_dims=[['depth'],
+                                                       ['depth']],
+                                     exclude_dims=set(('profile','depth',)))
+
+    return Nsquared, p_mid
 
 #####################################################################
 # Scalar density value
