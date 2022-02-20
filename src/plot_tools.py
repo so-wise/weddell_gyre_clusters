@@ -17,6 +17,7 @@ import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean.cm as cmo
+import cmocean
 from xhistogram.xarray import histogram
 ### os tools
 import os.path
@@ -201,7 +202,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.title(modStr, fontsize=fs)
+   #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(dploc + modStr + 'many_profiles_CT.png', bbox_inches='tight')
@@ -223,7 +224,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.title(modStr, fontsize=fs)
+   #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(dploc + modStr + 'many_profiles_SA.png', bbox_inches='tight')
@@ -245,7 +246,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.title(modStr, fontsize=fs)
+   #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(dploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
@@ -264,7 +265,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.title(modStr, fontsize=fs)
+   #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(dploc + modStr + 'many_profiles_sig0_on_highz.png', bbox_inches='tight')
@@ -286,7 +287,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.title(modStr, fontsize=fs)
+   #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(dploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
@@ -308,7 +309,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.title(modStr, fontsize=fs)
+   #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
             ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
    plt.savefig(dploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
@@ -468,14 +469,20 @@ def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
         c = [[ 0.267004,  0.004874,  0.329415,  1.  ]]
         labs='nolabels'
 
-    # 3D scatterplots
+    # 3D scatterplots\
+    # ax.set_xlim()  use these to zoom in a bit
+
+    qlow = 0.001
+    qhi = 0.999
 
     # view 1
     fig = plt.figure(figsize=(15,15))
     ax = fig.add_subplot(projection='3d')
     ax.view_init(30, 0)
-    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=0.1, s=1.0)
-    if withLabels==True: plt.colorbar(CS)
+    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=1.0, s=1.5)
+    ax.set_xlim(np.round(np.quantile(xyp[:,0], qlow)), np.round(np.quantile(xyp[:,0], qhi)))
+    ax.set_ylim(np.round(np.quantile(xyp[:,1], qlow)), np.round(np.quantile(xyp[:,1], qhi)))
+    ax.set_zlim(np.round(np.quantile(xyp[:,2], qlow)), np.round(np.quantile(xyp[:,2], qhi)))
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view1' + '.png', bbox_inches='tight')
     plt.close()
 
@@ -483,8 +490,10 @@ def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
     fig = plt.figure(figsize=(15,15))
     ax = fig.add_subplot(projection='3d')
     ax.view_init(30, 120)
-    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=0.1, s=1.0)
-    if withLabels==True: plt.colorbar(CS)
+    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=1.0, s=1.5)
+    ax.set_xlim(np.round(np.quantile(xyp[:,0], qlow)), np.round(np.quantile(xyp[:,0], qhi)))
+    ax.set_ylim(np.round(np.quantile(xyp[:,1], qlow)), np.round(np.quantile(xyp[:,1], qhi)))
+    ax.set_zlim(np.round(np.quantile(xyp[:,2], qlow)), np.round(np.quantile(xyp[:,2], qhi)))
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view2' + '.png', bbox_inches='tight')
     plt.close()
 
@@ -492,10 +501,14 @@ def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
     fig = plt.figure(figsize=(15,15))
     ax = fig.add_subplot(projection='3d')
     ax.view_init(30, 240)
-    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=0.1, s=1.0)
-    if withLabels==True: plt.colorbar(CS)
+    CS = ax.scatter(xyp[:,0], xyp[:,1], xyp[:,2], 'o', c=c, cmap=colormap, alpha=1.0, s=1.5)
+    ax.set_xlim(np.round(np.quantile(xyp[:,0], qlow)), np.round(np.quantile(xyp[:,0], qhi)))
+    ax.set_ylim(np.round(np.quantile(xyp[:,1], qlow)), np.round(np.quantile(xyp[:,1], qhi)))
+    ax.set_zlim(np.round(np.quantile(xyp[:,2], qlow)), np.round(np.quantile(xyp[:,2], qhi)))
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view3' + '.png', bbox_inches='tight')
     plt.close()
+
+    # separate colorbar (to be added)
 
 #####################################################################
 # Pairplot (general)
@@ -795,7 +808,7 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
             #plt.xlabel('Conservative temperature (deg C)', fontsize=fs)
             plt.ylabel('Depth (m)', fontsize=fs)
 
-        plt.title('Class = ' + str(num), fontsize=fs)
+        #plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
@@ -848,7 +861,7 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                                    Tmin=-3, Tmax=20,
                                    Smin=33.6, Smax=37.0,
                                    sig0min=26.0, sig0max=28.0,
-                                   frac=0.33):
+                                   frac=0.33, description='full'):
 # note: the input 'df1' should contain only a single class/label!
 
     print('plot_tools.plot_class_vertical_structures')
@@ -871,7 +884,8 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                            Tmin=Tmin, Tmax=Tmax,
                            Smin=Smin, Smax=Smax,
                            sig0min=sig0min, sig0max=sig0max,
-                           alpha=0.05, modStr='Class '+str(nrow+1),
+                           alpha=0.05,
+                           modStr='Class'+str(nrow)+'z'+description,
                            colorVal=colorVal)
 
 #####################################################################
@@ -925,7 +939,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
         fs = 42 # font size
         plt.xlabel('Absolute salinity (psu)', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('Class = ' + str(num), fontsize=fs)
+        #plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
@@ -987,7 +1001,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
         fs = 42 # font size
         plt.xlabel('Conservative temperature (deg C)', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('Class = ' + str(num), fontsize=fs)
+        #plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
@@ -1052,7 +1066,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
         fs = 42 # font size
         plt.xlabel('Absolute salinity (psu)', fontsize=fs)
         plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
-        plt.title('Class = ' + str(num), fontsize=fs)
+        #plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
@@ -1117,7 +1131,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
         fs = 42 # font size
         plt.xlabel('Conservative temperature (deg C)', fontsize=fs)
         plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
-        plt.title('Class = ' + str(num), fontsize=fs)
+        #plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
@@ -1182,7 +1196,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
         fs = 42 # font size
         plt.xlabel('\sigma_0 (kg/m^3)', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('Class = ' + str(num), fontsize=fs)
+        #plt.title('Class = ' + str(num), fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
@@ -1933,7 +1947,7 @@ def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-
         plt.xlim(SPrange)
         plt.yticks(fontsize=18)
         plt.xticks(fontsize=18)
-        plt.title('Class ' + str(nclass) , fontsize=22)
+        #plt.title('Class ' + str(nclass) , fontsize=22)
         plt.savefig(dploc + 'TS_multilev_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
         plt.close()
 
@@ -1957,7 +1971,8 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 
     # define colormap (cyclic)
     if timeShading=='month':
-        colormap = plt.get_cmap('hsv_r', 12)
+        #colormap = plt.get_cmap('hsv_r', 12)
+        colormap = cmocean.cm.phase
     else:
         colormap = plt.get_cmap('cividis', 30)
 
@@ -2025,7 +2040,7 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
         plt.xlim(SPrange)
         plt.yticks(fontsize=18)
         plt.xticks(fontsize=18)
-        plt.title('Class ' + str(nclass) , fontsize=22)
+        #plt.title('Class ' + str(nclass) , fontsize=22)
         plt.savefig(dploc + 'TS_by' + timeShading + '_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
         plt.close()
 
@@ -2083,8 +2098,9 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
     # --- plot histogram
     plt.figure(figsize=(10,10))
     # now superimpose T-S contours
-    histTS_scaled.plot(levels=30)
+    TS = histTS_scaled.plot(levels=30)
     CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
+    TS.colorbar.set_label('Count histogram (log10, scaled by maximum)')
     plt.clabel(CL, fontsize=14, inline=False, fmt='%.1f')
     plt.xlabel('Absolute salinity (psu)')
     plt.ylabel('Conservative temperature (°C)')

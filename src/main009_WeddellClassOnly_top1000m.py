@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+import cmocean
 ### os tools
 import os.path
 
@@ -87,12 +88,18 @@ gmm_fname = dloc + 'gmm_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_
 fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon_' + str(int(lat_min)) + 'to' + str(int(lat_max)) + 'lat_' + str(int(zmin)) + 'to' + str(int(zmax)) + 'depth_' + str(int(n_components_selected)) + 'K_' + descrip + '.nc'
 
 # colormap
-colormap = plt.get_cmap('tab10', n_components_selected)
+colormap = plt.get_cmap('Dark2', n_components_selected)
 colormap_cividis = plt.get_cmap('cividis', 20)
 
 #####################################################################
+#####################################################################
+#####################################################################
 # Run the standard analysis stuff
 #####################################################################
+#####################################################################
+#####################################################################
+
+#--
 
 #####################################################################
 # Data loading and preprocessing
@@ -206,27 +213,20 @@ pt.plot_class_vertical_structures(ploc, profiles, n_components_selected, colorma
                                   sig0min=sig0range[0], sig0max=sig0range[1],
                                   frac=0.33)
 
+# top 400 m
+pt.plot_class_vertical_structures(ploc, profiles, n_components_selected, colormap,
+                                  zmin=zmin, zmax=400,
+                                  Tmin=Trange[0], Tmax=Trange[1],
+                                  Smin=Srange[0], Smax=Srange[1],
+                                  sig0min=sig0range[0], sig0max=sig0range[1],
+                                  frac=0.33, description='top400m')
+
 # TS diagram just showing the mean values
 pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected, colormap,
                      PTrange=Trange, SPrange=Srange)
 
-# CT, SA, and sig0 class structure (means and standard deviation)
-pt.plot_CT_class_structure(ploc, dfp, class_means, class_stds,
-                           n_components_selected, colormap, zmin, zmax,
-                           Tmin=Trange[0], Tmax=Trange[1])
-pt.plot_SA_class_structure(ploc, dfp, class_means, class_stds,
-                           n_components_selected, colormap, zmin, zmax,
-                           Smin=Srange[0], Smax=Srange[1])
-pt.plot_sig0_class_structure(ploc, dfp, class_means, class_stds,
-                           n_components_selected, colormap, zmin, zmax,
-                           sig0min=sig0range[0], sig0max=sig0range[1])
-pt.plot_CT_and_SA_class_structure(ploc, profiles, class_means, class_stds,
-                                  n_components_selected, colormap, zmin, zmax,
-                                  Tmin=Trange[0], Tmax=Trange[1],
-                                  Smin=Srange[0], Smax=Srange[1])
-
 # plot 3D pca structure (now with class labels)
-pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.33, withLabels=True)
+pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.90, withLabels=True)
 
 # plot some single level T-S diagrams
 pt.plot_TS_single_lev(ploc, dfp, n_components_selected, colormap,
@@ -269,7 +269,7 @@ dfp = density.calc_Nsquared(dfp)
 dfp = density.calc_mixed_layer_depth(dfp)
 
 # print mld stats
-density.calc_mld_stats(ploc, df, n_components_selected)
+density.calc_mld_stats(ploc, dfp, n_components_selected)
 
 # plot some maps of the above
 pt.plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selected)
@@ -303,57 +303,57 @@ pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=(-2,2),
                  vartype='Tsurf',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.thermal)
 # histogram map (Tmax)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=(0,3),
                  vartype='Tmax',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.thermal)
 # histogram map (Tmin)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=(-2,2),
                  vartype='Tmin',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.thermal)
 
 # histogram map (Ssurf)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=Srange,
                  vartype='Ssurf',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.haline)
 # histogram map (Smax)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
-                 c_range=Srange,
+                 c_range=(34.8, 34.9),
                  vartype='Smax',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.haline)
 # histogram map (Smin)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=Srange,
                  vartype='Smin',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.haline)
 
 # histogram map (sig0surf)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=sig0range,
                  vartype='sig0surf',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.dense)
 # histogram map (sig0max)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
-                 c_range=sig0range,
+                 c_range=(27.7, 28.0),
                  vartype='sig0max',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.dense)
 # histogram map (sig0min)
 pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
                  n_components_selected,
                  c_range=sig0range,
                  vartype='sig0min',
-                 colormap=plt.get_cmap('coolwarm'))
+                 colormap=cmocean.cm.dense)
 
 # some T-S histograms
 sbins = np.arange(Srange[0], Srange[1], 0.025)
