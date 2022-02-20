@@ -62,6 +62,9 @@ def calc_dynamic_height(profiles):
 #####################################################################
 def calc_Nsquared(df):
 
+    # display
+    print('density.calc_Nsquared')
+
     # extract a few variables
     sa = df.prof_SA.values
     ct = df.prof_CT.values
@@ -101,6 +104,10 @@ def calc_Nsquared(df):
 # --- see Thomson and Fine (2003, JAOT)
 #####################################################################
 def calc_mixed_layer_depth(df):
+
+    # display
+    print('density.calc_mixed_layer depth')
+    print('NOTE: must call density.calc_Nsquared first')
 
     # extract a few variables
     N2 = df.Nsquared.values

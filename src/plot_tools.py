@@ -1546,9 +1546,11 @@ def plot_hist_map(ploc, df1D,
             myVar = df1.imetric
         elif vartype=="dyn_height":
             myVar = df1.dyn_height
+        elif vartype=="mld":
+            myVar = df1.mld
         else:
             print("Options include: Tsurf, Ssurf, sig0surf, Tmin, Smin, sig0min, \
-                   Tmax, Smax, sig0max, imetric, dyn_height")
+                   Tmax, Smax, sig0max, imetric, dyn_height, mld")
 
         # histogram ()
         dA = (binsize*110e3)*(binsize*110e3*np.cos(df1.lat*np.pi/180))

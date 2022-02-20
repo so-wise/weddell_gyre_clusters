@@ -270,6 +270,12 @@ dfp = density.calc_mixed_layer_depth(dfp)
 
 # plot some maps of the above
 pt.plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selected)
+# histogram map (mixed layer depth)
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=(0,400),
+                 vartype='mld',
+                 colormap=plt.get_cmap('cividis'))
 
 # Calc Tmin, Tmax, Smin, Smax
 dfp['Tmin'] = dfp.prof_CT.min(dim='depth')
