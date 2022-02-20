@@ -443,7 +443,10 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
 #####################################################################
 # Plot PCA structure in 3D space (with or without class labels
 #####################################################################
-def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
+def plot_pca3D(ploc, colormap, profiles, Xpca, best_gmm, frac=0.33, withLabels=False):
+
+    # for the ellipses
+    import numpy.linalg as la
 
     # start message
     print('plot_tools.plot_pca3D')
@@ -1670,9 +1673,9 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
     CS = plt.scatter(tSNE_data[0],
                      tSNE_data[1],
                      cmap=colormap,
-                     s=5.0,
+                     s=10.0,
                      c=colors_for_tSNE)
-    plt.colorbar(CS)
+    #plt.colorbar(CS)
     plt.title("t-SNE")
     plt.axis('tight')
     plt.savefig(ploc + 'tSNE' + '.png', bbox_inches='tight')

@@ -226,7 +226,7 @@ pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected, color
                      PTrange=Trange, SPrange=Srange)
 
 # plot 3D pca structure (now with class labels)
-pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.90, withLabels=True)
+pt.plot_pca3D(ploc, colormap, dfp, Xtrans, best_gmm, frac=0.90, withLabels=True)
 
 # plot some single level T-S diagrams
 pt.plot_TS_single_lev(ploc, dfp, n_components_selected, colormap,
