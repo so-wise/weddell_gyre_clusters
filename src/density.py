@@ -55,38 +55,40 @@ def calc_dynamic_height(profiles):
     return dynamic_height
 
 #####################################################################
-# Buoyancy frequency (stability)  [NOT YET WORKING!!!!!!!!!!!!!!!!!!!!!!]
+# Buoyancy frequency (stability) [using numpy approach for now]
 #####################################################################
-def calc_Nsquared(profiles):
+def calc_Nsquared(df):
 
     # extract a few variables
-    sa = profiles.prof_SA.T
-    ct = profiles.prof_CT.T
-    p = profiles.depth
-    lon = profiles.lon
-    lat = profiles.lat
+    sa = df.prof_SA.values
+    ct = df.prof_CT.values
+    p = df.depth.values
+    lon = df.lon.values
+    lat = df.lat.values
 
-    # buoyuancy freuqnecy (single one just for testing)
-    iprof = 1000
-    Nsquared1, p_mid1 = gsw.stability.Nsquared(sa.isel(profile=iprof),
-                                               ct.isel(profile=iprof),
-                                               p)
+    # initialize array of zeros
+    Nsquared = np.zeros((sa.shape[0],sa.shape[1]-1))
+    Nsquared[:,:] = np.NaN
+    p_mid = np.zeros((sa.shape[1]-1))
+    p_mid[:] = np.NaN
 
-    Nsquared, p_mid = xr.apply_ufunc(gsw.stability.Nsquared,
-                                     sa, ct, p)
+    # loop over profiles, calculate N2 separately
+    for n in np.arange(sa.shape[0]):
+        Nsq1, p_mid1 = gsw.stability.Nsquared(sa[n,:], ct[n,:], p)
+        Nsquared[n,:] = Nsq1
+        p_mid[:] = p_mid1
 
-    # buoyancy frequency (still need to sort out broadcasting issues)
-    Nsquared, p_mid = xr.apply_ufunc(gsw.stability.Nsquared,
-                                     sa, ct, p,
-                                     dask='parallelized',
-                                     input_core_dims=[['profile','depth'],
-                                                      ['profile','depth'],
-                                                      ['depth']],
-                                     output_core_dims=[['depth'],
-                                                       ['depth']],
-                                     exclude_dims=set(('profile','depth',)))
+    # convert to DataArray
+    da = xr.DataArray(data=Nsquared,
+                      dims=["profile", "depth_mid"],
+                      coords=dict(
+                          profile=df.profile.values,
+                          depth_mid=p_mid))
 
-    return Nsquared, p_mid
+    # add to df dataset
+    df['Nsquared'] = da
+
+    return df
 
 #####################################################################
 # Scalar density value
