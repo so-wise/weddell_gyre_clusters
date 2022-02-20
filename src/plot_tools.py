@@ -136,10 +136,10 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    # font size
    fs = 14
 
-    # p = 20 dbar
-    dploc = ploc + 'profile_stats/'
-    if not os.path.exists(dploc):
-        os.makedirs(dploc)
+   # p = 20 dbar
+   dploc = ploc + 'profile_stats/'
+   if not os.path.exists(dploc):
+       os.makedirs(dploc)
 
    # number of profiles
    Nprof = df.profile.values.size
