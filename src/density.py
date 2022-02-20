@@ -103,6 +103,7 @@ def calc_Nsquared(df):
 #####################################################################
 # Mixed layer depth (integral depth-scale method, numpy approach for now)
 # --- see Thomson and Fine (2003, JAOT)
+# https://doi.org/10.1175/1520-0426(2003)020<0319:EMLDFO>2.0.CO;2
 #####################################################################
 def calc_mixed_layer_depth(df):
 
