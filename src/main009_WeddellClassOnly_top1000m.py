@@ -263,8 +263,13 @@ pt.plot_i_metric_single_panel(ploc, df_imetric, lon_min, lon_max, lat_min, lat_m
 pt.plot_i_metric_multiple_panels(ploc, df_imetric, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
 
-# Calc and plot dynamic height
-dfp['dyn_height'] = density.calc_dynamic_height(dfp)
+# Calc and plot dynamic height, N2, mixed layer depth, etc.
+dfp = density.calc_dynamic_height(dfp)
+dfp = density.calc_Nsquared(dfp)
+dfp = density.calc_geostrophic_streamfunction(dfp)
+dfp = density.calc_mixed_layer_depth(dfp)
+
+# plot some maps of the above 
 pt.plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selected)
 
 # Calc Tmin, Tmax, Smin, Smax

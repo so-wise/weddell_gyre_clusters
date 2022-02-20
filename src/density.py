@@ -52,7 +52,10 @@ def calc_dynamic_height(profiles):
     dynamic_height = xr.apply_ufunc(gsw.geostrophy.geo_strf_dyn_height,
         sa, ct, p, dask='parallelized', output_dtypes=[sa.dtype])
 
-    return dynamic_height
+    # add to Dataset
+    profiles['dyn_height'] = dynamic_height
+
+    return profiles
 
 #####################################################################
 # Buoyancy frequency (stability) [using numpy approach for now]
@@ -83,10 +86,45 @@ def calc_Nsquared(df):
                       dims=["profile", "depth_mid"],
                       coords=dict(
                           profile=df.profile.values,
-                          depth_mid=p_mid))
+                          depth_mid=p_mid),
+                      attrs=dict(
+                            description="Buoyancy frequency",
+                            units="1/s^2",))
 
     # add to df dataset
     df['Nsquared'] = da
+
+    return df
+
+#####################################################################
+# Mixed layer depth (integral depth-scale method, numpy approach for now)
+# --- see Thomson and Fine (2003, JAOT)
+#####################################################################
+def calc_mixed_layer_depth(df):
+
+    # extract a few variables
+    N2 = df.Nsquared.values
+    p = df.depth_mid.values
+
+    # initialize array of zeros
+    mld = np.zeros((N2.shape[0],))
+    mld[:] = np.NaN
+
+    # loop over profiles, integrate downward (z_b= 1000 m reference)
+    for n in np.arange(N2.shape[0]):
+
+        N2a = N2[n,:]
+        A = np.cumsum(p*N2a)/np.cumsum(N2a)
+        mld[n] = A[-1]
+
+    # convert to DataArray
+    da = xr.DataArray(data=mld,
+                      dims=["profile"],
+                      coords=dict(profile=df.profile.values),
+                      attrs=dict(description="Mixed layer depth",units="m"))
+
+    # add to df dataset
+    df['mld'] = da
 
     return df
 
