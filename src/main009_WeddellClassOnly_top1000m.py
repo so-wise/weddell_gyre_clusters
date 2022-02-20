@@ -268,12 +268,15 @@ dfp = density.calc_dynamic_height(dfp)
 dfp = density.calc_Nsquared(dfp)
 dfp = density.calc_mixed_layer_depth(dfp)
 
+# print mld stats
+density.calc_mld_stats(ploc, df, n_components_selected)
+
 # plot some maps of the above
 pt.plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selected)
 # histogram map (mixed layer depth)
-pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+pt.plot_hist_map(ploc, dfp, lon_range, lat_range,
                  n_components_selected,
-                 c_range=(0,400),
+                 c_range=(0,200),
                  vartype='mld',
                  colormap=plt.get_cmap('cividis'))
 

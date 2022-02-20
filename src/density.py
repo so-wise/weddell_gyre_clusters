@@ -4,6 +4,7 @@
 
 import gsw
 import xarray as xr
+import numpy as np
 
 #####################################################################
 # Calculate density of each profile in an xarray dataset
@@ -134,6 +135,30 @@ def calc_mixed_layer_depth(df):
     df['mld'] = da
 
     return df
+
+#####################################################################
+# MLD stats
+#####################################################################
+def calc_mld_stats(ploc, df, n_components_selected):
+
+    for iclass in range(n_components_selected):
+
+        df1 = df.where(df.label==iclass, drop=True)
+
+        Qmin = df1.mld.min().values
+        Q25 = df1.mld.quantile(0.25, dim='profile').values
+        Q50 = df1.mld.quantile(0.50, dim='profile').values
+        Q75 = df1.mld.quantile(0.75, dim='profile').values
+        Qmax = df1.mld.max().values
+
+        print('class = ' + str(iclass))
+        print('min / Q25 / Q50 / Q75 / max')
+        print("%.2f" % Qmin, '/ '
+              "%.2f" % Q25, '/',
+              "%.2f" % Q50, '/',
+              "%.2f" % Q75, '/',
+              "%.2f" % Qmax,
+              )
 
 #####################################################################
 # Scalar density value
