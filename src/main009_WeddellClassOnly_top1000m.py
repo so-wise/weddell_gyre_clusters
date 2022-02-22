@@ -46,7 +46,7 @@ if not os.path.exists(ploc):
 myClass=1
 
 # calculate BIC and AIC? set max number of components
-getBIC = True
+getBIC = True 
 max_N = 20
 
 # transformation method (pca, umap)
@@ -59,8 +59,8 @@ use_kernel_pca = False
 # save the processed output as a NetCDF file?
 saveOutput = False
 
-# number of PCA components (was 6)
-n_pca = 10
+# number of PCA components (roughly 95%)
+n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
 n_components_selected = 4

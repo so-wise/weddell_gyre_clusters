@@ -28,20 +28,10 @@ import random
 import gsw
 
 #####################################################################
-# Function to resize colorbar
-#####################################################################
-def resize_colobar(event):
-    plt.draw()
-
-    posn = ax.get_position()
-    cbar_ax.set_position([posn.x0 + posn.width + 0.01, posn.y0,
-                          0.04, posn.height])
-
-#####################################################################
 # Plot histogram of profile locations
 #####################################################################
 def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
-                                        source='all', binsize=1,
+                                        source='all', binsize=2,
                                         bathy_fname="bathy.nc",
                                         lev_range=range(-6000,1,500),
                                         myPlotLevels=30, vmin=0, vmax=200):
@@ -822,6 +812,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
         ax.tick_params(axis='y', labelsize=30)
 
     plt.savefig(ploc + 'pca_SA.png', bbox_inches='tight')
+    plt.savefig(ploc + 'pca_SA.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -923,6 +914,7 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
     #fig.subplots_adjust(wspace=0.7)
     plt.tight_layout(pad=3.0)
     plt.savefig(ploc + 'prof_CT_and_SA_byClass.png', bbox_inches='tight')
+    plt.savefig(ploc + 'prof_CT_and_SA_byClass.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1021,6 +1013,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
 
     #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_SA_byClass.png', bbox_inches='tight')
+    plt.savefig(ploc + 'prof_SA_byClass.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1084,6 +1077,7 @@ def plot_CT_class_structure(ploc, profiles, class_means,
 
     #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_CT_byClass.png', bbox_inches='tight')
+    plt.savefig(ploc + 'prof_CT_byClass.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1150,6 +1144,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
 
     #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_SA_sig0_byClass.png', bbox_inches='tight')
+    plt.savefig(ploc + 'prof_SA_sig0_byClass.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1216,6 +1211,7 @@ def plot_CT_class_structure_onSig(ploc, profiles, class_means,
 
     #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_CT_sig0_byClass.png', bbox_inches='tight')
+    plt.savefig(ploc + 'prof_CT_sig0_byClass.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1282,6 +1278,7 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 
     #fig.subplots_adjust(wspace=0.7)
     plt.savefig(ploc + 'prof_sig0_byClass.png', bbox_inches='tight')
+    plt.savefig(ploc + 'prof_sig0_byClass.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1350,6 +1347,7 @@ def plot_label_map(ploc, profiles, n_components_selected, colormap,
 
     # save figure
     plt.savefig(ploc + 'label_map.png', bbox_inches='tight')
+    plt.savefig(ploc + 'label_map.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1431,6 +1429,7 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
 
     # save figure
     plt.savefig(dploc + 'i-metric_single.png', bbox_inches='tight')
+    plt.savefig(dploc + 'i-metric_single.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1513,6 +1512,7 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 
         # save figure
         plt.savefig(dploc + 'i-metric_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.savefig(dploc + 'i-metric_' + str(int(iclass)) + 'K.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -1687,6 +1687,7 @@ def plot_hist_map(ploc, df1D,
 
         # save figure
         plt.savefig(dploc + 'hist_' + vartype + '_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
+        plt.savefig(dploc + 'hist_' + vartype + '_' + str(int(iclass)) + 'K.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -1740,6 +1741,7 @@ def plot_seaice_freezing(ploc=" ", lon_min=-65, lon_max=80, lat_min=-70, lat_max
 
     # save figure
     plt.savefig(ploc+"seaice/SeaIceFreezing_SOSE_winter.png", bbox_inches="tight")
+    plt.savefig(ploc+"seaice/SeaIceFreezing_SOSE_winter.pdf", bbox_inches="tight")
     plt.show()
     plt.close()
 
@@ -1760,6 +1762,7 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
     plt.title("t-SNE")
     plt.axis('tight')
     plt.savefig(ploc + 'tSNE' + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'tSNE' + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1832,6 +1835,7 @@ def plot_TS_single_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(
     plt.xticks(fontsize=18)
     plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
     plt.savefig(dploc + 'TS_single_lev_' + str(int(p)) + 'dbar' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'TS_single_lev_' + str(int(p)) + 'dbar' + descrip + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1887,6 +1891,7 @@ def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, colormap, descrip='
     plt.xticks(fontsize=18)
     #plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
     plt.savefig(dploc + 'TS_withMeans' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'TS_withMeans' + descrip + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1956,6 +1961,7 @@ def plot_TS_all_lev(ploc, df, n_comp, colormap, descrip='', PTrange=(-2, 27.0),
     plt.xticks(fontsize=18)
     #plt.title('T-S diagram at '+ str(p) + ' dbar', fontsize=22)
     plt.savefig(dploc + 'TS_all_levs' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'TS_all_levs' + descrip + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -2037,6 +2043,7 @@ def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-
         plt.xticks(fontsize=18)
         #plt.title('Class ' + str(nclass) , fontsize=22)
         plt.savefig(dploc + 'TS_multilev_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
+        plt.savefig(dploc + 'TS_multilev_class_' + str(nclass) + 'K' + descrip + '.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -2131,6 +2138,7 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
         plt.xticks(fontsize=18)
         #plt.title('Class ' + str(nclass) , fontsize=22)
         plt.savefig(dploc + 'TS_by' + timeShading + '_class_' + str(nclass) + 'K' + descrip + '.png', bbox_inches='tight')
+        plt.savefig(dploc + 'TS_by' + timeShading + '_class_' + str(nclass) + 'K' + descrip + '.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -2195,6 +2203,7 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
     plt.xlabel('Absolute salinity (psu)')
     plt.ylabel('Conservative temperature (°C)')
     plt.savefig(dploc + 'histogram_depth' + modStr + '.png', bbox_inches='tight')
+    plt.savefig(dploc + 'histogram_depth' + modStr + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -2253,6 +2262,7 @@ def plot_lon_split(ploc, df):
     plt.xticks(fontsize=fs)
     plt.yticks(fontsize=fs)
     plt.savefig(ploc + 'twogroup_CT.png', bbox_inches='tight')
+    plt.savefig(ploc + 'twogroup_CT.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
