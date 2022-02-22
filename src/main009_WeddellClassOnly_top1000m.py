@@ -34,7 +34,7 @@ warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
 descrip = 'WeddellOnly' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22_dev/'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forPaper/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -46,7 +46,7 @@ if not os.path.exists(ploc):
 myClass=1
 
 # calculate BIC and AIC? set max number of components
-getBIC = False
+getBIC = True
 max_N = 20
 
 # transformation method (pca, umap)
@@ -59,8 +59,8 @@ use_kernel_pca = False
 # save the processed output as a NetCDF file?
 saveOutput = False
 
-# number of PCA components
-n_pca = 6
+# number of PCA components (was 6)
+n_pca = 10
 
 # make decision about n_components_selected (iterative part of analysis)
 n_components_selected = 4
@@ -226,7 +226,7 @@ pt.plot_TS_withMeans(ploc, class_means, class_stds, n_components_selected, color
                      PTrange=Trange, SPrange=Srange)
 
 # plot 3D pca structure (now with class labels)
-pt.plot_pca3D(ploc, colormap, dfp, Xtrans, best_gmm, frac=0.90, withLabels=True)
+pt.plot_pca3D(ploc, colormap, dfp, Xtrans, frac=0.90, withLabels=True)
 
 # plot some single level T-S diagrams
 pt.plot_TS_single_lev(ploc, dfp, n_components_selected, colormap,

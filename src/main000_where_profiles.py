@@ -23,6 +23,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import matplotlib as mpl
+import xarray as xr
+import numpy as np
 ### os tools
 import os.path
 
@@ -33,7 +35,7 @@ import os.path
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_allDomain_top1000m_K05_forOSM22_dev/'
+ploc = 'plots/plots_allDomain_top1000m_K05_forPaper/'
 
 # if plot directory doesn't exist, create it
 if not os.path.exists(ploc):
@@ -104,8 +106,21 @@ pt.plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range, sou
 #pt.plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range, source='seal')
 pt.plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range, source='all', binsize=2)
 
-# make a separate colorbar
+# histogram of distribution by year
+xr.plot.hist(profiles.year, bins=np.arange(profiles.year.min(), profiles.year.max()+1))
+plt.xlabel('Year', fontsize=14)
+plt.ylabel('Number of profiles', fontsize=18)
+plt.savefig(ploc+'allDomain_hist_byYear.png',bbox_inches='tight')
+plt.savefig(ploc+'allDomain_hist_byYear.pdf',bbox_inches='tight')
+plt.close()
 
+# histogram of distribution by month
+xr.plot.hist(profiles.month, bins=np.arange(1,13))
+plt.xlabel('Month', fontsize=14)
+plt.ylabel('Number of profiles', fontsize=18)
+plt.savefig(ploc+'allDomain_hist_byMonth.png',bbox_inches='tight')
+plt.savefig(ploc+'allDomain_hist_byMonth.pdf',bbox_inches='tight')
+plt.close()
 
 #####################################################################
 # Data loading and plotting (Antarctic Class Only)
@@ -115,8 +130,12 @@ pt.plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range, sou
 descrip = 'WeddellOnly' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
 classified_data_location = 'models/profiles_-65to80lon_-85to-30lat_20to1000depth_5K_allDomain_revised.nc'
-ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forOSM22_dev/'
+ploc = 'plots/plots_WeddellClassOnly_top1000m_K04_forPaper/'
 dloc = 'models/'
+
+# if plot directory doesn't exist, create it
+if not os.path.exists(ploc):
+    os.makedirs(ploc)
 
 # single class from previous effort to sub-classify
 # don't forget 0 indexing
@@ -159,3 +178,19 @@ pt.plot_many_profiles(ploc, profiles_antarctic, frac = 0.10,
                       sig0min = sig0range[0], sig0max = sig0range[1],
                       alpha = 0.01, modStr = '',
                       colorVal = 'black')
+
+# histogram of distribution by year
+xr.plot.hist(profiles_antarctic.year, bins=np.arange(profiles_antarctic.year.min(), profiles_antarctic.year.max()+1))
+plt.xlabel('Year', fontsize=14)
+plt.ylabel('Number of profiles', fontsize=18)
+plt.savefig(ploc+'WeddellOnly_hist_byYear.png',bbox_inches='tight')
+plt.savefig(ploc+'WeddellOnly_hist_byYear.pdf',bbox_inches='tight')
+plt.close()
+
+# histogram of distribution by month
+xr.plot.hist(profiles_antarctic.month, bins=np.arange(1,13))
+plt.xlabel('Month', fontsize=14)
+plt.ylabel('Number of profiles', fontsize=18)
+plt.savefig(ploc+'WeddellOnly_hist_byMonth.png',bbox_inches='tight')
+plt.savefig(ploc+'WeddellOnly_hist_byMonth.pdf',bbox_inches='tight')
+plt.close()
