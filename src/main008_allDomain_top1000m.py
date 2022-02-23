@@ -36,7 +36,7 @@ warnings.filterwarnings('ignore', 'RuntimeWarning: All-NaN slice encountered')
 # set locations and names
 descrip = 'allDomain' # extra description for filename
 data_location = '../../so-chic-data/' # input data location
-ploc = 'plots/plots_allDomain_top1000m_K05_forOSM22/'
+ploc = 'plots/plots_allDomain_top1000m_K05_forPaper/'
 dloc = 'models/'
 
 # if plot directory doesn't exist, create it
@@ -58,7 +58,7 @@ use_kernel_pca = False
 saveOutput = False
 
 # number of PCA components
-# --- EXPLAINED VARIANCE Is = 0.95
+# --- EXPLAINED VARIANCE Is = 0.993
 n_pca = 6
 
 # make decision about n_components_selected (iterative part of analysis)
@@ -87,7 +87,8 @@ fname = dloc + 'profiles_' + str(int(lon_min)) + 'to' + str(int(lon_max)) + 'lon
 #
 # colormap (to be used across all plots)
 #
-colormap = plt.get_cmap('tab10', n_components_selected)
+colormap = plt.get_cmap('Dark2', n_components_selected)
+colormap_cividis = plt.get_cmap('cividis', 20)
 
 #####################################################################
 # Run the standard analysis stuff
@@ -298,12 +299,18 @@ pt.plot_label_map(ploc, dfp, n_components_selected, colormap,
 # calculate the i-metric
 df1D = dfp.isel(depth=0)
 df1D = gmm.calc_i_metric(profiles)
-pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
-pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
+
+# scatterplots
+#pt.plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max)
+#pt.plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
                                  lat_min, lat_max, n_components_selected)
-# i-metric, multiple panels, histogram style
-pt.plot_i_metric_multiple_panels_hist(ploc, df1D, lon_min, lon_max,
-                                 lat_min, lat_max, n_components_selected)
+
+# i-metric histogram
+pt.plot_hist_map(ploc, df1D, lon_range, lat_range,
+                 n_components_selected,
+                 c_range=(0,1),
+                 vartype='imetric',
+                 colormap=plt.get_cmap('cividis'))
 
 #####################################################################
 # Further analysis of time variation

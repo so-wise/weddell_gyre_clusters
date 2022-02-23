@@ -144,12 +144,12 @@ def plot_many_profiles(ploc, df, frac = 0.10,
 
    # extract DataArrays
    z = df_sample.depth.values
-   depth_highz = df_sample.depth_highz.values
+   #depth_highz = df_sample.depth_highz.values
    sig0_levs = df_sample.sig0_levs.values
    CT = df_sample.prof_CT.values
    SA = df_sample.prof_SA.values
    sig0 = df_sample.sig0.values
-   sig0_on_highz = df_sample.sig0_on_highz.values
+   #sig0_on_highz = df_sample.sig0_on_highz.values
    CTsig = df_sample.ct_on_sig0.values
    SAsig = df_sample.sa_on_sig0.values
 
@@ -763,7 +763,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
         #plt.xlim([33.6, 37.0])
 
         #text box
-        fs = 42 # font size
+        fs = 24 # font size
         plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
         plt.title('PC' + str(num) + ' (CT)', fontsize=fs)
@@ -801,7 +801,7 @@ def plot_pca_structure(ploc, profiles, pca, number_of_pca_components, zmin, zmax
         #plt.xlim([33.6, 37.0])
 
         #text box
-        fs = 42 # font size
+        fs = 24 # font size
         plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
         plt.title('PC' + str(num) + ' (SA)', fontsize=fs)
