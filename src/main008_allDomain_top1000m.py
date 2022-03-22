@@ -113,7 +113,7 @@ pt.prof_TS_sample_plots(ploc, profiles)
 # plot random profile
 pt.plot_profile(ploc, profiles.isel(profile=1000))
 
-# regrid onto density levels (maybe useful for plotting later?)
+# regrid onto density levels (maybe useful for plotting later)
 profiles = lp.regrid_onto_more_vertical_levels(profiles, zmin, zmax)
 profiles = lp.regrid_onto_density_levels(profiles)
 

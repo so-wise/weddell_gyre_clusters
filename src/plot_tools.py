@@ -352,20 +352,22 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
     ############# Temperature plot
 
     # initialize the figure
-    plt.figure(figsize=(30, 30))
+    plt.figure(figsize=(60, 30))
     plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
     # vertical coordinate
     z = profiles.depth.values
 
-    # iterate over groups
     num = 0
+
+    # iterate over groups
     for npca in range(pca.n_components):
-        num += 1
+
+        num = num + 1
 
         # select subplot
-        ax = plt.subplot(5,3,num)
+        ax = plt.subplot(2,6,num)
         plt.plot(pca_temp[npca,:], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
@@ -374,39 +376,40 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         #plt.xlim([33.6, 37.0])
 
         #text box
-        fs = 42 # font size
+        fs = 24 # font size
         plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('PC' + str(num) + ' (temp)', fontsize=fs)
+        plt.title('PC' + str(npca+1) + ' (Conservative temp.) ' + \
+                  '[' + str(round(pca.explained_variance_ratio_[npca]*100,1)) + '%]', fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
-        ax.tick_params(axis='x', labelsize=30)
-        ax.tick_params(axis='y', labelsize=30)
+        ax.tick_params(axis='x', labelsize=22)
+        ax.tick_params(axis='y', labelsize=22)
 
     # save figure and close
-    plt.savefig(ploc + 'pca_temp.png', bbox_inches='tight')
-    plt.savefig(ploc + 'pca_temp.pdf', bbox_inches='tight')
-    plt.show()
-    plt.close()
+    #plt.savefig(ploc + 'pca_temp.png', bbox_inches='tight')
+    #plt.savefig(ploc + 'pca_temp.pdf', bbox_inches='tight')
+    #plt.show()
+    #plt.close()
 
     ############# Salinity plot
 
     # initialize the figure
-    plt.figure(figsize=(30, 30))
-    plt.style.use('seaborn-darkgrid')
+    #plt.figure(figsize=(10, 60))
+    #plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
     # vertical coordinate
     z = profiles.depth.values
 
     # iterate over groups
-    num = 0
     for npca in range(pca.n_components):
-        num += 1
+
+        num = num + 1
 
         # select subplot
-        ax = plt.subplot(5,3,num)
+        ax = plt.subplot(2,6,num)
         plt.plot(pca_salt[npca,:], z, marker='', linestyle='solid',
                  color='black', linewidth=6.0, alpha=0.9)
 
@@ -415,19 +418,19 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         #plt.xlim([33.6, 37.0])
 
         #text box
-        fs = 42 # font size
+        fs = 24 # font size
         plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('PC' + str(num) + ' (salt)', fontsize=fs)
+        plt.title('PC' + str(npca+1) + ' (Absolute salinity)', fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
-        ax.tick_params(axis='x', labelsize=30)
-        ax.tick_params(axis='y', labelsize=30)
+        ax.tick_params(axis='x', labelsize=22)
+        ax.tick_params(axis='y', labelsize=22)
 
     # save figure and close
-    plt.savefig(ploc + 'pca_salt.png', bbox_inches='tight')
-    plt.savefig(ploc + 'pca_salt.pdf', bbox_inches='tight')
+    plt.savefig(ploc + 'pca_vertical.png', bbox_inches='tight')
+    plt.savefig(ploc + 'pca_vertical.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -1526,6 +1529,7 @@ def plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selec
 
     # p = 20 dbar
     dploc = ploc + 'dynamic_height/p0020dbar/'
+    print('----- Dynamic height: 20 dbar -----')
     if not os.path.exists(dploc):
         os.makedirs(dploc)
     # single pressure level
@@ -1536,6 +1540,7 @@ def plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selec
 
     # p = 100 dbar
     dploc = ploc + 'dynamic_height/p0100dbar/'
+    print('----- Dynamic height: 100 dbar -----')
     if not os.path.exists(dploc):
         os.makedirs(dploc)
     # single pressure level
@@ -1546,6 +1551,7 @@ def plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selec
 
     # p = 500 dbar
     dploc = ploc + 'dynamic_height/p0500dbar/'
+    print('----- Dynamic height: 500 dbar -----')
     if not os.path.exists(dploc):
         os.makedirs(dploc)
     # single pressure level
@@ -1556,6 +1562,7 @@ def plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selec
 
     # p = 1000 dbar
     dploc = ploc + 'dynamic_height/p1000dbar/'
+    print('----- Dynamic height: 1000 dbar -----')
     if not os.path.exists(dploc):
         os.makedirs(dploc)
     # single pressure level
@@ -1575,7 +1582,7 @@ def plot_hist_map(ploc, df1D,
                   colormap=plt.get_cmap('cividis'),
                   binsize=1,
                   bathy_fname='bathy.nc',
-                  lev_range=range(-6000,1,500)):
+                  lev_range=range(-6000,1,1000)):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -1611,7 +1618,7 @@ def plot_hist_map(ploc, df1D,
 
         # add bathymetry contours
         ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-                linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
+                linewidths=0.5, alpha=0.5, colors='gray', linestyles='-',
                 transform=ccrs.PlateCarree())
 
         # define histogram, calculate mean i-metric value in each bin
@@ -1682,7 +1689,7 @@ def plot_hist_map(ploc, df1D,
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
         ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
-                     linewidth=2, color='gray', alpha=0.5, linestyle='--')
+                     linewidth=1, color='gray', alpha=0.25, linestyle='--')
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure

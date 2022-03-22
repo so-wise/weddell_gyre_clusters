@@ -46,7 +46,7 @@ if not os.path.exists(ploc):
 myClass=1
 
 # calculate BIC and AIC? set max number of components
-getBIC = True 
+getBIC = True
 max_N = 20
 
 # transformation method (pca, umap)
@@ -269,7 +269,7 @@ dfp = density.calc_Nsquared(dfp)
 dfp = density.calc_mixed_layer_depth(dfp)
 
 # print mld stats
-density.calc_mld_stats(ploc, dfp, n_components_selected)
+density.calc_oneLevel_stats(ploc, df, n_components_selected, varname='mld')
 
 # plot some maps of the above
 pt.plot_dynamic_height_maps(ploc, dfp, lon_range, lat_range, n_components_selected)

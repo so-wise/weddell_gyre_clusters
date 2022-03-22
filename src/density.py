@@ -140,17 +140,17 @@ def calc_mixed_layer_depth(df):
 #####################################################################
 # MLD stats
 #####################################################################
-def calc_mld_stats(ploc, df, n_components_selected):
+def calc_oneLevel_stats(ploc, df, n_components_selected, varname='mld'):
 
     for iclass in range(n_components_selected):
 
         df1 = df.where(df.label==iclass, drop=True)
 
-        Qmin = df1.mld.min().values
-        Q25 = df1.mld.quantile(0.25, dim='profile').values
-        Q50 = df1.mld.quantile(0.50, dim='profile').values
-        Q75 = df1.mld.quantile(0.75, dim='profile').values
-        Qmax = df1.mld.max().values
+        Qmin = df1[varname].min().values
+        Q25 = df1[varname].quantile(0.25, dim='profile').values
+        Q50 = df1[varname].quantile(0.50, dim='profile').values
+        Q75 = df1[varname].quantile(0.75, dim='profile').values
+        Qmax = df1[varname].max().values
 
         print('class = ' + str(iclass))
         print('min / Q25 / Q50 / Q75 / max')
