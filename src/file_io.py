@@ -36,7 +36,7 @@ def load_front(file_name):
 #####################################################################
 # Load SOSE seaice freezing file (winter mean)
 #####################################################################
-def load_sose_SIfreeze(file_name="seaice/SIfreeze_SOSE.nc"):
+def load_sose_SIfreeze(file_name="physical_fields/SIfreeze_SOSE.nc"):
 
     # load sea ice files
     ds = xr.open_dataset(file_name)
