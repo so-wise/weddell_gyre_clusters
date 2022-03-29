@@ -82,6 +82,37 @@ def load_profile_data(data_location, lon_min, lon_max,
     return profiles
 
 #####################################################################
+# Load Ekman velocity (estimates from tau and oss)
+#####################################################################
+def load_ekman_vel(floc="../../so-chic-data/Stress_and_EKE/"):
+
+    # start message
+    print('load_and_preprocess.load_ekman_vel')
+
+    # open dataset
+    ds = xr.open_dataset(floc+"Ekmanvel.nc")
+
+    # sort by Longitude
+    ds = ds.sortby("longitude")
+
+    # return
+    return ds
+
+#####################################################################
+# Load Ekman velocity (estimates from tau and oss)
+#####################################################################
+def load_eke_and_geo(floc="../../so-chic-data/Stress_and_EKE/"):
+
+    # start message
+    print('load_and_preprocess.load_eke_and_geo')
+
+    # open dataset
+    ds = xr.open_dataset(floc+"geovel_eke_climatology.nc")
+
+    # return
+    return ds
+
+#####################################################################
 # Load Reeve climatology
 #####################################################################
 def load_reeve_climatology(floc="../../so-chic-data/WeddellGyre_OM/"):
