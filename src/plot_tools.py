@@ -1755,7 +1755,7 @@ def plot_seaice_freezing(ploc=" ", lon_min=-65, lon_max=80, lat_min=-70, lat_max
 #####################################################################
 # Plot t-SNE
 #####################################################################
-def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
+def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE, describe=''):
 
     print('plot_tools.plot_tsne')
 
@@ -1768,8 +1768,21 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE):
     #plt.colorbar(CS)
     plt.title("t-SNE")
     plt.axis('tight')
-    plt.savefig(ploc + 'tSNE' + '.png', bbox_inches='tight')
-    plt.savefig(ploc + 'tSNE' + '.pdf', bbox_inches='tight')
+    plt.savefig(ploc + 'tSNE' + describe + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'tSNE' + describe + '.pdf', bbox_inches='tight')
+    plt.show()
+    plt.close()
+    
+    # separate colorbar
+    a = np.array([[np.min(colors_for_tSNE), np.max(colors_for_tSNE)]])
+    plt.figure(figsize=(9, 1.5))
+    img = plt.imshow(a, cmap=colormap)
+    plt.gca().set_visible(False)
+    cax = plt.axes([0.1, 0.2, 0.8, 0.6])
+    cbar = plt.colorbar(orientation="horizontal", cax=cax)
+    cbar.ax.tick_params(labelsize=22)
+    plt.savefig(ploc + 'tSNE_colorbar' + describe + '.pdf', bbox_inches='tight')
+    plt.savefig(ploc + 'tSNE_colorbar' + describe + '.png', bbox_inches='tight')
     plt.show()
     plt.close()
 

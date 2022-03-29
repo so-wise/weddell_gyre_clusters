@@ -478,7 +478,7 @@ def apply_pca(profiles, pca, method='onZ'):
 # Fit and apply t-SNE
 #####################################################################
 def fit_and_apply_tsne(profiles, Xpca, random_state=0, perplexity=50,
-                       tsne_frac=0.10):
+                       tsne_frac=0.10, var_to_plot="label"):
 
     # sample size
     sample_size = np.min((int(tsne_frac*Xpca.shape[0]),int(Xpca.shape[0])))
@@ -486,7 +486,32 @@ def fit_and_apply_tsne(profiles, Xpca, random_state=0, perplexity=50,
     # random sample for tSNE plot
     rows_id = random.sample(range(0,Xpca.shape[0]), sample_size)
     Xpca_for_tSNE = Xpca[rows_id,:]
-    colors_for_tSNE = profiles.label[rows_id].values
+    
+    # select which variable to plot
+    if var_to_plot=="label":
+        colors_for_tSNE = profiles.label[rows_id].values
+    elif var_to_plot=="Tmin":
+        colors_for_tSNE = profiles.Tmin[rows_id].values
+    elif var_to_plot=="Tmax":
+        colors_for_tSNE = profiles.Tmax[rows_id].values
+    elif var_to_plot=="Smin":
+        colors_for_tSNE = profiles.Smin[rows_id].values
+    elif var_to_plot=="Smax":
+        colors_for_tSNE = profiles.Smax[rows_id].values
+    elif var_to_plot=="SA":
+        colors_for_tSNE = profiles.prof_SA[rows_id].values
+    elif var_to_plot=="CT":
+        colors_for_tSNE = profiles.prof_CT[rows_id].values
+    elif var_to_plot=="sig0":
+        colors_for_tNSE = profiles.sig0[rows_id].values
+    elif var_to_plot=="dyn_height":
+        colors_for_tSNE = profiles.dyn_height[rows_id].values
+    elif var_to_plot=="mld":
+        colors_for_tSNE = profiles.mld[rows_id].values
+    elif var_to_plot=="imetric":
+        colors_for_tSNE = profiles.imetric[rows_id].values
+    else:
+        colors_for_tSNE = profiles.label[rows_id].values
 
     # create tSNE object
     tsne = manifold.TSNE(n_components=2, init='random',
