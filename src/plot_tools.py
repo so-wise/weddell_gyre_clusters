@@ -2178,6 +2178,89 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
         plt.close()
 
 #####################################################################
+# Plot a histogram in T-S space for each class
+#####################################################################
+def plot_hist_TS(ploc, df1D, n_components_selected,
+                 sbins = np.arange(31, 38, 0.025),
+                 tbins = np.arange(-2, 32, 0.1),
+                 vartype='month',
+                 crange=[0, 100],
+                 colormap=cmocean.cm.phase):
+
+    # print out
+    print('plot_tools.plot_hist_map')
+
+    # subdirectory
+    dploc = ploc + 'TSdiagrams/'
+    if not os.path.exists(dploc):
+        os.makedirs(dploc)
+
+    # import packages
+    import gsw
+
+    # T-S grid for density reference lines
+    ctg, sag = np.meshgrid(tbins, sbins)
+    sig0_grid = gsw.density.sigma0(sag, ctg)
+
+    # loop over classes, create one histogram plot per class
+    for iclass in range(n_components_selected):
+
+        # random sample for plotting
+        df1 = df1D.where(df1D.label==iclass, drop=True)
+
+        # select variable
+        if vartype=="month":
+            myVar = df1.month
+            varName = 'Month'
+        elif vartype=="year":
+            myVar = df1.year
+            varName = 'Year'
+        elif vartype=="imetric":
+            myVar = df1.imetric
+            varName = 'I-metric'
+        elif vartype=="dyn_height":
+            myVar = df1.dyn_height
+            varName = 'Dynamic height (m)'
+        elif vartype=="mld":
+            myVar = df1.mld
+            varName = 'Mixed layer depth (m)'
+        else:
+            print("Options include: month, year, imetric, dyn_height, mld")
+
+        # histogram ()
+        hist_denominator = histogram(df1.prof_SA,
+                                     df1.prof_CT,
+                                     bins=[sbins, tbins])
+        hist_numerator = histogram(df1.prof_SA,
+                                   df1.prof_CT,
+                                   bins=[sbins, tbins],
+                                   weights=myVar)
+        histTS = hist_numerator/hist_denominator
+        histTS = histTS.T
+
+        # --- plot histogram
+        plt.figure(figsize=(10,10))
+
+        # TS histogram
+        if vartype=="month":
+            TS = histTS.plot(levels=12, cmap=colormap)
+        else:
+            TS = histTS.plot(levels=12, cmap=colormap, vmin=crange[0], vmax=crange[1])
+
+        # grid
+        CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
+        TS.colorbar.set_label(varName)
+        plt.clabel(CL, fontsize=14, inline=False, fmt='%.1f')
+        plt.xlabel('Absolute salinity (psu)')
+        plt.ylabel('Conservative temperature (°C)')
+        plt.xlim(sbins[0], sbins[-1])
+        plt.ylim(tbins[0], tbins[-1])
+        plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + '.png', bbox_inches='tight')
+        plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + '.pdf', bbox_inches='tight')
+        plt.show()
+        plt.close()
+
+#####################################################################
 # Volume histogram in T/S space
 #####################################################################
 def calc_and_plot_volume_histogram_TS(ploc, df,
@@ -2207,7 +2290,7 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
     sig0_grid = gsw.density.sigma0(sag, ctg)
 
     # create histogram
-    histTS = histogram(df1D.prof_SA, df1D.prof_CT, bins=[sbins,tbins])
+    histTS = histogram(df1D.prof_SA, df1D.prof_CT, bins=[sbins, tbins])
 
     # histogram ()
     # --
