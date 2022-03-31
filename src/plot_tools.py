@@ -121,13 +121,10 @@ def plot_many_profiles(ploc, df, frac = 0.10,
                        Tmin = -1.9, Tmax = 7.0,
                        Smin = 33.0, Smax = 35.0,
                        sig0min = 23.0, sig0max = 28.0,
-                       alpha = 0.05, modStr = '',
-                       colorVal = 'black'):
+                       alpha = 0.01, modStr = '',
+                       colorVal = 'black', fs = 14):
 
    print("plot_tools.plot_many_profiles")
-
-   # font size
-   fs = 14
 
    # p = 20 dbar
    dploc = ploc + 'profile_stats/'
@@ -179,13 +176,13 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    SAsig_q75 = df.sa_on_sig0.quantile(0.75, dim='profile').values
 
    # figure CT
-   fig1, ax1 = plt.subplots()
+   fig1, ax1 = plt.subplots(facecolor='white')
    for d in range(CT.shape[0]):
-       ax1.plot(CT[d,:], z, lw = 1, alpha = alpha, color = 'grey')
+       ax1.plot(CT[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(CT_q25, z, lw = 2, color = colorVal, linestyle='dashed')
-   ax1.plot(CT_median, z, lw = 2, color = colorVal)
-   ax1.plot(CT_q75, z, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(CT_q25, z, lw = 3, color = colorVal, linestyle='dashed')
+   ax1.plot(CT_median, z, lw = 3, color = colorVal)
+   ax1.plot(CT_q75, z, lw = 3, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Tmin, Tmax])
    ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
@@ -203,13 +200,13 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.close()
 
    # figure SA
-   fig1, ax1 = plt.subplots()
+   fig1, ax1 = plt.subplots(facecolor='white')
    for d in range(SA.shape[0]):
-       ax1.plot(SA[d,:], z, lw = 1, alpha = alpha, color = 'grey')
+       ax1.plot(SA[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(SA_q25, z, lw = 2, color = colorVal, linestyle='dashed')
-   ax1.plot(SA_median, z, lw = 2, color = colorVal)
-   ax1.plot(SA_q75, z, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(SA_q25, z, lw = 3, color = colorVal, linestyle='dashed')
+   ax1.plot(SA_median, z, lw = 3, color = colorVal)
+   ax1.plot(SA_q75, z, lw = 3, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
@@ -227,13 +224,13 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.close()
 
    # figure sig0
-   fig1, ax1 = plt.subplots()
+   fig1, ax1 = plt.subplots(facecolor='white')
    for d in range(sig0.shape[0]):
-       ax1.plot(sig0[d,:], z, lw = 1, alpha = alpha, color = 'grey')
+       ax1.plot(sig0[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(sig0_q25, z, lw = 2, color = colorVal, linestyle='dashed')
-   ax1.plot(sig0_median, z, lw = 2, color = colorVal)
-   ax1.plot(sig0_q75, z, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(sig0_q25, z, lw = 3, color = colorVal, linestyle='dashed')
+   ax1.plot(sig0_median, z, lw = 3, color = colorVal)
+   ax1.plot(sig0_q75, z, lw = 3, color = colorVal, linestyle='dashed')
    ax1.set_xlim([sig0min, sig0max])
    ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
@@ -251,13 +248,13 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.close()
 
    # figure CT sig
-   fig1, ax1 = plt.subplots()
+   fig1, ax1 = plt.subplots(facecolor='white')
    for d in range(CTsig.shape[0]):
-       ax1.plot(CTsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
+       ax1.plot(CTsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(CTsig_q25, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
-   ax1.plot(CTsig_median, sig0_levs, lw = 2, color = colorVal)
-   ax1.plot(CTsig_q75, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(CTsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
+   ax1.plot(CTsig_median, sig0_levs, lw = 3, color = colorVal)
+   ax1.plot(CTsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Tmin, Tmax])
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()
@@ -275,13 +272,13 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.close()
 
    # figure SA sig
-   fig1, ax1 = plt.subplots()
+   fig1, ax1 = plt.subplots(facecolor='white')
    for d in range(SAsig.shape[0]):
-       ax1.plot(SAsig[d,:], sig0_levs, lw = 1, alpha = alpha, color = 'grey')
+       ax1.plot(SAsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(SAsig_q25, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
-   ax1.plot(SAsig_median, sig0_levs, lw = 2, color = colorVal)
-   ax1.plot(SAsig_q75, sig0_levs, lw = 2, color = colorVal, linestyle='dashed')
+   ax1.plot(SAsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
+   ax1.plot(SAsig_median, sig0_levs, lw = 3, color = colorVal)
+   ax1.plot(SAsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
    ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([sig0min, sig0max])
    plt.gca().invert_yaxis()
@@ -437,7 +434,7 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
 #####################################################################
 # Plot PCA structure in 3D space (with or without class labels
 #####################################################################
-def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
+def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False, fs=14):
 
     # for the ellipses
     import numpy.linalg as la
@@ -480,6 +477,11 @@ def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
     ax.set_xlim(np.round(np.quantile(xyp[:,0], qlow)), np.round(np.quantile(xyp[:,0], qhi)))
     ax.set_ylim(np.round(np.quantile(xyp[:,1], qlow)), np.round(np.quantile(xyp[:,1], qhi)))
     ax.set_zlim(np.round(np.quantile(xyp[:,2], qlow)), np.round(np.quantile(xyp[:,2], qhi)))
+    ax.set_xlabel('PC1', fontsize=18)
+    ax.set_ylabel('PC2', fontsize=18)
+    plt.tick_params(axis='x', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view1' + '.png', bbox_inches='tight')
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view1' + '.pdf', bbox_inches='tight')
     plt.show()
@@ -493,6 +495,11 @@ def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
     ax.set_xlim(np.round(np.quantile(xyp[:,0], qlow)), np.round(np.quantile(xyp[:,0], qhi)))
     ax.set_ylim(np.round(np.quantile(xyp[:,1], qlow)), np.round(np.quantile(xyp[:,1], qhi)))
     ax.set_zlim(np.round(np.quantile(xyp[:,2], qlow)), np.round(np.quantile(xyp[:,2], qhi)))
+    ax.set_xlabel('PC1', fontsize=18)
+    ax.set_ylabel('PC2', fontsize=18)
+    plt.tick_params(axis='x', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view2' + '.png', bbox_inches='tight')
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view2' + '.pdf', bbox_inches='tight')
     plt.show()
@@ -506,6 +513,11 @@ def plot_pca3D(ploc, colormap, profiles, Xpca, frac=0.33, withLabels=False):
     ax.set_xlim(np.round(np.quantile(xyp[:,0], qlow)), np.round(np.quantile(xyp[:,0], qhi)))
     ax.set_ylim(np.round(np.quantile(xyp[:,1], qlow)), np.round(np.quantile(xyp[:,1], qhi)))
     ax.set_zlim(np.round(np.quantile(xyp[:,2], qlow)), np.round(np.quantile(xyp[:,2], qhi)))
+    ax.set_xlabel('PC1', fontsize=18)
+    ax.set_ylabel('PC2', fontsize=18)
+    plt.tick_params(axis='x', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view3' + '.png', bbox_inches='tight')
     plt.savefig(ploc + 'pca_scatter_' + labs + '_view3' + '.pdf', bbox_inches='tight')
     plt.show()
@@ -929,7 +941,7 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                                    Tmin=-3, Tmax=20,
                                    Smin=33.6, Smax=37.0,
                                    sig0min=26.0, sig0max=28.0,
-                                   frac=0.33, description='full'):
+                                   frac=0.1, description='full'):
 # note: the input 'df1' should contain only a single class/label!
 
     print('plot_tools.plot_class_vertical_structures')
@@ -947,12 +959,12 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
         df1_singleClass = df1.where(df1.label==nrow, drop=True)
 
         # call routine to plot many profiles
-        plot_many_profiles(ploc, df1_singleClass, frac=0.10,
+        plot_many_profiles(ploc, df1_singleClass, frac=frac,
                            zmin=zmin, zmax=zmax,
                            Tmin=Tmin, Tmax=Tmax,
                            Smin=Smin, Smax=Smax,
                            sig0min=sig0min, sig0max=sig0max,
-                           alpha=0.05,
+                           alpha=0.01,
                            modStr='Class'+str(nrow)+'z'+description,
                            colorVal=colorVal)
 
@@ -1582,7 +1594,8 @@ def plot_hist_map(ploc, df1D,
                   colormap=plt.get_cmap('cividis'),
                   binsize=1,
                   bathy_fname='bathy.nc',
-                  lev_range=range(-6000,1,1000)):
+                  lev_range=range(-6000,1,1000),
+                  legend_font_size=18):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -1618,7 +1631,7 @@ def plot_hist_map(ploc, df1D,
 
         # add bathymetry contours
         ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-                linewidths=0.5, alpha=0.5, colors='gray', linestyles='-',
+                linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
                 transform=ccrs.PlateCarree())
 
         # define histogram, calculate mean i-metric value in each bin
@@ -1684,12 +1697,14 @@ def plot_hist_map(ploc, df1D,
         l_sbdy = mpatches.Rectangle((0, 0), 1, 1, facecolor="yellow")
         labels = ['SAF', 'PF', 'SACCF', 'SBDY']
         plt.legend([l_saf, l_pf, l_saccf, l_sbdy], labels,
-                   loc='lower right', fancybox=True)
+                   loc='lower right', frameon=True, fontsize=legend_font_size)
 
         #plt.colorbar(CS)
         ax.coastlines(resolution='50m')
-        ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
-                     linewidth=1, color='gray', alpha=0.25, linestyle='--')
+        gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                          linewidth=1, color='gray', alpha=0.25, linestyle='--')
+        gl.top_labels = False
+        gl.right_labels = False
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
@@ -1772,7 +1787,7 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE, describe=''):
     plt.savefig(ploc + 'tSNE' + describe + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
-    
+
     # separate colorbar
     a = np.array([[np.min(colors_for_tSNE), np.max(colors_for_tSNE)]])
     plt.figure(figsize=(9, 1.5))
