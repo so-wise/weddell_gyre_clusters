@@ -248,6 +248,7 @@ def preprocess_time_and_date(profiles):
     time =  np.zeros((nsize,), dtype='datetime64[s]')
     month = np.zeros((nsize,), dtype='int')
     year =  np.zeros((nsize,), dtype='int')
+    season = np.zeros((nsize,), dtype='int')
 
     # loop over all values, convert do datetime64[s]
     for i in range(nsize):
@@ -272,19 +273,34 @@ def preprocess_time_and_date(profiles):
 
     # convert to pandas datetime (may not may not end up using this)
     #time_pd = pd.to_datetime(time)
+    
+    # assign season based on the month (1=DJF, 2=MAM, 3=JJA, 4=SON)
+    for i in range(nsize):
+        if (month[i]==12 or month[i]==1 or month[i]==2):
+            season[i] = 0
+        elif (month[i]==3 or month[i]==4 or month[i]==5):
+            season[i] = 1
+        elif (month[i]==6 or month[i]==7 or month[i]==8):
+            season[i] = 2
+        elif (month[i]==9 or month[i]==10 or month[i]==11):
+            season[i] = 3
+        else:
+            season[i] = None
 
     # convert time array into a DataArray, add to Dataset
     da = xr.DataArray(time, dims=['profile'])
     profiles['time'] = da
 
-    # do the same for year and month
+    # do the same for year, month, and season
     dy = xr.DataArray(year, dims=['profile'])
     profiles['year'] = dy
     dm = xr.DataArray(month, dims=['profile'])
     profiles['month'] = dm
+    dseason = xr.DataArray(season, dims=['profile'])
+    profiles['season'] = dseason
 
     # set time, year, month as coordinates
-    profiles = profiles.set_coords({'time','year','month'})
+    profiles = profiles.set_coords({'time','year','month','season'})
 
     # examine Dataset again
     return profiles

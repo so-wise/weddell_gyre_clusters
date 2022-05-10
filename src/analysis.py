@@ -8,6 +8,74 @@ import xarray as xr
 import plot_tools as pt
 
 #####################################################################
+# Calculate stats of a particular quantity over time 
+#####################################################################
+def calculate_stats_over_time(df, varName='Tmax'):
+
+    print('analysis.calculate_stats_over_time')
+
+    # Use original profile dataset for interannual variability
+    yearMin = int(df.year.values.min())
+    yearMax = int(df.year.values.max())
+    Nyears = yearMax - yearMin + 1
+    labelMax = int(df.label.values.max())
+    
+    # create array of NaNs 
+    f_mean = np.empty((labelMax+1, Nyears, 4))
+    f_mean[:] = np.nan
+    f_std = np.empty((labelMax+1, Nyears, 4))
+    f_std[:] = np.nan
+    f_N = np.empty((labelMax+1, Nyears, 4))
+    f_N[:] = np.nan
+    
+    # Loop over classes and years
+    for k in range(0, labelMax + 1):
+        
+        year_index = -1
+
+        for yr in range(yearMin, yearMax + 1):
+            
+            year_index = year_index + 1
+            
+            for sn in range(1, 5):
+                
+                season_index = sn - 1
+
+                # construct the mask
+                myMask = (df.year==yr) & (df.label==k) & (df.season==sn)
+
+                # only calculate if there are profiles in this set
+                if (myMask.max()==True):
+
+                    # use mask to select profiles
+                    df1y = df.where(myMask, drop=True)
+                    
+                    # select variable
+                    if varName=="Tmax":
+                        f = df1y.Tmax
+                    elif varName=="Smax":
+                        f = df1y.Smax
+                    elif varName=="sig0max":
+                        f = df1y.sig0max
+                    elif varName=="Tmin":
+                        f = df1y.Tmin
+                    elif varName=="Smin":
+                        f = df1y.Smin
+                    elif varName=="sig0min":
+                        f = df1y.sig0min
+                    elif varName=="mld":
+                        f = df1y.mld
+                    else:
+                        print("varName options include: Tmax, Smax, sig0max, Tmin, Smin, sig0min, mld")
+                    
+                    # save f stats
+                    f_mean[k,year_index,season_index] = f.values.mean()
+                    f_std[k,year_index,season_index] = f.values.std()
+                    f_N[k,year_index,season_index] = f.profile.size
+                    
+    return f_mean, f_std, f_N
+
+#####################################################################
 # Select profiles within a rectangular box
 #####################################################################
 def split_single_class_by_box(df, class_split, box_edges):

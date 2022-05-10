@@ -122,7 +122,8 @@ def plot_many_profiles(ploc, df, frac = 0.10,
                        Smin = 33.0, Smax = 35.0,
                        sig0min = 23.0, sig0max = 28.0,
                        alpha = 0.01, modStr = '',
-                       colorVal = 'black', fs = 14):
+                       colorVal = 'black', fs = 14, 
+                       withDensity=True):
 
    print("plot_tools.plot_many_profiles")
 
@@ -142,13 +143,14 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    # extract DataArrays
    z = df_sample.depth.values
    #depth_highz = df_sample.depth_highz.values
-   sig0_levs = df_sample.sig0_levs.values
    CT = df_sample.prof_CT.values
    SA = df_sample.prof_SA.values
-   sig0 = df_sample.sig0.values
-   #sig0_on_highz = df_sample.sig0_on_highz.values
-   CTsig = df_sample.ct_on_sig0.values
-   SAsig = df_sample.sa_on_sig0.values
+   if withDensity==True:
+       sig0_levs = df_sample.sig0_levs.values
+       sig0 = df_sample.sig0.values
+       #sig0_on_highz = df_sample.sig0_on_highz.values
+       CTsig = df_sample.ct_on_sig0.values
+       SAsig = df_sample.sa_on_sig0.values
 
    # Rechunk into a single dask array chunk along the "profile" dimension
    # --- this was necessary to get rid of a "core dimension" error
@@ -157,23 +159,26 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    # 0.25 quantile
    CT_q25 = df.prof_CT.quantile(0.25, dim='profile').values
    SA_q25 = df.prof_SA.quantile(0.25, dim='profile').values
-   sig0_q25 = df.sig0.quantile(0.25, dim='profile').values
-   CTsig_q25 = df.ct_on_sig0.quantile(0.25, dim='profile').values
-   SAsig_q25 = df.sa_on_sig0.quantile(0.25, dim='profile').values
+   if withDensity==True:
+       sig0_q25 = df.sig0.quantile(0.25, dim='profile').values
+       CTsig_q25 = df.ct_on_sig0.quantile(0.25, dim='profile').values
+       SAsig_q25 = df.sa_on_sig0.quantile(0.25, dim='profile').values
 
    # median values
    CT_median = df.prof_CT.quantile(0.50, dim='profile').values
    SA_median = df.prof_SA.quantile(0.50, dim='profile').values
-   sig0_median = df.sig0.quantile(0.50, dim='profile').values
-   CTsig_median = df.ct_on_sig0.quantile(0.50, dim='profile').values
-   SAsig_median = df.sa_on_sig0.quantile(0.50, dim='profile').values
+   if withDensity==True:
+       sig0_median = df.sig0.quantile(0.50, dim='profile').values
+       CTsig_median = df.ct_on_sig0.quantile(0.50, dim='profile').values
+       SAsig_median = df.sa_on_sig0.quantile(0.50, dim='profile').values
 
    # 0.75 quantile
    CT_q75 = df.prof_CT.quantile(0.75, dim='profile').values
    SA_q75 = df.prof_SA.quantile(0.75, dim='profile').values
-   sig0_q75 = df.sig0.quantile(0.75, dim='profile').values
-   CTsig_q75 = df.ct_on_sig0.quantile(0.75, dim='profile').values
-   SAsig_q75 = df.sa_on_sig0.quantile(0.75, dim='profile').values
+   if withDensity==True:
+       sig0_q75 = df.sig0.quantile(0.75, dim='profile').values
+       CTsig_q75 = df.ct_on_sig0.quantile(0.75, dim='profile').values
+       SAsig_q75 = df.sa_on_sig0.quantile(0.75, dim='profile').values
 
    # figure CT
    fig1, ax1 = plt.subplots(facecolor='white')
@@ -224,76 +229,77 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.close()
 
    # figure sig0
-   fig1, ax1 = plt.subplots(facecolor='white')
-   for d in range(sig0.shape[0]):
-       ax1.plot(sig0[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
+   if withDensity==True:
+       fig1, ax1 = plt.subplots(facecolor='white')
+       for d in range(sig0.shape[0]):
+           ax1.plot(sig0[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(sig0_q25, z, lw = 3, color = colorVal, linestyle='dashed')
-   ax1.plot(sig0_median, z, lw = 3, color = colorVal)
-   ax1.plot(sig0_q75, z, lw = 3, color = colorVal, linestyle='dashed')
-   ax1.set_xlim([sig0min, sig0max])
-   ax1.set_ylim([zmin, zmax])
-   plt.gca().invert_yaxis()
-   plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
-   plt.ylabel('Depth (m)', fontsize=fs)
-   ax1.tick_params(axis='x', labelsize=fs)
-   ax1.tick_params(axis='y', labelsize=fs)
-   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   #plt.title(modStr, fontsize=fs)
-   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
-            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(dploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
-   plt.savefig(dploc + modStr + 'many_profiles_sig0.pdf', bbox_inches='tight')
-   plt.show()
-   plt.close()
+       ax1.plot(sig0_q25, z, lw = 3, color = colorVal, linestyle='dashed')
+       ax1.plot(sig0_median, z, lw = 3, color = colorVal)
+       ax1.plot(sig0_q75, z, lw = 3, color = colorVal, linestyle='dashed')
+       ax1.set_xlim([sig0min, sig0max])
+       ax1.set_ylim([zmin, zmax])
+       plt.gca().invert_yaxis()
+       plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
+       plt.ylabel('Depth (m)', fontsize=fs)
+       ax1.tick_params(axis='x', labelsize=fs)
+       ax1.tick_params(axis='y', labelsize=fs)
+       #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+       #plt.title(modStr, fontsize=fs)
+       plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
+                ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+       plt.savefig(dploc + modStr + 'many_profiles_sig0.png', bbox_inches='tight')
+       plt.savefig(dploc + modStr + 'many_profiles_sig0.pdf', bbox_inches='tight')
+       plt.show()
+       plt.close()
 
-   # figure CT sig
-   fig1, ax1 = plt.subplots(facecolor='white')
-   for d in range(CTsig.shape[0]):
-       ax1.plot(CTsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
+       # figure CT sig
+       fig1, ax1 = plt.subplots(facecolor='white')
+       for d in range(CTsig.shape[0]):
+           ax1.plot(CTsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(CTsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-   ax1.plot(CTsig_median, sig0_levs, lw = 3, color = colorVal)
-   ax1.plot(CTsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-   ax1.set_xlim([Tmin, Tmax])
-   ax1.set_ylim([sig0min, sig0max])
-   plt.gca().invert_yaxis()
-   plt.xlabel('Conservative temperature (°C)', fontsize=fs)
-   plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
-   ax1.tick_params(axis='x', labelsize=fs)
-   ax1.tick_params(axis='y', labelsize=fs)
-   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   #plt.title(modStr, fontsize=fs)
-   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
-            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(dploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
-   plt.savefig(dploc + modStr + 'many_profiles_CTsig.pdf', bbox_inches='tight')
-   plt.show()
-   plt.close()
+       ax1.plot(CTsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
+       ax1.plot(CTsig_median, sig0_levs, lw = 3, color = colorVal)
+       ax1.plot(CTsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
+       ax1.set_xlim([Tmin, Tmax])
+       ax1.set_ylim([sig0min, sig0max])
+       plt.gca().invert_yaxis()
+       plt.xlabel('Conservative temperature (°C)', fontsize=fs)
+       plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
+       ax1.tick_params(axis='x', labelsize=fs)
+       ax1.tick_params(axis='y', labelsize=fs)
+       #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+       #plt.title(modStr, fontsize=fs)
+       plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
+                ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+       plt.savefig(dploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
+       plt.savefig(dploc + modStr + 'many_profiles_CTsig.pdf', bbox_inches='tight')
+       plt.show()
+       plt.close()
 
-   # figure SA sig
-   fig1, ax1 = plt.subplots(facecolor='white')
-   for d in range(SAsig.shape[0]):
-       ax1.plot(SAsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
+       # figure SA sig
+       fig1, ax1 = plt.subplots(facecolor='white')
+       for d in range(SAsig.shape[0]):
+           ax1.plot(SAsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
 
-   ax1.plot(SAsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-   ax1.plot(SAsig_median, sig0_levs, lw = 3, color = colorVal)
-   ax1.plot(SAsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-   ax1.set_xlim([Smin, Smax])
-   ax1.set_ylim([sig0min, sig0max])
-   plt.gca().invert_yaxis()
-   plt.xlabel('Absolute salinity (psu)', fontsize=fs)
-   plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
-   ax1.tick_params(axis='x', labelsize=fs)
-   ax1.tick_params(axis='y', labelsize=fs)
-   #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   #plt.title(modStr, fontsize=fs)
-   plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
-            ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-   plt.savefig(dploc + modStr + 'many_profiles_SAsig.pdf', bbox_inches='tight')
-   plt.savefig(dploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
-   plt.show()
-   plt.close()
+       ax1.plot(SAsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
+       ax1.plot(SAsig_median, sig0_levs, lw = 3, color = colorVal)
+       ax1.plot(SAsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
+       ax1.set_xlim([Smin, Smax])
+       ax1.set_ylim([sig0min, sig0max])
+       plt.gca().invert_yaxis()
+       plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+       plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
+       ax1.tick_params(axis='x', labelsize=fs)
+       ax1.tick_params(axis='y', labelsize=fs)
+       #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+       #plt.title(modStr, fontsize=fs)
+       plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
+                ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+       plt.savefig(dploc + modStr + 'many_profiles_SAsig.pdf', bbox_inches='tight')
+       plt.savefig(dploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
+       plt.show()
+       plt.close()
 
 #####################################################################
 # Plot single profile
@@ -428,6 +434,113 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
     # save figure and close
     plt.savefig(ploc + 'pca_vertical.png', bbox_inches='tight')
     plt.savefig(ploc + 'pca_vertical.pdf', bbox_inches='tight')
+    plt.show()
+    plt.close()
+    
+########################################################################
+# Plot helper: add Gaussian ellipse
+########################################################################
+def add_ellipse(means, cov, ax, n_std=1.0, facecolor='none'):
+    
+    from matplotlib.patches import Ellipse
+    import matplotlib.transforms as transforms
+    
+    pearson = cov[0, 1]/np.sqrt(cov[0, 0] * cov[1, 1])
+    ell_radius_x = np.sqrt(1 + pearson)
+    ell_radius_y = np.sqrt(1 - pearson)
+    ellipse = Ellipse((0, 0),
+                      width=ell_radius_x * 2,
+                      height=ell_radius_y * 2,
+                      facecolor='black')
+    
+    scale_x = np.sqrt(cov[0, 0]) * n_std
+    mean_x = means[0]
+
+    # calculating the stdandard deviation of y ...
+    scale_y = np.sqrt(cov[1, 1]) * n_std
+    mean_y = means[1]
+
+    transf = transforms.Affine2D() \
+        .rotate_deg(45) \
+        .scale(scale_x, scale_y) \
+        .translate(mean_x, mean_y)
+
+    ellipse.set_transform(transf + ax.transData)
+    return ax.add_patch(ellipse)
+    
+########################################################################
+# Plot PCA structure in 2D space (still need to add gaussian ellipses)
+########################################################################
+def plot_pca2D(ploc, colormap, profiles, Xpca, pca, gmm, frac=0.33, withLabels=False, fs=14):
+
+    import random
+
+    # start message
+    print('plot_tools.plot_pca2D')
+
+    # just to shorten the names
+    xy=Xpca
+
+    # if plot with label
+    if withLabels==True:
+        labels=profiles.label.values
+
+    # random sample
+    rsample_size = int(frac*xy.shape[0])
+    rows_id = random.sample(range(0,xy.shape[0]-1), rsample_size)
+
+    # select radom sample in xy and color
+    xyp = xy[rows_id,:]
+
+    if withLabels==True:
+        c = labels[rows_id]
+        labs='labelled'
+    else:
+        c = [[ 0.267004,  0.004874,  0.329415,  1.  ]]
+        labs='nolabels'
+
+    # 2D scatterplots
+
+    # view 1
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot()
+    CS = ax.scatter(xyp[:,0], xyp[:,1], s=1.5, c=c, marker='o', cmap=colormap)
+    ax.set_xlabel('PC1', fontsize=18)
+    ax.set_ylabel('PC2', fontsize=18)
+    plt.grid()
+    #add_ellipse(means, cov, ax, n_std=1.0, facecolor='none')
+    plt.tick_params(axis='x', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
+    plt.savefig(ploc + 'pca_2Dscatter_' + labs + '_view1' + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'pca_2Dscatter_' + labs + '_view1' + '.pdf', bbox_inches='tight')
+    plt.show()
+    plt.close()
+    
+    # view 2
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot()
+    CS = ax.scatter(xyp[:,2], xyp[:,1], s=1.5, c=c, marker='o', cmap=colormap)
+    ax.set_xlabel('PC3', fontsize=18)
+    ax.set_ylabel('PC2', fontsize=18)
+    plt.grid()
+    plt.tick_params(axis='x', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
+    plt.savefig(ploc + 'pca_2Dscatter_' + labs + '_view2' + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'pca_2Dscatter_' + labs + '_view2' + '.pdf', bbox_inches='tight')
+    plt.show()
+    plt.close()
+    
+    # view 3
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot()
+    CS = ax.scatter(xyp[:,2], xyp[:,0], s=1.5, c=c, marker='o', cmap=colormap)
+    ax.set_xlabel('PC3', fontsize=18)
+    ax.set_ylabel('PC1', fontsize=18)
+    plt.grid()
+    plt.tick_params(axis='x', labelsize=fs)
+    plt.tick_params(axis='y', labelsize=fs)
+    plt.savefig(ploc + 'pca_2Dscatter_' + labs + '_view3' + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'pca_2Dscatter_' + labs + '_view3' + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -941,8 +1054,8 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                                    Tmin=-3, Tmax=20,
                                    Smin=33.6, Smax=37.0,
                                    sig0min=26.0, sig0max=28.0,
-                                   frac=0.1, description='full'):
-# note: the input 'df1' should contain only a single class/label!
+                                   frac=0.1, description='full', 
+                                   withDensity=True):
 
     print('plot_tools.plot_class_vertical_structures')
 
@@ -966,7 +1079,8 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                            sig0min=sig0min, sig0max=sig0max,
                            alpha=0.01,
                            modStr='Class'+str(nrow)+'z'+description,
-                           colorVal=colorVal)
+                           colorVal=colorVal, 
+                           withDensity=withDensity)
 
 #####################################################################
 # Plot mean and stdev salinity class structure
@@ -1853,10 +1967,18 @@ def plot_seaice_freezing(ploc=" ", lon_min=-65, lon_max=80, lat_min=-70, lat_max
 def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE, describe=''):
 
     print('plot_tools.plot_tsne')
+    
+    # make sure axis with largest range is the x-axis
+    if np.max(tSNE_data[0])>=np.max(tSNE_data[1]):
+        xp = tSNE_data[0]
+        yp = tSNE_data[1]
+    else:
+        xp = tSNE_data[1]
+        yp = tSNE_data[0]
 
     # scatterplot
-    CS = plt.scatter(tSNE_data[0],
-                     tSNE_data[1],
+    CS = plt.scatter(xp,
+                     yp,
                      cmap=colormap,
                      s=10.0,
                      c=colors_for_tSNE)
@@ -2265,7 +2387,8 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
                  tbins = np.arange(-2, 32, 0.1),
                  vartype='month',
                  crange=[0, 100],
-                 colormap=cmocean.cm.phase):
+                 colormap=cmocean.cm.phase,
+                 moreText=''):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -2335,8 +2458,8 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         plt.ylabel('Conservative temperature (°C)')
         plt.xlim(sbins[0], sbins[-1])
         plt.ylim(tbins[0], tbins[-1])
-        plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + '.png', bbox_inches='tight')
-        plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + '.pdf', bbox_inches='tight')
+        plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + moreText + '.png', bbox_inches='tight')
+        plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + moreText + '.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -2627,3 +2750,44 @@ def plot_lon_split(ploc, df):
     plt.savefig(ploc + 'twogroup_SA_onSig0.png', bbox_inches='tight')
     plt.show()
     plt.close()
+
+#####################################################################
+# Plot statistics from analysis.calculate_stats_over_time 
+#####################################################################
+def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_components_selected, varName='Blank'):
+    
+    # use t-test for 95% confidence interval in the mean
+    # slightly dodgy assumption that samples are independent
+    from scipy.stats import t
+    alpha = 0.025
+    tvals = t.ppf(1 - alpha, df=f_N)
+    
+    # select colormap
+    cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
+    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
+    
+    # calculate years for x-axis
+    years = range(int(df.year.values.min()), int(df.year.values.max())+1)
+    
+    iclass = 0
+    iseason = 0
+    
+    for iclass in range(0,4):
+        
+        colorVal = scalarMap.to_rgba(iclass)
+        
+        for iseason in range(0,4):
+    
+            f_sample_mean = f_mean[iclass,:,iseason]
+            f_SE = f_std[iclass,:,iseason]/np.sqrt(Tmax_N[iclass,:,iseason])
+            tval_select = tval[iclass,:,iseason]
+
+            plt.figure(figsize=(6,4))
+            plt.plot(years, f_sample_mean, color=colorVal, linestyle='-')
+            plt.plot(years, f_sample_mean + f_SE*tval_select, color=colorVal, linestyle='--')
+            plt.plot(years, f_sample_mean - f_SE*tval_select, color=colorVal, linestyle='--')
+            plt.title('Class ' + str(iclass) + ', season ' + str(iseason))
+            plt.savefig(ploc + varName + '_stats' + '_class' + str(iclass) + '_season' + str(iseason) + '.png')
+            plt.savefig(ploc + varName + '_stats' + '_class' + str(iclass) + '_season' + str(iseason) + '.pdf')
+            plt.show()
+            plt.close()
