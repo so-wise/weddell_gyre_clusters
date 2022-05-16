@@ -53,20 +53,26 @@ def calculate_stats_over_time(df, varName='Tmax'):
                     # select variable
                     if varName=="Tmax":
                         f = df1y.Tmax
+                    elif varName=="Tmax_depth":
+                        f = df1y.Tmax_depth
                     elif varName=="Smax":
                         f = df1y.Smax
                     elif varName=="sig0max":
                         f = df1y.sig0max
                     elif varName=="Tmin":
                         f = df1y.Tmin
+                    elif varName=="Tmin_depth":
+                        f = df1y.Tmin_depth
                     elif varName=="Smin":
                         f = df1y.Smin
                     elif varName=="sig0min":
                         f = df1y.sig0min
                     elif varName=="mld":
                         f = df1y.mld
+                    elif varName=="Nsquared_surface":
+                        f = df1y.Nsquared.isel(depth_mid=0)
                     else:
-                        print("varName options include: Tmax, Smax, sig0max, Tmin, Smin, sig0min, mld")
+                        print("varName options include: Tmax, Smax, sig0max, Tmin, Smin, sig0min, mld, Nsquared_surf")
                     
                     # save f stats
                     f_mean[k,year_index,season_index] = f.values.mean()

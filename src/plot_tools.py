@@ -1857,6 +1857,14 @@ def plot_hist_map(ploc, df1D,
                 myVar = df1.dyn_height
             elif vartype=="mld":
                 myVar = df1.mld
+            elif vartype=="Tmin_depth":
+                myVar = df1.Tmin_depth
+            elif vartype=="Tmax_depth":
+                myVar = df1.Tmax_depth
+            elif vartype=="Smin_depth":
+                myVar = df1.Smin_depth
+            elif vartype=="Smax_depth":
+                myVar = df1.Smax_depth
             else:
                 print("Options include: Tsurf, Ssurf, sig0surf, Tmin, Smin, sig0min, \
                        Tmax, Smax, sig0max, imetric, dyn_height, mld")
@@ -2754,12 +2762,11 @@ def plot_lon_split(ploc, df):
 #####################################################################
 # Plot statistics from analysis.calculate_stats_over_time 
 #####################################################################
-def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_components_selected, varName='Blank'):
+def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_components_selected, varName='Blank', xlim=[], ylim=[], alpha=0.025):
     
     # use t-test for 95% confidence interval in the mean
     # slightly dodgy assumption that samples are independent
     from scipy.stats import t
-    alpha = 0.025
     tvals = t.ppf(1 - alpha, df=f_N)
     
     # select colormap
@@ -2768,6 +2775,12 @@ def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_component
     
     # calculate years for x-axis
     years = range(int(df.year.values.min()), int(df.year.values.max())+1)
+    
+    # class names string
+    class_str = ["ACC South", "Gyre", "SBDY South", "Ventilated"]
+    
+    # season string
+    season_str = ["DJF", "MAM", "JJA", "SON"]
     
     iclass = 0
     iseason = 0
@@ -2779,14 +2792,20 @@ def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_component
         for iseason in range(0,4):
     
             f_sample_mean = f_mean[iclass,:,iseason]
-            f_SE = f_std[iclass,:,iseason]/np.sqrt(Tmax_N[iclass,:,iseason])
-            tval_select = tval[iclass,:,iseason]
+            f_SE = f_std[iclass,:,iseason]/np.sqrt(f_N[iclass,:,iseason])
+            tval_select = tvals[iclass,:,iseason]
 
-            plt.figure(figsize=(6,4))
+            plt.figure(figsize=(8,4))
             plt.plot(years, f_sample_mean, color=colorVal, linestyle='-')
             plt.plot(years, f_sample_mean + f_SE*tval_select, color=colorVal, linestyle='--')
             plt.plot(years, f_sample_mean - f_SE*tval_select, color=colorVal, linestyle='--')
-            plt.title('Class ' + str(iclass) + ', season ' + str(iseason))
+            plt.title('Class ' + class_str[iclass] + ', ' + season_str[iseason])
+            
+            if xlim:
+                plt.xlim(xlim[0],xlim[1])
+            if ylim:
+                plt.ylim(ylim[0],ylim[1])
+            
             plt.savefig(ploc + varName + '_stats' + '_class' + str(iclass) + '_season' + str(iseason) + '.png')
             plt.savefig(ploc + varName + '_stats' + '_class' + str(iclass) + '_season' + str(iseason) + '.pdf')
             plt.show()
