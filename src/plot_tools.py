@@ -1709,7 +1709,8 @@ def plot_hist_map(ploc, df1D,
                   binsize=1,
                   bathy_fname='bathy.nc',
                   lev_range=range(-6000,1,1000),
-                  legend_font_size=18):
+                  legend_font_size=18,
+                  moreText=''):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -1791,8 +1792,8 @@ def plot_hist_map(ploc, df1D,
         ax.add_feature(cartopy.feature.LAND)
 
         # save figure
-        plt.savefig(dploc + 'hist_' + vartype + '_labels.png', bbox_inches='tight')
-        plt.savefig(dploc + 'hist_' + vartype + '_labels.pdf', bbox_inches='tight')
+        plt.savefig(dploc + 'hist_' + vartype + moreText + '_labels.png', bbox_inches='tight')
+        plt.savefig(dploc + 'hist_' + vartype + moreText + '_labels.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -1910,8 +1911,8 @@ def plot_hist_map(ploc, df1D,
             ax.add_feature(cartopy.feature.LAND)
 
             # save figure
-            plt.savefig(dploc + 'hist_' + vartype + '_' + str(int(iclass)) + 'K.png', bbox_inches='tight')
-            plt.savefig(dploc + 'hist_' + vartype + '_' + str(int(iclass)) + 'K.pdf', bbox_inches='tight')
+            plt.savefig(dploc + 'hist_' + vartype + '_' + moreText + str(int(iclass)) + 'K.png', bbox_inches='tight')
+            plt.savefig(dploc + 'hist_' + vartype + '_' + moreText + str(int(iclass)) + 'K.pdf', bbox_inches='tight')
             plt.show()
             plt.close()
 
@@ -2432,11 +2433,14 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         elif vartype=="dyn_height":
             myVar = df1.dyn_height
             varName = 'Dynamic height (m)'
+        elif vartype=="sig0":
+            myVar = df1.sig0
+            varName = '\sigma_0'
         elif vartype=="mld":
             myVar = df1.mld
             varName = 'Mixed layer depth (m)'
         else:
-            print("Options include: month, year, imetric, dyn_height, mld")
+            print("Options include: month, year, imetric, dyn_height, sig0, mld")
 
         # histogram ()
         hist_denominator = histogram(df1.prof_SA,
@@ -2777,7 +2781,7 @@ def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_component
     years = range(int(df.year.values.min()), int(df.year.values.max())+1)
     
     # class names string
-    class_str = ["ACC South", "Gyre", "SBDY South", "Ventilated"]
+    class_str = ["ACC", "Gyre", "Transition", "Ventilated"]
     
     # season string
     season_str = ["DJF", "MAM", "JJA", "SON"]
