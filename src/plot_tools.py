@@ -2397,7 +2397,8 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
                  vartype='month',
                  crange=[0, 100],
                  colormap=cmocean.cm.phase,
-                 moreText=''):
+                 moreText='',
+                 fs=16.0):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -2465,16 +2466,18 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         # grid
         CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
         TS.colorbar.set_label(varName)
-        plt.clabel(CL, fontsize=14, inline=False, fmt='%.1f')
-        plt.xlabel('Absolute salinity (psu)')
-        plt.ylabel('Conservative temperature (°C)')
+        plt.clabel(CL, fontsize=fs, inline=False, fmt='%.1f') 
+        plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+        plt.ylabel('Conservative temperature (°C)', fontsize=fs)
         plt.xlim(sbins[0], sbins[-1])
         plt.ylim(tbins[0], tbins[-1])
+        plt.xticks(fontsize=16)
+        plt.yticks(fontsize=16)
         plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + moreText + '.png', bbox_inches='tight')
         plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + moreText + '.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
-
+        
 #####################################################################
 # Volume histogram in T/S space
 #####################################################################
@@ -2768,6 +2771,8 @@ def plot_lon_split(ploc, df):
 #####################################################################
 def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_components_selected, varName='Blank', xlim=[], ylim=[], alpha=0.025):
     
+    from matplotlib.ticker import MaxNLocator
+    
     # use t-test for 95% confidence interval in the mean
     # slightly dodgy assumption that samples are independent
     from scipy.stats import t
@@ -2804,6 +2809,8 @@ def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_component
             plt.plot(years, f_sample_mean + f_SE*tval_select, color=colorVal, linestyle='--')
             plt.plot(years, f_sample_mean - f_SE*tval_select, color=colorVal, linestyle='--')
             plt.title('Class ' + class_str[iclass] + ', ' + season_str[iseason])
+            
+            plt.xaxis.set_major_locator(MaxNLocator(integer=True))
             
             if xlim:
                 plt.xlim(xlim[0],xlim[1])
