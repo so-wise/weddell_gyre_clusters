@@ -27,6 +27,11 @@ import density
 import random
 import gsw
 
+# update
+from matplotlib.ticker import MaxNLocator
+from scipy import stats
+from scipy.stats import t
+
 #####################################################################
 # Plot histogram of profile locations
 #####################################################################
@@ -2769,21 +2774,27 @@ def plot_lon_split(ploc, df):
 #####################################################################
 # Plot statistics from analysis.calculate_stats_over_time 
 #####################################################################
-def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_components_selected, varName='Blank', xlim=[], ylim=[], alpha=0.025):
-    
-    from matplotlib.ticker import MaxNLocator
-    
-    # use t-test for 95% confidence interval in the mean
-    # slightly dodgy assumption that samples are independent
-    from scipy.stats import t
-    tvals = t.ppf(1 - alpha, df=f_N)
+def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, f_years, colormap, n_components_selected, \
+                             varName='Blank', xlim=None, ylim=None, alpha=0.025, doLinReg=True):
     
     # select colormap
     cNorm = colors.Normalize(vmin=0, vmax=n_components_selected)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=colormap)
     
-    # calculate years for x-axis
-    years = range(int(df.year.values.min()), int(df.year.values.max())+1)
+    # select subset of timeseries to plot and fit
+    if (xlim is not None):
+        xmin = xlim[0]
+        xmax = xlim[1]
+        index_of_min_year = np.where(f_years == xmin)[0][0]
+        index_of_max_year = np.where(f_years == xmax)[0][0]
+        f_mean = f_mean[:,index_of_min_year:index_of_max_year+1,:]
+        f_std = f_std[:,index_of_min_year:index_of_max_year+1,:]
+        f_N = f_N[:,index_of_min_year:index_of_max_year+1,:]
+        f_years = f_years[index_of_min_year:index_of_max_year+1]
+        
+    # use t-test for 95% confidence interval in the mean
+    # slightly dodgy assumption that samples are independent
+    tvals = t.ppf(1 - alpha, df=f_N)
     
     # class names string
     class_str = ["ACC", "Gyre", "Transition", "Ventilated"]
@@ -2804,20 +2815,56 @@ def plot_stats_from_analysis(ploc, df, f_mean, f_std, f_N, colormap, n_component
             f_SE = f_std[iclass,:,iseason]/np.sqrt(f_N[iclass,:,iseason])
             tval_select = tvals[iclass,:,iseason]
 
-            plt.figure(figsize=(8,4))
-            plt.plot(years, f_sample_mean, color=colorVal, linestyle='-')
-            plt.plot(years, f_sample_mean + f_SE*tval_select, color=colorVal, linestyle='--')
-            plt.plot(years, f_sample_mean - f_SE*tval_select, color=colorVal, linestyle='--')
+            h = plt.figure(figsize=(8,4))
+            plt.plot(f_years, f_sample_mean, color=colorVal, linestyle='-')
+            plt.plot(f_years, f_sample_mean + f_SE*tval_select, color=colorVal, linestyle='--')
+            plt.plot(f_years, f_sample_mean - f_SE*tval_select, color=colorVal, linestyle='--')
             plt.title('Class ' + class_str[iclass] + ', ' + season_str[iseason])
             
-            plt.xaxis.set_major_locator(MaxNLocator(integer=True))
+            ax = h.gca()
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
             
-            if xlim:
+            if (xlim is not None):
                 plt.xlim(xlim[0],xlim[1])
-            if ylim:
+            if (ylim is not None):
                 plt.ylim(ylim[0],ylim[1])
+                
+            # linear regression
+            if doLinReg:
+                linRegResult = plot_simple_linear_regression(f_years, f_sample_mean)
             
+            # save plot 
             plt.savefig(ploc + varName + '_stats' + '_class' + str(iclass) + '_season' + str(iseason) + '.png')
             plt.savefig(ploc + varName + '_stats' + '_class' + str(iclass) + '_season' + str(iseason) + '.pdf')
             plt.show()
             plt.close()
+            
+#####################################################################
+# Simple linear regression 
+#####################################################################
+def plot_simple_linear_regression(x, y):
+    
+    # remove NaN values
+    x0 = x
+    y0 = y
+    x = x0[~np.isnan(y0)]
+    y = y0[~np.isnan(y0)]
+    
+    # if not empty, use scipy for linear regression
+    if len(y)>0:
+        
+        res = stats.linregress(x, y)
+        # print R^2 value
+        print(f"R-squared: {res.rvalue**2:.6f}")
+
+        # calculate 95% confidence interval for slope
+        tinv = lambda p, df: abs(t.ppf(p/2, df))
+        ts = tinv(0.05, len(x)-2)
+        print(f"slope (95%): {res.slope:.6f} +/- {ts*res.stderr:.6f}")
+        
+    else:
+        
+        print('plot_tools:plot_simple_linear_regression: cannot regress empty array')
+        res = None
+    
+    return res
