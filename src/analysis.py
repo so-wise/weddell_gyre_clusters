@@ -10,7 +10,7 @@ import plot_tools as pt
 #####################################################################
 # Calculate stats of a particular quantity over time 
 #####################################################################
-def calculate_stats_over_time(df, varName='Tmax'):
+def calculate_stats_over_time(df, varName='Tmax', sig0index=0):
 
     print('analysis.calculate_stats_over_time')
 
@@ -27,6 +27,9 @@ def calculate_stats_over_time(df, varName='Tmax'):
     f_std[:] = np.nan
     f_N = np.empty((labelMax+1, Nyears, 4))
     f_N[:] = np.nan
+    
+    # Array of years
+    f_years = np.array(range(yearMin,yearMax+1)) 
     
     # Loop over classes and years
     for k in range(0, labelMax + 1):
@@ -71,15 +74,22 @@ def calculate_stats_over_time(df, varName='Tmax'):
                         f = df1y.mld
                     elif varName=="Nsquared_surface":
                         f = df1y.Nsquared.isel(depth_mid=0)
+                    elif varName=="ct_on_sig0":
+                        f = df1y.ct_on_sig0.isel(sig0_levs=sig0index)
+                    elif varName=="sa_on_sig0":
+                        f = df1y.sa_on_sig0.isel(sig0_levs=sig0index)
+                    elif varName=="z_on_sig0":
+                        f = df1y.z_on_sig0.isel(sig0_levs=sig0index)
                     else:
-                        print("varName options include: Tmax, Smax, sig0max, Tmin, Smin, sig0min, mld, Nsquared_surf")
+                        print("varName options include: Tmax, Smax, sig0max, Tmin, Smin, sig0min, mld, \
+                               Nsquared_surface, ct_on_sig0, sa_on_sig0, z_on_sig0")
                     
                     # save f stats
                     f_mean[k,year_index,season_index] = f.values.mean()
                     f_std[k,year_index,season_index] = f.values.std()
                     f_N[k,year_index,season_index] = f.profile.size
                     
-    return f_mean, f_std, f_N
+    return f_mean, f_std, f_N, f_years
 
 #####################################################################
 # Select profiles within a rectangular box

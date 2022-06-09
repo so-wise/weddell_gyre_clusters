@@ -327,6 +327,7 @@ def regrid_onto_more_vertical_levels(profiles, zmin, zmax, zlevs=50):
                                  target_z_levels,
                                  target_data=profiles.depth,
                                  method='linear')
+    
     # linearly interpolate density onto selected z levels
     sig0_on_highz = grid.transform(profiles.sig0, 'Z',
                                    target_z_levels,
@@ -343,17 +344,18 @@ def regrid_onto_more_vertical_levels(profiles, zmin, zmax, zlevs=50):
 
     return profiles
 
-#####################################################################
-# Regrid onto density levels (probably run after high-z interpolation)
-#####################################################################
-def regrid_onto_density_levels(profiles, sig0levs=100):
+######################################################################################
+# Regrid onto density levels (tends to get better results after high-z interpolation)
+######################################################################################
+def regrid_onto_density_levels(profiles, target_sig0_levels=None):
 
     print('load_and_preprocess.regrid_onto_density_levels')
 
-    # define target sigma levels
-    sig0min = profiles.sig0_on_highz.values.min()
-    sig0max = profiles.sig0_on_highz.values.max()
-    target_sig0_levels = np.linspace(sig0min, sig0max, sig0levs)
+    # if none provided, define target sigma levels
+    if (target_sig0_levels is None):
+        sig0min = profiles.sig0_on_highz.values.min()
+        sig0max = profiles.sig0_on_highz.values.max()
+        target_sig0_levels = np.linspace(sig0min, sig0max, 100)
 
     # define grid object
     grid = Grid(profiles, coords={'Z': {'center': 'depth_highz'}}, periodic=False)
@@ -369,13 +371,22 @@ def regrid_onto_density_levels(profiles, sig0levs=100):
                                 target_sig0_levels,
                                 target_data=profiles.sig0_on_highz,
                                 method='linear')
+    
+    # find the depth of density surfaces
+    tmp1 = xr.broadcast(profiles.depth_highz,profiles.profile)
+    broadcast_depth_highz = tmp1[0]
+    z_on_sig0 = grid.transform(broadcast_depth_highz, 'Z',
+                               target_sig0_levels,
+                               target_data=profiles.sig0_on_highz,
+                               method='linear')
 
     # rename dimension to avoid conflict with existing dimension
     profiles['ct_on_sig0'] = ct_on_sig0.rename({'sig0_on_highz':'sig0_levs'})
     profiles['sa_on_sig0'] = sa_on_sig0.rename({'sig0_on_highz':'sig0_levs'})
+    profiles['z_on_sig0'] = z_on_sig0.rename({'sig0_on_highz':'sig0_levs'})
 
     # drop any levels where there are no values (all NaNs)
-    profiles = profiles.dropna(dim='sig0_levs', how='all')
+    #profiles = profiles.dropna(dim='sig0_levs', how='all')
 
     return profiles
 
