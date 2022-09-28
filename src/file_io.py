@@ -17,8 +17,11 @@ def load_bathymetry(file_name="bathy.nc"):
     print('file_io.load_bathymetry')
 
     # import bathymetry file
-    ds = Dataset(file_name, "r", format="NETCDF4")
+    #ds = Dataset(file_name, "r", format="NETCDF4")
 
+    # import bathymetry file using xarray
+    ds = xr.open_dataset(file_name)
+    
     # return the dataset
     return ds
 
