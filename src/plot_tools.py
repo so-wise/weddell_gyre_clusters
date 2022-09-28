@@ -37,7 +37,7 @@ from scipy.stats import t
 #####################################################################
 def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
                                         source='all', binsize=2,
-                                        bathy_fname="bathy.nc",
+                                        bathy_fname='bathy_with_fH.nc',
                                         lev_range=range(-6000,1,500),
                                         myPlotLevels=30, vmin=0, vmax=200):
 #
@@ -63,9 +63,10 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
 
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
-    bathy_lon = bds['lon'][:]
-    bathy_lat = bds['lat'][:]
-    bathy = bds['bathy'][:]
+    bathy_lon = bds.lon
+    bathy_lat = bds.lat
+    bathy = bds.bathy
+    f_over_H = bds.f_over_H
 
     #
     #-- original attempt
@@ -1419,17 +1420,26 @@ def plot_sig0_class_structure(ploc, profiles, class_means,
 #####################################################################
 # Plot class label map using cartopy
 #####################################################################
-def plot_label_map(ploc, profiles, n_components_selected, colormap,
-                   lon_min=-80, lon_max=80, lat_min=-85, lat_max=-30,
-                   bathy_fname="bathy.nc", lev_range=range(-6000,1,500)):
+def plot_label_map(ploc, 
+                   profiles, 
+                   n_components_selected, 
+                   colormap,
+                   lon_min=-80, 
+                   lon_max=80, 
+                   lat_min=-85, 
+                   lat_max=-30,
+                   bathy_fname='bathy_with_fH.nc',
+                   depth_lev_range=range(-6000,1,1000),
+                   fH_lev_range=np.arange(-0.5e-7,0.0e-7,0.2e-7)):
 
     print('plot_tools.plot_label_map')
 
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
-    bathy_lon = bds['lon'][:]
-    bathy_lat = bds['lat'][:]
-    bathy = bds['bathy'][:]
+    bathy_lon = bds.lon
+    bathy_lat = bds.lat
+    bathy = bds.bathy
+    f_over_H = bds.f_over_H
 
     # define colormap
     #colormap = plt.get_cmap('Set1', n_components_selected)
@@ -1459,10 +1469,15 @@ def plot_label_map(ploc, profiles, n_components_selected, colormap,
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
 
-    # add bathymetry contours
-    ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-            linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
-            transform=ccrs.PlateCarree())
+    # add bathymetry or f/H contours
+    if which_contours=='depth':
+        ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
+                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   transform=ccrs.PlateCarree())
+    elif which_contours=='fH':
+        ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
+                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   transform=ccrs.PlateCarree())   
 
     # scatter plot
     CS = plt.scatter(lons_random_sample-360,
@@ -1488,8 +1503,16 @@ def plot_label_map(ploc, profiles, n_components_selected, colormap,
 #####################################################################
 # Scatter plot single i-metric map
 #####################################################################
-def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
-        rr=0.66,str="bathy.nc", lev_range=range(-6000,1,500)):
+def plot_i_metric_single_panel(ploc, 
+                               df1D, 
+                               lon_min, 
+                               lon_max, 
+                               lat_min, 
+                               lat_max,
+                               rr=0.66,
+                               bathy_fname='bathy_with_fH.nc',
+                               depth_lev_range=range(-6000,1,1000),
+                               fH_lev_range=np.arange(-0.5e-7,0.0e-7,0.2e-7)):
 
     print('plot_tools.plot_i_metric_single_panel')
 
@@ -1499,10 +1522,11 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
         os.makedirs(dploc)
 
     # load bathymetry
-    bds = io.load_bathymetry(str)
-    bathy_lon = bds['lon'][:]
-    bathy_lat = bds['lat'][:]
-    bathy = bds['bathy'][:]
+    bds = io.load_bathymetry(bathy_fname)
+    bathy_lon = bds.lon
+    bathy_lat = bds.lat
+    bathy = bds.bathy
+    f_over_H = bds.f_over_H
 
     # load fronts
     pf = io.load_front("fronts/pf_kim.txt")
@@ -1534,10 +1558,15 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
 
-    # add bathymetry contours
-    ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-            linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
-            transform=ccrs.PlateCarree())
+    # add bathymetry or f/H contours
+    if which_contours=='depth':
+        ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
+                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   transform=ccrs.PlateCarree())
+    elif which_contours=='fH':
+        ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
+                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   transform=ccrs.PlateCarree())   
 
     # scatter plot
     CS = plt.scatter(lons_random_sample-360,
@@ -1570,9 +1599,15 @@ def plot_i_metric_single_panel(ploc, df1D, lon_min, lon_max, lat_min, lat_max,
 #####################################################################
 # Scatter plot multiple i-metric maps (one per class)
 #####################################################################
-def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
-        lat_min, lat_max, n_components_selected, bathy_fname="bathy.nc",
-        lev_range=range(-6000,1,500)):
+def plot_i_metric_multiple_panels(ploc, 
+                                  df1D, 
+                                  lon_min, 
+                                  lon_max,
+                                  lat_min, 
+                                  lat_max, 
+                                  bathy_fname='bathy_with_fH.nc',
+                                  depth_lev_range=range(-6000,1,1000),
+                                  fH_lev_range=np.arange(-0.5e-7,0.0e-7,0.2e-7)):
 
     print('plot_tools.plot_i_metric_multiple_panels')
 
@@ -1583,9 +1618,10 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
 
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
-    bathy_lon = bds['lon'][:]
-    bathy_lat = bds['lat'][:]
-    bathy = bds['bathy'][:]
+    bathy_lon = bds.lon
+    bathy_lat = bds.lat
+    bathy = bds.bathy
+    f_over_H = bds.f_over_H
 
     # load fronts
     pf = io.load_front("fronts/pf_kim.txt")
@@ -1617,10 +1653,15 @@ def plot_i_metric_multiple_panels(ploc, df1D, lon_min, lon_max,
         ax = plt.axes(projection=ccrs.PlateCarree())
         ax.set_extent([lon_min, lon_max, lat_min, lat_max], ccrs.PlateCarree())
 
-        # add bathymetry contours
-        ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-                linewidths=0.5, alpha=0.5, colors="k", linestyles='-',
-                transform=ccrs.PlateCarree())
+        # add bathymetry or f/H contours
+        if which_contours=='depth':
+            ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
+                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       transform=ccrs.PlateCarree())
+        elif which_contours=='fH':
+            ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
+                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       transform=ccrs.PlateCarree())   
 
         # scatter plot
         CS = plt.scatter(lons_random_sample-360,
@@ -1712,8 +1753,10 @@ def plot_hist_map(ploc, df1D,
                   vartype='imetric',
                   colormap=plt.get_cmap('cividis'),
                   binsize=1,
-                  bathy_fname='bathy.nc',
-                  lev_range=range(-6000,1,1000),
+                  which_contours='depth',
+                  bathy_fname='bathy_with_fH.nc',
+                  depth_lev_range=range(-6000,1,1000),
+                  fH_lev_range=np.arange(-0.5e-7,0.0e-7,0.2e-7),
                   legend_font_size=18,
                   moreText=''):
 
@@ -1727,9 +1770,10 @@ def plot_hist_map(ploc, df1D,
 
     # load bathymetry
     bds = io.load_bathymetry(bathy_fname)
-    bathy_lon = bds['lon'][:]
-    bathy_lat = bds['lat'][:]
-    bathy = bds['bathy'][:]
+    bathy_lon = bds.lon
+    bathy_lat = bds.lat
+    bathy = bds.bathy
+    f_over_H = bds.f_over_H
 
     # load fronts
     pf = io.load_front("fronts/pf_kim.txt")
@@ -1747,10 +1791,15 @@ def plot_hist_map(ploc, df1D,
         ax.set_extent([lon_range[0], lon_range[1],
                        lat_range[0], lat_range[1]], ccrs.PlateCarree())
 
-        # add bathymetry contours
-        ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-                linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
-                transform=ccrs.PlateCarree())
+        # add bathymetry or f/H contours
+        if which_contours=='depth':
+            ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
+                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       transform=ccrs.PlateCarree())
+        elif which_contours=='fH':
+            ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
+                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       transform=ccrs.PlateCarree())            
 
         # define histogram, calculate mean i-metric value in each bin
         lon_bins = np.arange(lon_range[0], lon_range[1], binsize)
@@ -1829,10 +1878,15 @@ def plot_hist_map(ploc, df1D,
             ax.set_extent([lon_range[0], lon_range[1],
                            lat_range[0], lat_range[1]], ccrs.PlateCarree())
 
-            # add bathymetry contours
-            ax.contour(bathy_lon, bathy_lat, bathy, levels=lev_range,
-                    linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
-                    transform=ccrs.PlateCarree())
+            # add bathymetry or f/H contours
+            if which_contours=='depth':
+                ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
+                           linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                           transform=ccrs.PlateCarree())
+            elif which_contours=='fH':
+                ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
+                           linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                           transform=ccrs.PlateCarree())      
 
             # define histogram, calculate mean i-metric value in each bin
             lon_bins = np.arange(lon_range[0], lon_range[1], binsize)
