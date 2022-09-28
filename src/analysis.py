@@ -72,6 +72,10 @@ def calculate_stats_over_time(df, varName='Tmax', sig0index=0):
                         f = df1y.sig0min
                     elif varName=="mld":
                         f = df1y.mld
+                    elif varName=="lon":
+                        f = df1y.lon
+                    elif varName=="lat":
+                        f = df1y.lat
                     elif varName=="Nsquared_surface":
                         f = df1y.Nsquared.isel(depth_mid=0)
                     elif varName=="ct_on_sig0":

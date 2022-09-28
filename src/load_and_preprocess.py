@@ -411,7 +411,7 @@ def select_sig0_range(profiles,sig0range=(26.5,27.2)):
 #####################################################################
 # Apply preprocessing scaling
 #####################################################################
-def apply_scaling(profiles, method='onZ'):
+def apply_scaling(profiles, method='onZ', whichVars='both'):
 
     # start message
     print('load_and_preprocess.apply_scaling')
@@ -431,26 +431,34 @@ def apply_scaling(profiles, method='onZ'):
     # scale salinity and temperature
     scaled_S = preprocessing.scale(XS)
     scaled_T = preprocessing.scale(XT)
-    #scaled_S.shape
-    #scaled_T.shape
 
     # concatenate
-    Xraw = np.concatenate((XT,XS),axis=1)
-    Xscaled = np.concatenate((scaled_T,scaled_S),axis=1)
+    if whichVars=='both':
+        Xraw = np.concatenate((XT,XS),axis=1)
+        Xscaled = np.concatenate((scaled_T,scaled_S),axis=1)
+    elif whichVars=='justSalt':
+        Xraw = XS
+        Xscaled = scaled_S
+    elif whichVars=='justTemp':
+        Xraw = XT
+        Xscaled = scaled_T
+    else:
+        print("load_and_preprocess.apply_scaling, input parameter \
+                whichVar must be justSalt, justTemp, or both")
 
     return Xraw, Xscaled
 
 #####################################################################
 # Fit and apply PCA (applied to absolute salinity, conservative temp)
 #####################################################################
-def fit_and_apply_pca(profiles, number_of_pca_components=3,
-                      kernel=False, train_frac=0.33, method='onZ'):
+def fit_and_apply_pca(profiles, number_of_pca_components=3, kernel=False, 
+                      train_frac=0.33, method='onZ', whichVars='both'):
 
     # start message
     print('load_and_preprocess.fit_and_apply_pca')
 
     # concatenate
-    Xraw, Xscaled = apply_scaling(profiles, method)
+    Xraw, Xscaled = apply_scaling(profiles, method, whichVars)
 
     # create PCA object
     if kernel==True:
@@ -484,13 +492,13 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3,
 #####################################################################
 # Apply an existing PCA
 #####################################################################
-def apply_pca(profiles, pca, method='onZ'):
+def apply_pca(profiles, pca, method='onZ', whichVars='both'):
 
     # start message
     print('load_and_preprocess.apply_pca')
 
     # concatenate
-    Xraw, Xscaled = apply_scaling(profiles, method=method)
+    Xraw, Xscaled = apply_scaling(profiles, method, whichVars)
 
     # transform
     Xpca = pca.transform(Xscaled)
