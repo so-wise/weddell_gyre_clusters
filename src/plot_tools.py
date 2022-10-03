@@ -787,6 +787,46 @@ def plot_aic_scores(ploc, max_N, aic_mean, aic_std):
     plt.savefig(ploc + 'delta_aic_scores.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
+    
+#####################################################################
+# Plot silhouette scores
+#####################################################################
+def plot_silhouette_scores(ploc, max_N, silhouette_mean, silhouette_std):
+
+    # start message
+    print('plot_tools.plot_silhouette_scores')
+
+    # plot the silhouette scores
+    n_components_range = range(2, max_N)
+    plt.figure(figsize=(20, 8))
+    spl = plt.subplot(2, 1, 1)
+    plt.plot(n_components_range, silhouette_mean-silhouette_std, '--', color='black')
+    plt.plot(n_components_range, silhouette_mean, '-', color='black')
+    plt.plot(n_components_range, silhouette_mean+silhouette_std, '--', color='black')
+    plt.xticks(n_components_range)
+    plt.title('silhouette score per model', fontsize=18)
+    spl.set_xlabel('Number of components',fontsize=18)
+    spl.set_ylabel('silhouette score',fontsize=18)
+    # save figure
+    plt.savefig(ploc + 'silhouette_scores.png', bbox_inches='tight')
+    plt.savefig(ploc + 'silhouette_scores.pdf', bbox_inches='tight')
+    plt.show()
+    plt.close()
+
+    # calculate and plot delta_silhouette
+    delta_silhouette = np.diff(silhouette_mean)   # out[i] = a[i+1] - a[i]
+    plt.figure(figsize=(20,8))
+    spl = plt.subplot(2,1,1)
+    plt.plot(n_components_range[:-1], delta_silhouette, '-', color='black')
+    plt.xticks(n_components_range[:-1])
+    plt.title('Change in silhouette score per model', fontsize=18)
+    spl.set_xlabel('Number of components',fontsize=18)
+    spl.set_ylabel('Change in silhouette score',fontsize=18)
+    # save figure
+    plt.savefig(ploc + 'delta_silhouette_scores.png', bbox_inches='tight')
+    plt.savefig(ploc + 'delta_silhouette_scores.pdf', bbox_inches='tight')
+    plt.show()
+    plt.close()
 
 #####################################################################
 # Sample profile plots for T, S, CT, SA, and sig0
