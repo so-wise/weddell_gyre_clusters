@@ -448,9 +448,63 @@ def apply_scaling(profiles, method='onZ', whichVars='both'):
 
     return Xraw, Xscaled
 
-#####################################################################
+############################################################################
+# Generate area-uniform training dataset
+############################################################################
+def select_area_uniform_training_dataset(profiles, 
+                                         lon_min = -65,
+                                         lon_max =  80,
+                                         lat_min = -80,
+                                         lat_max = -45,
+                                         grid_spacing = 10.0,
+                                         max_number_of_samples_from_a_cell = 500,
+                                         lat_ref = -45):
+
+    # start message
+    print('load_and_preprocess.select_area_uniform_training_dataset')
+    
+    # single-profile Dataset that will be merged with others to form the training Dataset
+    training_dataset = profiles.isel(profile=[0,1])
+
+    # define the grid spacing and the lat/lon values of the sampling grid
+    i_sampling_grid = np.arange(lon_min, lon_max, grid_spacing)
+    j_sampling_grid = np.arange(lat_min, lat_max, grid_spacing)
+
+    # loop through each cell in the sampling grid
+    for i in i_sampling_grid:
+        for j in j_sampling_grid:
+
+            # define the lat-lon edges of the sampling grid cell
+            is_in_cell_lon = ( profiles.lon > i ) & ( profiles.lon <= i + grid_spacing )
+            is_in_cell_lat = ( profiles.lat > j ) & ( profiles.lat <= j + grid_spacing )
+
+            # find all the profiles that are in the selected sampling grid cell
+            profiles_in_cell_lon = profiles.where(is_in_cell_lon, drop=True)
+            profiles_in_cell_latlon = profiles_in_cell_lon.where(is_in_cell_lat, drop=True)
+
+            # maximum number of profiles that can be sampled in the selected sampling grid cell
+            max_number_of_profiles = profiles_in_cell_latlon.profile.size
+
+            # scale the max number of samples from a cell by the cosine of latitude
+            lat_scaling = np.cos(j*np.pi/180 - lat_ref)
+            max_number_of_samples_from_a_cell_scaled = round(max_number_of_samples_from_a_cell*lat_scaling)
+
+            # select random subset of the profiles in the sampling grid cell
+            if max_number_of_profiles>0:
+                # the number of samples should be all the profiles, or the max number, whichever is smaller
+                number_of_samples = np.minimum(max_number_of_profiles, max_number_of_samples_from_a_cell_scaled)
+                # next, find the indices for the random samples
+                indices_for_random_samples = random.sample(range(0,max_number_of_profiles), number_of_samples)
+                drawn_from_sampling_cell = profiles_in_cell_latlon.isel(profile=indices_for_random_samples)
+
+                # merge the profiles drawn from the sampling cell with the rest of the training dataset
+                training_dataset = training_dataset.merge(drawn_from_sampling_cell)\
+                
+    return training_dataset
+
+############################################################################
 # Fit and apply PCA (applied to absolute salinity, conservative temp)
-#####################################################################
+############################################################################
 def fit_and_apply_pca(profiles, number_of_pca_components=3, kernel=False, 
                       train_frac=0.33, method='onZ', whichVars='both'):
 
@@ -488,6 +542,39 @@ def fit_and_apply_pca(profiles, number_of_pca_components=3, kernel=False,
         print(total_variance_explained_)
 
     return pca, Xpca
+
+############################################################################
+# Fit PCA
+############################################################################
+def fit_pca(training_dataset, number_of_pca_components=3, kernel=False, 
+            train_frac=0.99, method='onZ', whichVars='both'):
+
+    # start message
+    print('load_and_preprocess.fit_pca')
+
+    # concatenate
+    Xraw, Xscaled = apply_scaling(training_dataset, method, whichVars)
+
+    # create PCA object
+    if kernel==True:
+        # KernelPCA approach (crashses due to memory)
+        print('load_and_preprocess: apply KernelPCA')
+        pca = KernelPCA(n_components=number_of_pca_components,
+                        kernel='linear', fit_inverse_transform=True, gamma=10)
+    else:
+        pca = PCA(number_of_pca_components)
+
+    # random sample for training
+    pf = training_dataset.profile
+    rsample_size = np.min((int(train_frac*pf.size),int(pf.size)))
+    rows_id = random.sample(range(0,pf.size), rsample_size)
+    Xtrain = Xscaled[rows_id,:]
+
+    # fit PCA model using training dataset
+    print('Fitting PCA')
+    pca.fit(Xtrain)
+
+    return pca
 
 #####################################################################
 # Apply an existing PCA
