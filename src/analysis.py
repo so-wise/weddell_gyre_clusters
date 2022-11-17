@@ -8,6 +8,30 @@ import xarray as xr
 import plot_tools as pt
 
 #####################################################################
+# Stats for a field with a single level (e.g. mld, Tmin)
+#####################################################################
+def calc_oneLevel_stats(ploc, df, n_components_selected, varname='mld'):
+
+    for iclass in range(n_components_selected):
+
+        df1 = df.where(df.label==iclass, drop=True)
+
+        Qmin = df1[varname].min().values
+        Q25 = df1[varname].quantile(0.25, dim='profile').values
+        Q50 = df1[varname].quantile(0.50, dim='profile').values
+        Q75 = df1[varname].quantile(0.75, dim='profile').values
+        Qmax = df1[varname].max().values
+
+        print('class = ' + str(iclass))
+        print('min / Q25 / Q50 / Q75 / max')
+        print("%.2f" % Qmin, '/ '
+              "%.2f" % Q25, '/',
+              "%.2f" % Q50, '/',
+              "%.2f" % Q75, '/',
+              "%.2f" % Qmax,
+              )
+
+#####################################################################
 # Calculate stats of a particular quantity over time 
 #####################################################################
 def calculate_stats_over_time(df, varName='Tmax', sig0index=0):
