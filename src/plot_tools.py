@@ -2493,7 +2493,7 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
 def plot_hist_TS(ploc, df1D, n_components_selected,
                  sbins = np.arange(31, 38, 0.025),
                  tbins = np.arange(-2, 32, 0.1),
-                 vartype='month',
+                 vartype='count',
                  crange=[0, 100],
                  colormap=cmocean.cm.phase,
                  moreText='',
@@ -2539,19 +2539,21 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         elif vartype=="mld":
             myVar = df1.mld
             varName = 'Mixed layer depth (m)'
+        elif vartype=="count":
+            myVar = 1.0
+            varName = 'Count'
         else:
-            print("Options include: month, year, imetric, dyn_height, sig0, mld")
+            print("Options include: count, month, year, imetric, dyn_height, sig0, mld")
 
         # histogram ()
-        hist_denominator = histogram(df1.prof_SA,
-                                     df1.prof_CT,
-                                     bins=[sbins, tbins])
-        hist_numerator = histogram(df1.prof_SA,
-                                   df1.prof_CT,
-                                   bins=[sbins, tbins],
-                                   weights=myVar)
-        histTS = hist_numerator/hist_denominator
-        histTS = histTS.T
+        if vartype=="count":
+            histTS = histogram(df1.prof_SA, df1.prof_CT, bins=[sbins, tbins])
+            histTS = histTS.T           
+        else:
+            hist_denominator = histogram(df1.prof_SA, df1.prof_CT, bins=[sbins, tbins])
+            hist_numerator = histogram(df1.prof_SA, df1.prof_CT, bins=[sbins, tbins], weights=myVar)
+            histTS = hist_numerator/hist_denominator
+            histTS = histTS.T
 
         # --- plot histogram
         plt.figure(figsize=(10,10))
@@ -2563,7 +2565,7 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
             TS = histTS.plot(levels=12, cmap=colormap, vmin=crange[0], vmax=crange[1])
 
         # grid
-        CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
+        CL = plt.contour(sag, ctg, sig0_grid, colors='gray', zorder=1)
         TS.colorbar.set_label(varName)
         plt.clabel(CL, fontsize=fs, inline=False, fmt='%.1f') 
         plt.xlabel('Absolute salinity (psu)', fontsize=fs)
