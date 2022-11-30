@@ -118,6 +118,99 @@ def plot_profile(ploc, df):
    plt.savefig(ploc + 'single_profile.pdf', bbox_inches='tight')
    plt.show()
    plt.close()
+    
+#####################################################################
+# Compare two collections of  profiles
+#####################################################################
+def compare_two_collections(ploc, df1, df2, frac = 0.10,
+                            zmin = 20, zmax = 1000,
+                            Tmin = -1.9, Tmax = 2.0,
+                            Smin = 33.9, Smax = 34.9,
+                            sig0min = 27.1, sig0max = 27.9,
+                            alpha = 0.01, modStr = '',
+                            colorVal = 'black', fs = 14):
+    
+    
+   ####################### figure CT
+   fig1, ax1 = plt.subplots(facecolor='white')
+   z = df1.depth.values
+   
+   # df1
+   ax1.plot(df1.prof_CT.quantile(0.25, dim='profile').values, z, lw = 3, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_CT.quantile(0.50, dim='profile').values, z, lw = 3, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_CT.quantile(0.75, dim='profile').values, z, lw = 3, color = 'red',linestyle='dashed')
+   # df2
+   ax1.plot(df2.prof_CT.quantile(0.25, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_CT.quantile(0.50, dim='profile').values, z, lw = 3, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_CT.quantile(0.75, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+
+   # tick parameters 
+   ax1.legend([line1, line2],['Northern','Southern'])
+   ax1.set_xlim([Tmin, Tmax])
+   ax1.set_ylim([zmin, zmax])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Conservative temperature (°C)', fontsize=fs)
+   plt.ylabel('Depth (m)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.savefig(ploc + modStr + 'compare_edge_profiles_CT.png', bbox_inches='tight')
+   plt.savefig(ploc + modStr + 'compare_edge_profiles_CT.pdf', bbox_inches='tight')
+   plt.show()
+   plt.close()
+
+   ####################### figure SA
+   fig1, ax1 = plt.subplots(facecolor='white')
+   z = df1.depth.values
+   
+   # df1
+   ax1.plot(df1.prof_SA.quantile(0.25, dim='profile').values, z, lw = 3, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_SA.quantile(0.50, dim='profile').values, z, lw = 3, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_SA.quantile(0.75, dim='profile').values, z, lw = 3, color = 'red',linestyle='dashed')
+   # df2
+   ax1.plot(df2.prof_SA.quantile(0.25, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_SA.quantile(0.50, dim='profile').values, z, lw = 3, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_SA.quantile(0.75, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+
+   # tick parameters 
+   ax1.legend([line1, line2],['Northern','Southern'])
+   ax1.set_xlim([Smin, Smax])
+   ax1.set_ylim([zmin, zmax])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+   plt.ylabel('Depth (m)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.savefig(ploc + modStr + 'compare_edge_profiles_SA.png', bbox_inches='tight')
+   plt.savefig(ploc + modStr + 'compare_edge_profiles_SA.pdf', bbox_inches='tight')
+   plt.show()
+   plt.close()
+    
+   ####################### figure sig0
+   fig1, ax1 = plt.subplots(facecolor='white')
+   z = df1.depth.values
+   
+   # df1
+   ax1.plot(df1.sig0.quantile(0.25, dim='profile').values, z, lw = 3, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.sig0.quantile(0.50, dim='profile').values, z, lw = 3, color = 'red', linestyle='solid')
+   ax1.plot(df1.sig0.quantile(0.75, dim='profile').values, z, lw = 3, color = 'red',linestyle='dashed')
+   # df2
+   ax1.plot(df2.sig0.quantile(0.25, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.sig0.quantile(0.50, dim='profile').values, z, lw = 3, color = 'blue', linestyle='solid')
+   ax1.plot(df2.sig0.quantile(0.75, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+
+   # tick parameters 
+   ax1.legend([line1, line2],['Northern','Southern'])
+   ax1.set_xlim([sig0min, sig0max])
+   ax1.set_ylim([zmin, zmax])
+   plt.gca().invert_yaxis()
+   plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
+   plt.ylabel('Depth (m)', fontsize=fs)
+   ax1.tick_params(axis='x', labelsize=fs)
+   ax1.tick_params(axis='y', labelsize=fs)
+   plt.savefig(ploc + modStr + 'compare_edge_profiles_sig0.png', bbox_inches='tight')
+   plt.savefig(ploc + modStr + 'compare_edge_profiles_sig0.pdf', bbox_inches='tight')
+   plt.show()
+   plt.close()
 
 #####################################################################
 # Plot many profiles
