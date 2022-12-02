@@ -3,7 +3,7 @@ datasets_bsose
 notebooks/exploratory/dask-worker-space
 notebooks/exploratory/processed_data
 archive/
-plots_reeve/
+src/plots_reeve/
 plots/
 
 # Keynote reports

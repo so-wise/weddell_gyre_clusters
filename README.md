@@ -8,7 +8,7 @@
 ## Getting started
 
 ### Docker container
-At present, you can use Docker to get this project installed and running. (We could go with a simpler docker container in the future). These commands work for me:
+At present, you can use Docker to get this project installed and running. These commands have been tested and should work:
 ```
 cd <where-you-want-to-work>
 docker pull dannes/weddell-clusters
@@ -20,62 +20,27 @@ docker run --rm -it -v $PWD:/work -w /work dannes/weddell-clusters bash
 ipython3
 ```
 
-### Singularity container (NOT WORKING AT PRESENT)
-NOTE: I'm having a shell issue. I have to run `source .cshrc` when I log on in order for my aliases to be defined. 
-
-If you're working on an HPC platform (e.g for access to more memory or GPUs), you'll probably need to run singularity instead. These commands seem to basically work on BAS HPC:
+### Singularity container
+If you're working on an HPC platform (e.g for access to more memory or GPUs), you'll probably need to run singularity instead. These commands have been tested on a specific platform at BAS:
 ```
 $ cd <where-you-want-to-work>
 $ singularity pull docker://pangeo/pangeo-notebook:2021.09.08
-$ singularity shell --bind /data/expose/so-wise/:/mnt pangeo-notebook_2021.09.08.sif -nv 
+$ singularity shell --bind <<<YOUR DATA DIRECTORY>>:/mnt pangeo-notebook_2021.09.08.sif -nv 
 Singularity> source activate notebook
 (notebook) Singularity> pip install seaborn gsw umap-learn cmocean
 (notebook) Singularity> ipython
 cd /mnt
 ```
-The `-nv` flag should give access to GPUs. After the `source activate notebook` step, you might have to pip install gsw, seaborn, and umap-learn. Eventually I need to get these into their own image, once I learn how to do that. 
-
-(Now, I'm running into lots of other bugs, but they don't seem to be related to the computing environment.)
+The `-nv` flag should give access to GPUs. After the `source activate notebook` step, you might have to pip install gsw, seaborn, and umap-learn
 
 ## Project Organization
 ```
+├── Dockerfile         <- Docker file that can be used for containerised computing
 ├── LICENSE
-├── Makefile           <- Makefile with commands like `make init` or `make lint-requirements`
 ├── README.md          <- The top-level README for developers using this project.
-|
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-|   |                     the creator's initials, and a short `-` delimited description, e.g.
-|   |                     `1.0_jqp_initial-data-exploration`.
-│   ├── exploratory    <- Notebooks for initial exploration.
-│   └── reports        <- Polished notebooks for presentations or intermediate results.
-│
-├── report             <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   ├── figures        <- Generated graphics and figures to be used in reporting
-│   └── sections       <- LaTeX sections. The report folder can be linked to your overleaf
-|                         report with github submodules.
-│
-├── requirements       <- Directory containing the requirement files.
-│
-├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-├── src                <- Source code for use in this project.
-│   ├── __init__.py    <- Makes src a Python module
-│   │
-│   ├── data_loading   <- Scripts to download or generate data
-│   │
-│   ├── preprocessing  <- Scripts to turn raw data into clean data and features for modeling
-|   |
-│   ├── models         <- Scripts to train models and then use trained models to make
-│   │                     predictions
-│   │
-│   └── tests          <- Scripts for unit tests of your functions
-│
-└── setup.cfg          <- setup configuration file for linting rules
+├── requirements.txt   <- Package requirements (you might be able to make a conda env with this; hasn't been tested)
+└── src                <- Source code, including jupyter notebooks and other functions
 ```
-
-## Code formatting
-To automatically format your code, make sure you have `black` installed (`pip install black`) and call
-```black . ``` 
-from within the project directory.
 
 ---
 
