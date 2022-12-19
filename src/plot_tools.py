@@ -176,7 +176,7 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
-   plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+   plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
@@ -314,7 +314,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([zmin, zmax])
    plt.gca().invert_yaxis()
-   plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+   plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
@@ -387,7 +387,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
        ax1.set_xlim([Smin, Smax])
        ax1.set_ylim([sig0min, sig0max])
        plt.gca().invert_yaxis()
-       plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+       plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
        plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
        ax1.tick_params(axis='x', labelsize=fs)
        ax1.tick_params(axis='y', labelsize=fs)
@@ -1270,7 +1270,7 @@ def plot_SA_class_structure(ploc, profiles, class_means,
 
        #text box
         fs = 42 # font size
-        plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+        plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
         #plt.title('Class = ' + str(num), fontsize=fs)
 
@@ -1401,7 +1401,7 @@ def plot_SA_class_structure_onSig(ploc, profiles, class_means,
 
        #text box
         fs = 42 # font size
-        plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+        plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
         plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
         #plt.title('Class = ' + str(num), fontsize=fs)
 
@@ -2266,7 +2266,7 @@ def plot_TS_single_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(
                      )
     plt.colorbar(SC)
     plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
-    plt.xlabel('Absolute salinity [psu]', fontsize=20)
+    plt.xlabel('Absolute salinity [g/kg]', fontsize=20)
     plt.ylim(PTrange)
     plt.xlim(SPrange)
     plt.yticks(fontsize=18)
@@ -2322,7 +2322,7 @@ def plot_TS_withMeans(ploc, class_means, class_stds, n_comp, colormap, descrip='
         plt.plot(SAbar[i,:], CTbar[i,:],
                  linewidth=5.0, linestyle='solid', color=colorVal)
     plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
-    plt.xlabel('Absolute salinity [psu]', fontsize=20)
+    plt.xlabel('Absolute salinity [g/kg]', fontsize=20)
     plt.ylim(PTrange)
     plt.xlim(SPrange)
     plt.yticks(fontsize=18)
@@ -2392,7 +2392,7 @@ def plot_TS_all_lev(ploc, df, n_comp, colormap, descrip='', PTrange=(-2, 27.0),
                      )
     plt.colorbar(SC)
     plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
-    plt.xlabel('Absolute salinity [psu]', fontsize=20)
+    plt.xlabel('Absolute salinity [g/kg]', fontsize=20)
     plt.ylim(PTrange)
     plt.xlim(SPrange)
     plt.yticks(fontsize=18)
@@ -2474,7 +2474,7 @@ def plot_TS_multi_lev(ploc, df, n_comp, colormap, descrip='', plev=0, PTrange=(-
                          )
         plt.colorbar(SC)
         plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
-        plt.xlabel('Absolute salinity [psu]', fontsize=20)
+        plt.xlabel('Absolute salinity [g/kg]', fontsize=20)
         plt.ylim(PTrange)
         plt.xlim(SPrange)
         plt.yticks(fontsize=18)
@@ -2569,7 +2569,7 @@ def plot_TS_bytime(ploc, df, n_comp, descrip='', plev=0, PTrange=(-2, 27.0),
                          )
         plt.colorbar(SC)
         plt.ylabel('Conservative temperature [$^\circ$C]', fontsize=20)
-        plt.xlabel('Absolute salinity [psu]', fontsize=20)
+        plt.xlabel('Absolute salinity [g/kg]', fontsize=20)
         plt.ylim(PTrange)
         plt.xlim(SPrange)
         plt.yticks(fontsize=18)
@@ -2661,7 +2661,7 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         CL = plt.contour(sag, ctg, sig0_grid, colors='gray', zorder=1)
         TS.colorbar.set_label(varName)
         plt.clabel(CL, fontsize=fs, inline=False, fmt='%.1f') 
-        plt.xlabel('Absolute salinity (psu)', fontsize=fs)
+        plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
         plt.ylabel('Conservative temperature (°C)', fontsize=fs)
         plt.xlim(sbins[0], sbins[-1])
         plt.ylim(tbins[0], tbins[-1])
@@ -2730,7 +2730,7 @@ def calc_and_plot_volume_histogram_TS(ploc, df,
     CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
     TS.colorbar.set_label('Count histogram (log10, scaled by maximum)')
     plt.clabel(CL, fontsize=14, inline=False, fmt='%.1f')
-    plt.xlabel('Absolute salinity (psu)')
+    plt.xlabel('Absolute salinity (g/kg)')
     plt.ylabel('Conservative temperature (°C)')
     plt.savefig(dploc + 'histogram_depth' + modStr + '.png', bbox_inches='tight')
     plt.savefig(dploc + 'histogram_depth' + modStr + '.pdf', bbox_inches='tight')
