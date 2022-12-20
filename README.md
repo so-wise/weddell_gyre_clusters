@@ -3,7 +3,7 @@
  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
  <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
  
- In this project, we use unsupervised classification to examine structures in the Weddell Gyre region dataset prepared by Shenjie Zhou (BAS) as part of the SO-CHIC project.
+ In this project, we use unsupervised classification to examine structures in the Weddell Gyre region dataset prepared by Shenjie Zhou (BAS) as part of the SO-CHIC project. 
 
 ## Getting started
 
@@ -41,6 +41,10 @@ The `-nv` flag should give access to GPUs. After the `source activate notebook` 
 ├── requirements.txt   <- Package requirements (you might be able to make a conda env with this; hasn't been tested)
 └── src                <- Source code, including jupyter notebooks and other functions
 ```
+
+## Acknowledgement
+
+This work was funded by a UKRI Future Leaders Fellowship (MR/T020822/1)
 
 ---
 
