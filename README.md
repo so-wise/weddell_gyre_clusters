@@ -41,7 +41,7 @@ Although this repository focuses on a set of profiles near the Antarctic, the in
 
 The expected directory structure:
 ```
-├── so-chic-data            <- Contains profile data as processed using MITprof, before it is classified
+├── so-chic-data            <- Profile data as processed using MITprof, before it is classified (not included)
 └── weddell_gyre_clusters   <- This current repository
 ```
 
