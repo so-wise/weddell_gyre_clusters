@@ -33,6 +33,18 @@ cd /mnt
 ```
 The `-nv` flag should give access to GPUs. After the `source activate notebook` step, you might have to pip install gsw, seaborn, and umap-learn
 
+### Downloading the larger South Atlantic dataset
+
+Although this repository focuses on a set of profiles near the Antarctic, the initial dataset covers the South Atlantic and some of the Indian Ocean as well. This larger dataset (~500MB) has been archived and is accessible via Zenodo (doi:10.5281/zenodo.7465132). The code expects to find this file in `weddell_gyre_clusters/src/models/`. It is not strictly necessary to download this dataset to reproduce most of the figures in this repository; most of the figures can be reproduced without any additional downloads beyond this GitHub repository itself.
+
+### Expected directory structure
+
+The expected directory structure:
+```
+├── so-chic-data            <- Contains profile data as processed using MITprof, before it is classified
+└── weddell_gyre_clusters   <- This current repository
+```
+
 ## Project Organization
 ```
 ├── Dockerfile         <- Docker file that can be used for containerised computing
