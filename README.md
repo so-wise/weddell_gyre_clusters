@@ -1,6 +1,7 @@
 # Weddell Gyre Clusters
 
  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+ [![DOI](https://zenodo.org/badge/366334234.svg)](https://zenodo.org/badge/latestdoi/366334234)
  <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
  
  In this project, we use unsupervised classification to examine structures in the Weddell Gyre region dataset prepared by Shenjie Zhou (BAS) as part of the EU SO-CHIC project. 
