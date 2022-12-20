@@ -1,3 +1,11 @@
+## Front data
+
+Fronts from:
+Kim, Y. S. and Orsi, A. H.: On the Variability of Antarctic Circumpolar Current Fronts Inferred from 1992–2011 Altimetry*, Journal of
+Physical Oceanography, 44, 3054–3071, https://doi.org/10.1175/JPO-D-13-0217.1, 2014.
+
+## Surface stress
+
 Surface_stress.nc
 ossx,ossy: ocean surface stress considering the sea ice modulation
 taux,tauy: ERA5 wind stress;
@@ -25,6 +33,8 @@ we_tau: Ekman upwelling and downwelling velocity driven by wind stress
 we_oss: Ekman upwelling and downwelling velocity driven by ocean surface stress
 
 we = curl(tau)/rhow/f;
+
+## Geostrophic velocity and EKE
 
 geovel_eke.nc
 u_g, v_g: geostrophic velocity
