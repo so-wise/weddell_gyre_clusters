@@ -65,12 +65,12 @@ def save_pca(file_name, pca):
 #####################################################################
 # Load PCA using joblib
 #####################################################################
-def load_pca(file_name, pca):
+def load_pca(file_name):
 
     print('file_io.load_pca')
 
     # save pca object
-    joblib.load(pca, file_name + '.pkl')
+    return joblib.load(file_name + '.pkl', 'r')
 
 #####################################################################
 # Save GMM as numpy files
