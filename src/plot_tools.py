@@ -39,11 +39,15 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
                                         source='all', binsize=2,
                                         bathy_fname='bathy_with_fH.nc',
                                         lev_range=range(-6000,1,500),
-                                        myPlotLevels=30, vmin=0, vmax=200):
+                                        myPlotLevels=30, vmin=0, vmax=200, fs=18,
+                                        descrip=''):
 #
 # source : may be 'argo', 'ctd', 'seal', or 'all'
 # binsize : size of  lat-lon bins in degrees
 #
+
+    from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+    import matplotlib.ticker as mticker
 
     # print
     print("plot_tools.plot_histogram_of_profile_locations")
@@ -81,24 +85,40 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
     CS = plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, transform=ccrs.PlateCarree())
     plt.clim(vmin, vmax)
     ax.coastlines(resolution='50m',color='white')
-    ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+    
+    # format ticklines
+    gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
                  linewidth=2, color='gray', alpha=0.5, linestyle='--')
+    gl.xlabels_top = True
+    gl.ylabels_left = True
+    gl.xlines = True
+    gl.xlocator = mticker.FixedLocator([-60, -40, -20, 0, 20, 40, 60])
+    gl.ylocator = mticker.FixedLocator([-75,-70,-65,-60,-55,-50])
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+    gl.xlabel_style = {'size': fs, 'color': 'black'}
+    gl.ylabel_style = {'size': fs, 'color': 'black'}
+
+    # add land
     ax.add_feature(cartopy.feature.LAND)
-    plt.savefig(ploc + 'histogram_lat_lon_map_' + source + '.png', bbox_inches='tight')
-    plt.savefig(ploc + 'histogram_lat_lon_map_' + source + '.pdf', bbox_inches='tight')
+        
+    # save figure    
+    plt.savefig(ploc + 'histogram_lat_lon_map_' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'histogram_lat_lon_map_' + descrip + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
     # separate colorbar
     a = np.array([[vmin,vmax]])
-    plt.figure(figsize=(9, 1.5))
+    plt.figure(figsize=(4.25, 0.71))
     img = plt.imshow(a, cmap="viridis")
     plt.gca().set_visible(False)
     cax = plt.axes([0.1, 0.2, 0.8, 0.6])
     cbar = plt.colorbar(orientation="horizontal", cax=cax)
-    cbar.ax.tick_params(labelsize=22)
-    plt.savefig(ploc + 'histogram_latlon_map_colorbar.png', bbox_inches='tight')
-    plt.savefig(ploc + 'histogram_latlon_map_colorbar.pdf', bbox_inches='tight')
+    cbar.ax.tick_params(labelsize=fs)
+    cbar.set_label("Count", fontsize=fs)
+    plt.savefig(ploc + 'histogram_latlon_map_colorbar' + descrip + '.png', bbox_inches='tight')
+    plt.savefig(ploc + 'histogram_latlon_map_colorbar' + descrip + '.pdf', bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -136,13 +156,13 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.prof_CT.quantile(0.25, dim='profile').values, z, lw = 3, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.prof_CT.quantile(0.50, dim='profile').values, z, lw = 3, color = 'red', linestyle='solid')
-   ax1.plot(df1.prof_CT.quantile(0.75, dim='profile').values, z, lw = 3, color = 'red',linestyle='dashed')
+   ax1.plot(df1.prof_CT.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_CT.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_CT.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.prof_CT.quantile(0.25, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.prof_CT.quantile(0.50, dim='profile').values, z, lw = 3, color = 'blue', linestyle='solid')
-   ax1.plot(df2.prof_CT.quantile(0.75, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.prof_CT.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_CT.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_CT.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
@@ -163,13 +183,13 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.prof_SA.quantile(0.25, dim='profile').values, z, lw = 3, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.prof_SA.quantile(0.50, dim='profile').values, z, lw = 3, color = 'red', linestyle='solid')
-   ax1.plot(df1.prof_SA.quantile(0.75, dim='profile').values, z, lw = 3, color = 'red',linestyle='dashed')
+   ax1.plot(df1.prof_SA.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_SA.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_SA.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.prof_SA.quantile(0.25, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.prof_SA.quantile(0.50, dim='profile').values, z, lw = 3, color = 'blue', linestyle='solid')
-   ax1.plot(df2.prof_SA.quantile(0.75, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.prof_SA.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_SA.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_SA.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
@@ -190,13 +210,13 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.sig0.quantile(0.25, dim='profile').values, z, lw = 3, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.sig0.quantile(0.50, dim='profile').values, z, lw = 3, color = 'red', linestyle='solid')
-   ax1.plot(df1.sig0.quantile(0.75, dim='profile').values, z, lw = 3, color = 'red',linestyle='dashed')
+   ax1.plot(df1.sig0.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.sig0.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
+   ax1.plot(df1.sig0.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.sig0.quantile(0.25, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.sig0.quantile(0.50, dim='profile').values, z, lw = 3, color = 'blue', linestyle='solid')
-   ax1.plot(df2.sig0.quantile(0.75, dim='profile').values, z, lw = 3, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.sig0.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.sig0.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
+   ax1.plot(df2.sig0.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
@@ -220,9 +240,12 @@ def plot_many_profiles(ploc, df, frac = 0.10,
                        Tmin = -1.9, Tmax = 7.0,
                        Smin = 33.0, Smax = 35.0,
                        sig0min = 23.0, sig0max = 28.0,
-                       alpha = 0.01, modStr = '',
-                       colorVal = 'black', fs = 14, 
-                       withDensity=True):
+                       alpha = 0.01, 
+                       modStr = '',
+                       colorVal = 'black', 
+                       fs = 18, 
+                       withDensity=True, 
+                       sample_size=400):
 
    print("plot_tools.plot_many_profiles")
 
@@ -235,7 +258,9 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    Nprof = df.profile.values.size
 
    # select random samples
-   sample_size = int(frac*df.profile.size)
+   #sample_size = int(frac*df.profile.size)
+
+   # random sample 
    rows_id = sorted(random.sample(range(0, df.profile.size-1), sample_size))
    df_sample = df.isel(profile=rows_id)
 
@@ -245,11 +270,11 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    CT = df_sample.prof_CT.values
    SA = df_sample.prof_SA.values
    if withDensity==True:
-       sig0_levs = df_sample.sig0_levs.values
+       #sig0_levs = df_sample.sig0_levs.values
        sig0 = df_sample.sig0.values
        #sig0_on_highz = df_sample.sig0_on_highz.values
-       CTsig = df_sample.ct_on_sig0.values
-       SAsig = df_sample.sa_on_sig0.values
+       #CTsig = df_sample.ct_on_sig0.values
+       #SAsig = df_sample.sa_on_sig0.values
 
    # Rechunk into a single dask array chunk along the "profile" dimension
    # --- this was necessary to get rid of a "core dimension" error
@@ -260,29 +285,29 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    SA_q25 = df.prof_SA.quantile(0.25, dim='profile').values
    if withDensity==True:
        sig0_q25 = df.sig0.quantile(0.25, dim='profile').values
-       CTsig_q25 = df.ct_on_sig0.quantile(0.25, dim='profile').values
-       SAsig_q25 = df.sa_on_sig0.quantile(0.25, dim='profile').values
+       #CTsig_q25 = df.ct_on_sig0.quantile(0.25, dim='profile').values
+       #SAsig_q25 = df.sa_on_sig0.quantile(0.25, dim='profile').values
 
    # median values
    CT_median = df.prof_CT.quantile(0.50, dim='profile').values
    SA_median = df.prof_SA.quantile(0.50, dim='profile').values
    if withDensity==True:
        sig0_median = df.sig0.quantile(0.50, dim='profile').values
-       CTsig_median = df.ct_on_sig0.quantile(0.50, dim='profile').values
-       SAsig_median = df.sa_on_sig0.quantile(0.50, dim='profile').values
+       #CTsig_median = df.ct_on_sig0.quantile(0.50, dim='profile').values
+       #SAsig_median = df.sa_on_sig0.quantile(0.50, dim='profile').values
 
    # 0.75 quantile
    CT_q75 = df.prof_CT.quantile(0.75, dim='profile').values
    SA_q75 = df.prof_SA.quantile(0.75, dim='profile').values
    if withDensity==True:
        sig0_q75 = df.sig0.quantile(0.75, dim='profile').values
-       CTsig_q75 = df.ct_on_sig0.quantile(0.75, dim='profile').values
-       SAsig_q75 = df.sa_on_sig0.quantile(0.75, dim='profile').values
+       #CTsig_q75 = df.ct_on_sig0.quantile(0.75, dim='profile').values
+       #SAsig_q75 = df.sa_on_sig0.quantile(0.75, dim='profile').values
 
    # figure CT
    fig1, ax1 = plt.subplots(facecolor='white')
    for d in range(CT.shape[0]):
-       ax1.plot(CT[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
+       ax1.plot(CT[d,:], z, lw = 1.5, alpha = alpha, color = 'grey')
 
    ax1.plot(CT_q25, z, lw = 3, color = colorVal, linestyle='dashed')
    ax1.plot(CT_median, z, lw = 3, color = colorVal)
@@ -294,6 +319,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
+   plt.grid(visible=True)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
    #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
@@ -306,7 +332,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    # figure SA
    fig1, ax1 = plt.subplots(facecolor='white')
    for d in range(SA.shape[0]):
-       ax1.plot(SA[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
+       ax1.plot(SA[d,:], z, lw = 1.5, alpha = alpha, color = 'grey')
 
    ax1.plot(SA_q25, z, lw = 3, color = colorVal, linestyle='dashed')
    ax1.plot(SA_median, z, lw = 3, color = colorVal)
@@ -318,6 +344,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    plt.ylabel('Depth (m)', fontsize=fs)
    ax1.tick_params(axis='x', labelsize=fs)
    ax1.tick_params(axis='y', labelsize=fs)
+   plt.grid(visible=True)
    #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
    #plt.title(modStr, fontsize=fs)
    plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
@@ -331,7 +358,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
    if withDensity==True:
        fig1, ax1 = plt.subplots(facecolor='white')
        for d in range(sig0.shape[0]):
-           ax1.plot(sig0[d,:], z, lw = 0.5, alpha = alpha, color = 'grey')
+           ax1.plot(sig0[d,:], z, lw = 1.5, alpha = alpha, color = 'grey')
 
        ax1.plot(sig0_q25, z, lw = 3, color = colorVal, linestyle='dashed')
        ax1.plot(sig0_median, z, lw = 3, color = colorVal)
@@ -343,6 +370,7 @@ def plot_many_profiles(ploc, df, frac = 0.10,
        plt.ylabel('Depth (m)', fontsize=fs)
        ax1.tick_params(axis='x', labelsize=fs)
        ax1.tick_params(axis='y', labelsize=fs)
+       plt.grid(visible=True)
        #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
        #plt.title(modStr, fontsize=fs)
        plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
@@ -352,53 +380,55 @@ def plot_many_profiles(ploc, df, frac = 0.10,
        plt.show()
        plt.close()
 
-       # figure CT sig
-       fig1, ax1 = plt.subplots(facecolor='white')
-       for d in range(CTsig.shape[0]):
-           ax1.plot(CTsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
+#        # figure CT sig
+#        fig1, ax1 = plt.subplots(facecolor='white')
+#        for d in range(CTsig.shape[0]):
+#            ax1.plot(CTsig[d,:], sig0_levs, lw = 1.0, alpha = alpha, color = 'grey')
 
-       ax1.plot(CTsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-       ax1.plot(CTsig_median, sig0_levs, lw = 3, color = colorVal)
-       ax1.plot(CTsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-       ax1.set_xlim([Tmin, Tmax])
-       ax1.set_ylim([sig0min, sig0max])
-       plt.gca().invert_yaxis()
-       plt.xlabel('Conservative temperature (°C)', fontsize=fs)
-       plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
-       ax1.tick_params(axis='x', labelsize=fs)
-       ax1.tick_params(axis='y', labelsize=fs)
-       #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-       #plt.title(modStr, fontsize=fs)
-       plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
-                ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-       plt.savefig(dploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
-       plt.savefig(dploc + modStr + 'many_profiles_CTsig.pdf', bbox_inches='tight')
-       plt.show()
-       plt.close()
+#        ax1.plot(CTsig_q25, sig0_levs, lw = 5, color = colorVal, linestyle='dashed')
+#        ax1.plot(CTsig_median, sig0_levs, lw = 5, color = colorVal)
+#        ax1.plot(CTsig_q75, sig0_levs, lw = 5, color = colorVal, linestyle='dashed')
+#        ax1.set_xlim([Tmin, Tmax])
+#        ax1.set_ylim([sig0min, sig0max])
+#        plt.gca().invert_yaxis()
+#        plt.xlabel('Conservative temperature (°C)', fontsize=fs)
+#        plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
+#        ax1.tick_params(axis='x', labelsize=fs)
+#        ax1.tick_params(axis='y', labelsize=fs)
+#        plt.grid(visible=True)
+#        #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+#        #plt.title(modStr, fontsize=fs)
+#        plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
+#                 ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+#        plt.savefig(dploc + modStr + 'many_profiles_CTsig.png', bbox_inches='tight')
+#        plt.savefig(dploc + modStr + 'many_profiles_CTsig.pdf', bbox_inches='tight')
+#        plt.show()
+#        plt.close()
 
-       # figure SA sig
-       fig1, ax1 = plt.subplots(facecolor='white')
-       for d in range(SAsig.shape[0]):
-           ax1.plot(SAsig[d,:], sig0_levs, lw = 0.5, alpha = alpha, color = 'grey')
+#        # figure SA sig
+#        fig1, ax1 = plt.subplots(facecolor='white')
+#        for d in range(SAsig.shape[0]):
+#            ax1.plot(SAsig[d,:], sig0_levs, lw = 1.0, alpha = alpha, color = 'grey')
 
-       ax1.plot(SAsig_q25, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-       ax1.plot(SAsig_median, sig0_levs, lw = 3, color = colorVal)
-       ax1.plot(SAsig_q75, sig0_levs, lw = 3, color = colorVal, linestyle='dashed')
-       ax1.set_xlim([Smin, Smax])
-       ax1.set_ylim([sig0min, sig0max])
-       plt.gca().invert_yaxis()
-       plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
-       plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
-       ax1.tick_params(axis='x', labelsize=fs)
-       ax1.tick_params(axis='y', labelsize=fs)
-       #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
-       #plt.title(modStr, fontsize=fs)
-       plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
-                ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
-       plt.savefig(dploc + modStr + 'many_profiles_SAsig.pdf', bbox_inches='tight')
-       plt.savefig(dploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
-       plt.show()
-       plt.close()
+#        ax1.plot(SAsig_q25, sig0_levs, lw = 5, color = colorVal, linestyle='dashed')
+#        ax1.plot(SAsig_median, sig0_levs, lw = 5, color = colorVal)
+#        ax1.plot(SAsig_q75, sig0_levs, lw = 5, color = colorVal, linestyle='dashed')
+#        ax1.set_xlim([Smin, Smax])
+#        ax1.set_ylim([sig0min, sig0max])
+#        plt.gca().invert_yaxis()
+#        plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
+#        plt.ylabel('Potential density (kg/m^3)', fontsize=fs)
+#        ax1.tick_params(axis='x', labelsize=fs)
+#        ax1.tick_params(axis='y', labelsize=fs)
+#        plt.grid(visible=True)
+#        #plt.text(0.1, 0.1, modStr, ha='left', va='bottom', fontsize=fs, transform=ax1.transAxes)
+#        #plt.title(modStr, fontsize=fs)
+#        plt.text(0.9, 0.1, 'N = ' + str(Nprof), \
+#                 ha='right', va='bottom', fontsize=fs, transform=ax1.transAxes)
+#        plt.savefig(dploc + modStr + 'many_profiles_SAsig.pdf', bbox_inches='tight')
+#        plt.savefig(dploc + modStr + 'many_profiles_SAsig.png', bbox_inches='tight')
+#        plt.show()
+#        plt.close()
 
 #####################################################################
 # Plot single profile
@@ -1886,7 +1916,7 @@ def plot_hist_map(ploc, df1D,
                   vartype='imetric',
                   colormap=plt.get_cmap('cividis'),
                   binsize=1,
-                  which_contours='depth',
+                  which_contours='fH',
                   bathy_fname='bathy_with_fH.nc',
                   depth_lev_range=range(-6000,1,1000),
                   fH_lev_range=np.arange(-0.5e-7,0.0e-7,0.2e-7),
@@ -2025,6 +2055,9 @@ def plot_hist_map(ploc, df1D,
             lon_bins = np.arange(lon_range[0], lon_range[1], binsize)
             lat_bins = np.arange(lat_range[0], lat_range[1], binsize)
 
+            # for most variables, extend colorbar
+            myExtend = "both"
+            
             # select variable
             if vartype=="Tsurf":
                 myVar = df1.prof_CT
@@ -2046,18 +2079,24 @@ def plot_hist_map(ploc, df1D,
                 myVar = df1.sig0max
             elif vartype=="imetric":
                 myVar = df1.imetric
+                myExtend = "neither"
             elif vartype=="dyn_height":
                 myVar = df1.dyn_height
             elif vartype=="mld":
                 myVar = df1.mld
+                myExtend = "max"
             elif vartype=="Tmin_depth":
                 myVar = df1.Tmin_depth
+                myExtend = "max"
             elif vartype=="Tmax_depth":
                 myVar = df1.Tmax_depth
+                myExtend = "max"
             elif vartype=="Smin_depth":
                 myVar = df1.Smin_depth
+                myExtend = "max"
             elif vartype=="Smax_depth":
                 myVar = df1.Smax_depth
+                myExtend = "max"
             else:
                 print("Options include: Tsurf, Ssurf, sig0surf, Tmin, Smin, sig0min, \
                        Tmax, Smax, sig0max, imetric, dyn_height, mld")
@@ -2085,14 +2124,15 @@ def plot_hist_map(ploc, df1D,
             h_saccf = plt.plot(saccf[:,0], saccf[:,1], color="green", linewidth=2.0, transform=ccrs.Geodetic())
             h_sbdy = plt.plot(sbdy[:,0], sbdy[:,1], color="yellow", linewidth=2.0, transform=ccrs.Geodetic())
 
-            # make two proxy artists to add to a legend
-            l_saf = mpatches.Rectangle((0, 0), 1, 1, facecolor="black")
-            l_pf = mpatches.Rectangle((0, 0), 1, 1, facecolor="blue")
-            l_saccf = mpatches.Rectangle((0, 0), 1, 1, facecolor="green")
-            l_sbdy = mpatches.Rectangle((0, 0), 1, 1, facecolor="yellow")
-            labels = ['SAF', 'PF', 'SACCF', 'SBDY']
-            plt.legend([l_saf, l_pf, l_saccf, l_sbdy], labels,
-                       loc='lower right', frameon=True, fontsize=legend_font_size)
+            # legend
+            if iclass==0:
+                l_saf = mpatches.Rectangle((0, 0), 1, 1, facecolor="black")
+                l_pf = mpatches.Rectangle((0, 0), 1, 1, facecolor="blue")
+                l_saccf = mpatches.Rectangle((0, 0), 1, 1, facecolor="green")
+                l_sbdy = mpatches.Rectangle((0, 0), 1, 1, facecolor="yellow")
+                labels = ['SAF', 'PF', 'SACCF', 'SBDY']
+                plt.legend([l_saf, l_pf, l_saccf, l_sbdy], labels,
+                           loc='lower right', frameon=True, fontsize=legend_font_size)
 
             #plt.colorbar(CS)
             ax.coastlines(resolution='50m')
@@ -2114,7 +2154,7 @@ def plot_hist_map(ploc, df1D,
             img = plt.imshow(a, cmap=colormap)
             plt.gca().set_visible(False)
             cax = plt.axes([0.1, 0.2, 0.8, 0.6])
-            cbar = plt.colorbar(orientation="horizontal", cax=cax)
+            cbar = plt.colorbar(orientation="horizontal", cax=cax, extend=myExtend)
             cbar.ax.tick_params(labelsize=22)
             plt.savefig(dploc + 'hist_' + vartype + 'colorbar.pdf', bbox_inches='tight')
             plt.savefig(dploc + 'hist_' + vartype + 'colorbar.png', bbox_inches='tight')
@@ -2186,6 +2226,8 @@ def plot_tsne(ploc, colormap, tSNE_data, colors_for_tSNE, describe=''):
     #plt.colorbar(CS)
     plt.title("t-SNE")
     plt.axis('tight')
+    plt.get_xaxis().set_visible(False)
+    plt.get_yaxis().set_visible(False)
     plt.savefig(ploc + 'tSNE' + describe + '.png', bbox_inches='tight')
     plt.savefig(ploc + 'tSNE' + describe + '.pdf', bbox_inches='tight')
     plt.show()
@@ -2590,7 +2632,7 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
                  crange=[0, 100],
                  colormap=cmocean.cm.phase,
                  moreText='',
-                 fs=16.0):
+                 fs=28.0):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -2658,19 +2700,22 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
             TS = histTS.plot(levels=12, cmap=colormap, vmin=crange[0], vmax=crange[1])
 
         # grid
-        CL = plt.contour(sag, ctg, sig0_grid, colors='gray', zorder=1)
-        TS.colorbar.set_label(varName)
+        CL = plt.contour(sag, ctg, sig0_grid, colors='white', zorder=1)
         plt.clabel(CL, fontsize=fs, inline=False, fmt='%.1f') 
+        cbar = TS.colorbar
+        cbar.set_ticks([0,10,20,30,40,50])
+        cbar.set_label('Count',fontsize=fs)
         plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
         plt.ylabel('Conservative temperature (°C)', fontsize=fs)
         plt.xlim(sbins[0], sbins[-1])
         plt.ylim(tbins[0], tbins[-1])
-        plt.xticks(fontsize=16)
-        plt.yticks(fontsize=16)
+        plt.xticks(fontsize=fs)
+        plt.yticks(fontsize=fs)
         plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + moreText + '.png', bbox_inches='tight')
         plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + moreText + '.pdf', bbox_inches='tight')
         plt.show()
         plt.close()
+        
         
 #####################################################################
 # Volume histogram in T/S space

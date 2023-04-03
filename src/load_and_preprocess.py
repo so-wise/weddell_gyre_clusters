@@ -632,13 +632,22 @@ def fit_and_apply_tsne(profiles, Xpca, random_state=0, perplexity=50,
         colors_for_tSNE = profiles.mld[rows_id].values
     elif var_to_plot=="imetric":
         colors_for_tSNE = profiles.imetric[rows_id].values
+    elif var_to_plot=="lon":
+        colors_for_tSNE = profiles.lon[rows_id].values
+    elif var_to_plot=="lat":
+        colors_for_tSNE = profiles.lat[rows_id].values
+    elif var_to_plot=="year":
+        colors_for_tSNE = profiles.year[rows_id].values
+    elif var_to_plot=="month":
+        colors_for_tSNE = profiles.month[rows_id].values
     else:
         colors_for_tSNE = profiles.label[rows_id].values
 
     # create tSNE object
     tsne = manifold.TSNE(n_components=2, init='random',
                          random_state=random_state,
-                         perplexity=perplexity)
+                         perplexity=perplexity,
+                         learning_rate='auto')
 
     # fit tsne
     trans_data = tsne.fit_transform(Xpca_for_tSNE).T

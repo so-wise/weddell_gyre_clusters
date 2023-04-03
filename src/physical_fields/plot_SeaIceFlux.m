@@ -35,7 +35,8 @@ figPos = [199 181 1422 770];
 
 % Let's only keep the positive flux (increasing salinity)
 
-threshold = 0.1e-4;
+%threshold = 0.1e-4;
+threshold = 1e-5;
 
 A = f_seasonal;
 A(A>0) = 0.0;
@@ -99,26 +100,26 @@ if writeToFileFlag==true
     SIfreeze = squeeze(A(:,:,4));
 
     % create variables
-    nccreate('SIfreeze_SOSE.nc','lon','Dimensions',{'lon',2160});
-    nccreate('SIfreeze_SOSE.nc','lat','Dimensions',{'lat',198});
-    nccreate('SIfreeze_SOSE.nc','SIfreeze','Dimensions',{'lon',2160,'lat',198});
+    nccreate('SIfreeze_SOSE_R1.nc','lon','Dimensions',{'lon',2160});
+    nccreate('SIfreeze_SOSE_R1.nc','lat','Dimensions',{'lat',198});
+    nccreate('SIfreeze_SOSE_R1.nc','SIfreeze','Dimensions',{'lon',2160,'lat',198});
 
     % write to those variables
-    ncwrite('SIfreeze_SOSE.nc','lon',lon);
-    ncwrite('SIfreeze_SOSE.nc','lat',lat);
-    ncwrite('SIfreeze_SOSE.nc','SIfreeze',SIfreeze);
+    ncwrite('SIfreeze_SOSE_R1.nc','lon',lon);
+    ncwrite('SIfreeze_SOSE_R1.nc','lat',lat);
+    ncwrite('SIfreeze_SOSE_R1.nc','SIfreeze',SIfreeze);
 
     % attributes assocaited with variable
-    ncwriteatt("SIfreeze_SOSE.nc","SIfreeze","Units","[kg/m^2/s]")
-    ncwriteatt("SIfreeze_SOSE.nc","SIfreeze","Long name","Seaice package: Ocean surface freshwater flux")
-    ncwriteatt("SIfreeze_SOSE.nc","SIfreeze","Variable name","SIfreeze")
-    ncwriteatt("SIfreeze_SOSE.nc","SIfreeze","Threshold",num2str(threshold))
-    ncwriteatt("SIfreeze_SOSE.nc","SIfreeze","Convention","> 0 increases salt")
+    ncwriteatt("SIfreeze_SOSE_R1.nc","SIfreeze","Units","[kg/m^2/s]")
+    ncwriteatt("SIfreeze_SOSE_R1.nc","SIfreeze","Long name","Seaice package: Ocean surface freshwater flux")
+    ncwriteatt("SIfreeze_SOSE_R1.nc","SIfreeze","Variable name","SIfreeze")
+    ncwriteatt("SIfreeze_SOSE_R1.nc","SIfreeze","Threshold",num2str(threshold))
+    ncwriteatt("SIfreeze_SOSE_R1.nc","SIfreeze","Convention","> 0 increases salt")
 
     % global attributes
-    ncwriteatt("SIfreeze_SOSE.nc","/","Source","SOSE iteration 100, 2005-2010")
-    ncwriteatt("SIfreeze_SOSE.nc","/","Source URL","http://sose.ucsd.edu/sose_stateestimation_data_05to10.html")
-    ncwriteatt("SIfreeze_SOSE.nc","/","Description","JAS (Austral winter) average 2005-2010")
+    ncwriteatt("SIfreeze_SOSE_R1.nc","/","Source","SOSE iteration 100, 2005-2010")
+    ncwriteatt("SIfreeze_SOSE_R1.nc","/","Source URL","http://sose.ucsd.edu/sose_stateestimation_data_05to10.html")
+    ncwriteatt("SIfreeze_SOSE_R1.nc","/","Description","JAS (Austral winter) average 2005-2010")
 
 end
 
