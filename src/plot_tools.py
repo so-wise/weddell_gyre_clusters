@@ -40,32 +40,34 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
                                         bathy_fname='bathy_with_fH.nc',
                                         lev_range=range(-6000,1,500),
                                         myPlotLevels=30, vmin=0, vmax=200, fs=18,
+                                        bounds=[0, 50, 100, 150, 200],
                                         descrip=''):
 #
 # source : may be 'argo', 'ctd', 'seal', or 'all'
 # binsize : size of  lat-lon bins in degrees
 #
 
+     # import specialty packages for lon/lat formatter
     from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
     import matplotlib.ticker as mticker
 
-    # print
+    # print the name of the function (for progress tracking)
     print("plot_tools.plot_histogram_of_profile_locations")
 
-    # select
+    # select which source the profiles are coming from (defaul tis "all")
     if source=='all':
         df = profiles
     else:
         df = profiles.where(profiles.source==source, drop=True)
 
-    # bins
+    # define the longitude and latitude bins
     lon_bins = np.arange(lon_range[0], lon_range[1], binsize)
     lat_bins = np.arange(lat_range[0], lat_range[1], binsize)
 
-    # histogram
+    # calculate the histogram
     hLatLon = histogram(df.lon, df.lat, bins=[lon_bins, lat_bins])
 
-    # load bathymetry
+    # load the bathymetry and the associated f/H contours
     bds = io.load_bathymetry(bathy_fname)
     bathy_lon = bds.lon
     bathy_lat = bds.lat
@@ -73,17 +75,26 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
     f_over_H = bds.f_over_H
 
     #
-    #-- original attempt
+    #-- make plot
     #
+    
+    # colormap
+    cmap = mpl.cm.viridis
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N, extend='max')
 
-    # cartopy plot
+    # define figure size and extent of cartopy plot
     plt.figure(figsize=(17, 13))
     ax = plt.axes(projection=ccrs.PlateCarree())
-    ax.set_extent([lon_range[0], lon_range[1], lat_range[0], lat_range[1]],
-                    ccrs.PlateCarree())
-    # colormesh histogram
-    CS = plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, transform=ccrs.PlateCarree())
-    plt.clim(vmin, vmax)
+    ax.set_extent([lon_range[0], 
+                   lon_range[1], 
+                   lat_range[0], 
+                   lat_range[1]],
+                   ccrs.PlateCarree())
+    
+    # plot the colormesh histogram
+    CS = plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, 
+                        norm=norm, cmap=cmap, transform=ccrs.PlateCarree())
+    #plt.clim(vmin, vmax)
     ax.coastlines(resolution='50m',color='white')
     
     # format ticklines
@@ -108,19 +119,14 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
     plt.show()
     plt.close()
 
-    # separate colorbar
-    a = np.array([[vmin,vmax]])
-    plt.figure(figsize=(4.25, 0.71))
-    img = plt.imshow(a, cmap="viridis")
-    plt.gca().set_visible(False)
-    cax = plt.axes([0.1, 0.2, 0.8, 0.6])
-    cbar = plt.colorbar(orientation="horizontal", cax=cax)
-    cbar.ax.tick_params(labelsize=fs)
-    cbar.set_label("Count", fontsize=fs)
+    # create and save separate colorbar, to be added to plot in another program
+    fig, ax = plt.subplots(figsize=(3,0.5)) 
+    fig.subplots_adjust(bottom=0.5)  
+    fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap),              
+                 cax=ax, orientation='horizontal',   
+                 label="Count")
     plt.savefig(ploc + 'histogram_latlon_map_colorbar' + descrip + '.png', bbox_inches='tight')
     plt.savefig(ploc + 'histogram_latlon_map_colorbar' + descrip + '.pdf', bbox_inches='tight')
-    plt.show()
-    plt.close()
 
 #####################################################################
 # Plot single profile
