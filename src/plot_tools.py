@@ -1649,11 +1649,11 @@ def plot_label_map(ploc,
     # add bathymetry or f/H contours
     if which_contours=='depth':
         ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-'
                    transform=ccrs.PlateCarree())
     elif which_contours=='fH':
         ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-'
                    transform=ccrs.PlateCarree())   
 
     # scatter plot
@@ -1738,11 +1738,11 @@ def plot_i_metric_single_panel(ploc,
     # add bathymetry or f/H contours
     if which_contours=='depth':
         ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-'
                    transform=ccrs.PlateCarree())
     elif which_contours=='fH':
         ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-'
                    transform=ccrs.PlateCarree())   
 
     # scatter plot
@@ -1833,11 +1833,11 @@ def plot_i_metric_multiple_panels(ploc,
         # add bathymetry or f/H contours
         if which_contours=='depth':
             ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-'
                        transform=ccrs.PlateCarree())
         elif which_contours=='fH':
             ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-'
                        transform=ccrs.PlateCarree())   
 
         # scatter plot
@@ -1930,10 +1930,10 @@ def plot_hist_map(ploc, df1D,
                   vartype='imetric',
                   colormap=plt.get_cmap('cividis'),
                   binsize=1,
-                  which_contours='fH',
+                  which_contours='depth',
                   bathy_fname='bathy_with_fH.nc',
                   depth_lev_range=range(-6000,1,1000),
-                  fH_lev_range=np.arange(-0.5e-7,0.0e-7,0.2e-7),
+                  fH_lev_range=(-6.0e-8, -4.0e-8),
                   legend_font_size=18,
                   moreText=''):
 
@@ -1971,11 +1971,11 @@ def plot_hist_map(ploc, df1D,
         # add bathymetry or f/H contours
         if which_contours=='depth':
             ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                        transform=ccrs.PlateCarree())
         elif which_contours=='fH':
             ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                        transform=ccrs.PlateCarree())            
 
         # define histogram, calculate mean i-metric value in each bin
@@ -2058,11 +2058,11 @@ def plot_hist_map(ploc, df1D,
             # add bathymetry or f/H contours
             if which_contours=='depth':
                 ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                           linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                           linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                            transform=ccrs.PlateCarree())
             elif which_contours=='fH':
                 ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                           linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                           linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                            transform=ccrs.PlateCarree())      
 
             # define histogram, calculate mean i-metric value in each bin
