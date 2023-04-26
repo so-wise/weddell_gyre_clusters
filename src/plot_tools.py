@@ -490,7 +490,7 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
     ############# Temperature plot
 
     # initialize the figure
-    plt.figure(figsize=(60, 30))
+    plt.figure(figsize=(30, 15))
     plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
@@ -515,15 +515,19 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
 
         #text box
         fs = 24 # font size
-        plt.xlabel('PC', fontsize=fs)
+        #plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('PC' + str(npca+1) + ' (Conservative temp.) ' + \
+        plt.title('PC' + str(npca+1) + ' CT ' + \
                   '[' + str(round(pca.explained_variance_ratio_[npca]*100,1)) + '%]', fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
         ax.tick_params(axis='x', labelsize=22)
         ax.tick_params(axis='y', labelsize=22)
+        
+        if npca>0:
+            ax.set_yticklabels(' ')
+            plt.ylabel(' ')
 
     # save figure and close
     #plt.savefig(ploc + 'pca_temp.png', bbox_inches='tight')
@@ -559,12 +563,16 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         fs = 24 # font size
         plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('PC' + str(npca+1) + ' (Absolute salinity)', fontsize=fs)
+        plt.title('PC' + str(npca+1) + ' SA ', fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
         ax.tick_params(axis='x', labelsize=22)
         ax.tick_params(axis='y', labelsize=22)
+        
+        if npca>0:
+            ax.set_yticklabels(' ')
+            plt.ylabel(' ')
 
     # save figure and close
     plt.savefig(ploc + 'pca_vertical.png', bbox_inches='tight')
