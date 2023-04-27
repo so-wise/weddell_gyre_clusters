@@ -27,6 +27,10 @@ import density
 import random
 import gsw
 
+# a couple more tools for lon/lat formatting
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+import matplotlib.ticker as mticker
+
 # update
 from matplotlib.ticker import MaxNLocator
 from scipy import stats
@@ -40,32 +44,34 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
                                         bathy_fname='bathy_with_fH.nc',
                                         lev_range=range(-6000,1,500),
                                         myPlotLevels=30, vmin=0, vmax=200, fs=18,
+                                        bounds=[0, 50, 100, 150, 200],
                                         descrip=''):
 #
 # source : may be 'argo', 'ctd', 'seal', or 'all'
 # binsize : size of  lat-lon bins in degrees
 #
 
+     # import specialty packages for lon/lat formatter
     from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
     import matplotlib.ticker as mticker
 
-    # print
+    # print the name of the function (for progress tracking)
     print("plot_tools.plot_histogram_of_profile_locations")
 
-    # select
+    # select which source the profiles are coming from (defaul tis "all")
     if source=='all':
         df = profiles
     else:
         df = profiles.where(profiles.source==source, drop=True)
 
-    # bins
+    # define the longitude and latitude bins
     lon_bins = np.arange(lon_range[0], lon_range[1], binsize)
     lat_bins = np.arange(lat_range[0], lat_range[1], binsize)
 
-    # histogram
+    # calculate the histogram
     hLatLon = histogram(df.lon, df.lat, bins=[lon_bins, lat_bins])
 
-    # load bathymetry
+    # load the bathymetry and the associated f/H contours
     bds = io.load_bathymetry(bathy_fname)
     bathy_lon = bds.lon
     bathy_lat = bds.lat
@@ -73,17 +79,26 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
     f_over_H = bds.f_over_H
 
     #
-    #-- original attempt
+    #-- make plot
     #
+    
+    # colormap
+    cmap = mpl.cm.viridis
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N, extend='max')
 
-    # cartopy plot
+    # define figure size and extent of cartopy plot
     plt.figure(figsize=(17, 13))
     ax = plt.axes(projection=ccrs.PlateCarree())
-    ax.set_extent([lon_range[0], lon_range[1], lat_range[0], lat_range[1]],
-                    ccrs.PlateCarree())
-    # colormesh histogram
-    CS = plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, transform=ccrs.PlateCarree())
-    plt.clim(vmin, vmax)
+    ax.set_extent([lon_range[0], 
+                   lon_range[1], 
+                   lat_range[0], 
+                   lat_range[1]],
+                   ccrs.PlateCarree())
+    
+    # plot the colormesh histogram
+    CS = plt.pcolormesh(lon_bins, lat_bins, hLatLon.T, 
+                        norm=norm, cmap=cmap, transform=ccrs.PlateCarree())
+    #plt.clim(vmin, vmax)
     ax.coastlines(resolution='50m',color='white')
     
     # format ticklines
@@ -108,19 +123,14 @@ def plot_histogram_of_profile_locations(ploc, profiles, lon_range, lat_range,
     plt.show()
     plt.close()
 
-    # separate colorbar
-    a = np.array([[vmin,vmax]])
-    plt.figure(figsize=(4.25, 0.71))
-    img = plt.imshow(a, cmap="viridis")
-    plt.gca().set_visible(False)
-    cax = plt.axes([0.1, 0.2, 0.8, 0.6])
-    cbar = plt.colorbar(orientation="horizontal", cax=cax)
-    cbar.ax.tick_params(labelsize=fs)
-    cbar.set_label("Count", fontsize=fs)
+    # create and save separate colorbar, to be added to plot in another program
+    fig, ax = plt.subplots(figsize=(3,0.5)) 
+    fig.subplots_adjust(bottom=0.5)  
+    fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap),              
+                 cax=ax, orientation='horizontal',   
+                 label="Count")
     plt.savefig(ploc + 'histogram_latlon_map_colorbar' + descrip + '.png', bbox_inches='tight')
     plt.savefig(ploc + 'histogram_latlon_map_colorbar' + descrip + '.pdf', bbox_inches='tight')
-    plt.show()
-    plt.close()
 
 #####################################################################
 # Plot single profile
@@ -156,18 +166,19 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.prof_CT.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.prof_CT.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
-   ax1.plot(df1.prof_CT.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
+   ax1.plot(df1.prof_CT.quantile(0.25, dim='profile').values, z, lw = 2, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_CT.quantile(0.50, dim='profile').values, z, lw = 2, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_CT.quantile(0.75, dim='profile').values, z, lw = 2, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.prof_CT.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.prof_CT.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
-   ax1.plot(df2.prof_CT.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.prof_CT.quantile(0.25, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_CT.quantile(0.50, dim='profile').values, z, lw = 2, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_CT.quantile(0.75, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
    ax1.set_xlim([Tmin, Tmax])
    ax1.set_ylim([zmin, zmax])
+   ax1.grid(visible=True, which='major', axis='both')
    plt.gca().invert_yaxis()
    plt.xlabel('Conservative temperature (°C)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -183,18 +194,19 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.prof_SA.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.prof_SA.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
-   ax1.plot(df1.prof_SA.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
+   ax1.plot(df1.prof_SA.quantile(0.25, dim='profile').values, z, lw = 2, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_SA.quantile(0.50, dim='profile').values, z, lw = 2, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_SA.quantile(0.75, dim='profile').values, z, lw = 2, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.prof_SA.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.prof_SA.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
-   ax1.plot(df2.prof_SA.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.prof_SA.quantile(0.25, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_SA.quantile(0.50, dim='profile').values, z, lw = 2, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_SA.quantile(0.75, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
    ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([zmin, zmax])
+   ax1.grid(visible=True, which='major', axis='both')
    plt.gca().invert_yaxis()
    plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -210,18 +222,19 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.sig0.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.sig0.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
-   ax1.plot(df1.sig0.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
+   ax1.plot(df1.sig0.quantile(0.25, dim='profile').values, z, lw = 2, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.sig0.quantile(0.50, dim='profile').values, z, lw = 2, color = 'red', linestyle='solid')
+   ax1.plot(df1.sig0.quantile(0.75, dim='profile').values, z, lw = 2, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.sig0.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.sig0.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
-   ax1.plot(df2.sig0.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.sig0.quantile(0.25, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.sig0.quantile(0.50, dim='profile').values, z, lw = 2, color = 'blue', linestyle='solid')
+   ax1.plot(df2.sig0.quantile(0.75, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
    ax1.set_xlim([sig0min, sig0max])
    ax1.set_ylim([zmin, zmax])
+   ax1.grid(visible=True, which='major', axis='both')
    plt.gca().invert_yaxis()
    plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -484,7 +497,7 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
     ############# Temperature plot
 
     # initialize the figure
-    plt.figure(figsize=(60, 30))
+    plt.figure(figsize=(30, 15))
     plt.style.use('seaborn-darkgrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
@@ -509,15 +522,19 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
 
         #text box
         fs = 24 # font size
-        plt.xlabel('PC', fontsize=fs)
+        #plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('PC' + str(npca+1) + ' (Conservative temp.) ' + \
+        plt.title('PC' + str(npca+1) + ' CT ' + \
                   '[' + str(round(pca.explained_variance_ratio_[npca]*100,1)) + '%]', fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
         ax.tick_params(axis='x', labelsize=22)
         ax.tick_params(axis='y', labelsize=22)
+        
+        if npca>0:
+            ax.set_yticklabels(' ')
+            plt.ylabel(' ')
 
     # save figure and close
     #plt.savefig(ploc + 'pca_temp.png', bbox_inches='tight')
@@ -553,12 +570,16 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
         fs = 24 # font size
         plt.xlabel('PC', fontsize=fs)
         plt.ylabel('Depth (m)', fontsize=fs)
-        plt.title('PC' + str(npca+1) + ' (Absolute salinity)', fontsize=fs)
+        plt.title('PC' + str(npca+1) + ' SA ', fontsize=fs)
 
         # font and axis stuff
         plt.gca().invert_yaxis()
         ax.tick_params(axis='x', labelsize=22)
         ax.tick_params(axis='y', labelsize=22)
+        
+        if npca>0:
+            ax.set_yticklabels(' ')
+            plt.ylabel(' ')
 
     # save figure and close
     plt.savefig(ploc + 'pca_vertical.png', bbox_inches='tight')
@@ -1635,11 +1656,11 @@ def plot_label_map(ploc,
     # add bathymetry or f/H contours
     if which_contours=='depth':
         ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                    transform=ccrs.PlateCarree())
     elif which_contours=='fH':
         ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                    transform=ccrs.PlateCarree())   
 
     # scatter plot
@@ -1724,11 +1745,11 @@ def plot_i_metric_single_panel(ploc,
     # add bathymetry or f/H contours
     if which_contours=='depth':
         ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                    transform=ccrs.PlateCarree())
     elif which_contours=='fH':
         ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                   linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                   linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                    transform=ccrs.PlateCarree())   
 
     # scatter plot
@@ -1819,11 +1840,11 @@ def plot_i_metric_multiple_panels(ploc,
         # add bathymetry or f/H contours
         if which_contours=='depth':
             ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                        transform=ccrs.PlateCarree())
         elif which_contours=='fH':
             ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                        transform=ccrs.PlateCarree())   
 
         # scatter plot
@@ -1914,12 +1935,13 @@ def plot_hist_map(ploc, df1D,
                   n_components_selected,
                   c_range=[0,1],
                   vartype='imetric',
-                  colormap=plt.get_cmap('cividis'),
+                  colormap=plt.get_cmap('viridis'),
+                  bounds = [0.0, 0.25, 0.50, 0.75, 1.0],
                   binsize=1,
                   which_contours='fH',
                   bathy_fname='bathy_with_fH.nc',
                   depth_lev_range=range(-6000,1,1000),
-                  fH_lev_range=np.arange(-0.5e-7,0.0e-7,0.2e-7),
+                  fH_lev_range=(-6.0e-8, -4.0e-8),
                   legend_font_size=18,
                   moreText=''):
 
@@ -1957,11 +1979,11 @@ def plot_hist_map(ploc, df1D,
         # add bathymetry or f/H contours
         if which_contours=='depth':
             ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                        transform=ccrs.PlateCarree())
         elif which_contours=='fH':
             ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                       linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                       linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                        transform=ccrs.PlateCarree())            
 
         # define histogram, calculate mean i-metric value in each bin
@@ -2044,11 +2066,11 @@ def plot_hist_map(ploc, df1D,
             # add bathymetry or f/H contours
             if which_contours=='depth':
                 ax.contour(bathy_lon, bathy_lat, bathy, levels=depth_lev_range,
-                           linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                           linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                            transform=ccrs.PlateCarree())
             elif which_contours=='fH':
                 ax.contour(bathy_lon, bathy_lat, f_over_H, levels=fH_lev_range,
-                           linewidths=0.1, alpha=0.5, colors='gray', linestyles='-',
+                           linewidths=1.0, alpha=0.75, colors='gray', linestyles='-',
                            transform=ccrs.PlateCarree())      
 
             # define histogram, calculate mean i-metric value in each bin
@@ -2057,6 +2079,8 @@ def plot_hist_map(ploc, df1D,
 
             # for most variables, extend colorbar
             myExtend = "both"
+            
+            # NOTE: add bounds, norm, and myLabel to new variables!
             
             # select variable
             if vartype=="Tsurf":
@@ -2067,36 +2091,61 @@ def plot_hist_map(ploc, df1D,
                 myVar = df1.sig0
             elif vartype=="Tmin":
                 myVar = df1.Tmin
+                bounds = [-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="both")
+                myLabel = "Minimum conservative temperature ($^\circ$C)"
             elif vartype=="Smin":
                 myVar = df1.Smin
+                bounds = [33.0, 33.5, 34.0, 34.5]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="both")
+                myLabel = "Minimum salinity (psu)"
             elif vartype=="sig0min":
                 myVar = df1.sig0min
             elif vartype=="Tmax":
                 myVar = df1.Tmax
+                bounds = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="both")
+                myLabel = "Maximum conservative temperature ($^\circ$C)"
             elif vartype=="Smax":
                 myVar = df1.Smax
             elif vartype=="sig0max":
                 myVar = df1.sig0max
             elif vartype=="imetric":
                 myVar = df1.imetric
-                myExtend = "neither"
+                bounds = [0.0, 0.1, 0.5, 0.9, 1.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="neither")
+                myLabel = "I-metric"
             elif vartype=="dyn_height":
                 myVar = df1.dyn_height
+                bounds = [-4.0, -3.5, -3.0, -2.5, -2.0, -1.5, -1.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="neither")
+                myLabel = "Dynamic height [500 dbar] (m)"
             elif vartype=="mld":
                 myVar = df1.mld
-                myExtend = "max"
+                bounds = [0.0, 10.0, 50.0, 100.0, 150.0, 200.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="max")
+                myLabel = "Mixed layer depth (m)"
             elif vartype=="Tmin_depth":
                 myVar = df1.Tmin_depth
-                myExtend = "max"
+                bounds = [0.0, 50.0, 100.0, 150.0, 200.0, 250.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="max")
+                myLabel = "Depth of minimum conservative temperature (m)"
             elif vartype=="Tmax_depth":
                 myVar = df1.Tmax_depth
-                myExtend = "max"
+                bounds = [0.0, 100.0, 200.0, 300.0, 400.0, 500.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="max")
+                myLabel = "Depth of maximum conservative temperature (m)"
             elif vartype=="Smin_depth":
                 myVar = df1.Smin_depth
-                myExtend = "max"
+                bounds = [0.0, 10.0, 20.0, 30.0, 40.0, 50.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="max")
+                myLabel = "Depth of minimum salinity (m)"
             elif vartype=="Smax_depth":
                 myVar = df1.Smax_depth
                 myExtend = "max"
+                bounds = [300.0, 450.0, 600.0, 750.0, 900.0]
+                norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="both")
+                myLabel = "Depth of maximum salinity (m)"
             else:
                 print("Options include: Tsurf, Ssurf, sig0surf, Tmin, Smin, sig0min, \
                        Tmax, Smax, sig0max, imetric, dyn_height, mld")
@@ -2115,8 +2164,8 @@ def plot_hist_map(ploc, df1D,
 
             # colormesh histogram
             CS = plt.pcolormesh(lon_bins, lat_bins, hiSsurf.T,
-                                transform=ccrs.PlateCarree(), cmap=colormap)
-            plt.clim(c_range[0],c_range[1])
+                                transform=ccrs.PlateCarree(), cmap=colormap, norm=norm)
+            #plt.clim(c_range[0],c_range[1])
 
             # fronts
             h_saf = plt.plot(saf[:,0], saf[:,1], color="black", linewidth=2.0, transform=ccrs.Geodetic())
@@ -2134,13 +2183,40 @@ def plot_hist_map(ploc, df1D,
                 plt.legend([l_saf, l_pf, l_saccf, l_sbdy], labels,
                            loc='lower right', frameon=True, fontsize=legend_font_size)
 
-            #plt.colorbar(CS)
+            # plot coastlines and land
             ax.coastlines(resolution='50m')
+            ax.add_feature(cartopy.feature.LAND)
+            
+            # format ticklines
             gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
                               linewidth=1, color='gray', alpha=0.25, linestyle='--')
+            #if iclass==3:
+            #    gl.top_labels = True
+            #    gl.bottom_labels = False
+            #    gl.left_labels = True
+            #    gl.right_labels = False
+            #elif iclass==1:
+            #    gl.top_labels = False
+            #    gl.bottom_labels = True
+            #    gl.left_labels = True
+            #    gl.right_labels = False
+            #else:
+            #    gl.top_labels = False
+            #    gl.bottom_labels = False
+            #    gl.left_labels = True
+            #    gl.right_labels = False
             gl.top_labels = False
+            gl.bottom_labels = True
+            gl.left_labels = True
             gl.right_labels = False
-            ax.add_feature(cartopy.feature.LAND)
+                
+            gl.xlines = True
+            gl.xlocator = mticker.FixedLocator([-60, -40, -20, 0, 20, 40, 60])
+            gl.ylocator = mticker.FixedLocator([-75, -70, -65, -60, -55, -50])
+            gl.xformatter = LONGITUDE_FORMATTER
+            gl.yformatter = LATITUDE_FORMATTER
+            gl.xlabel_style = {'size': 18, 'color': 'black'}
+            gl.ylabel_style = {'size': 18, 'color': 'black'}
 
             # save figure
             plt.savefig(dploc + 'hist_' + vartype + '_' + moreText + str(int(iclass)) + 'K.png', bbox_inches='tight')
@@ -2149,17 +2225,27 @@ def plot_hist_map(ploc, df1D,
             plt.close()
 
             # separate colorbar
-            a = np.array([[c_range[0], c_range[1]]])
-            plt.figure(figsize=(9, 1.5))
-            img = plt.imshow(a, cmap=colormap)
-            plt.gca().set_visible(False)
-            cax = plt.axes([0.1, 0.2, 0.8, 0.6])
-            cbar = plt.colorbar(orientation="horizontal", cax=cax, extend=myExtend)
-            cbar.ax.tick_params(labelsize=22)
-            plt.savefig(dploc + 'hist_' + vartype + 'colorbar.pdf', bbox_inches='tight')
-            plt.savefig(dploc + 'hist_' + vartype + 'colorbar.png', bbox_inches='tight')
-            plt.show()
-            plt.close()
+            #a = np.array([[c_range[0], c_range[1]]])
+            #plt.figure(figsize=(9, 1.5))
+            #img = plt.imshow(a, cmap=colormap)
+            #plt.gca().set_visible(False)
+            #cax = plt.axes([0.1, 0.2, 0.8, 0.6])
+            #cbar = plt.colorbar(orientation="horizontal", cax=cax, extend=myExtend)
+            #cbar.ax.tick_params(labelsize=22)
+            #plt.savefig(dploc + 'hist_' + vartype + 'colorbar.pdf', bbox_inches='tight')
+            #plt.savefig(dploc + 'hist_' + vartype + 'colorbar.png', bbox_inches='tight')
+            #plt.show()
+            #plt.close()
+            
+            # new approach to colorbar
+            fig, ax = plt.subplots(figsize=(3,0.5)) 
+            fig.subplots_adjust(bottom=0.5)  
+            fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=colormap),
+                         cax=ax, 
+                         orientation='horizontal',
+                         label=myLabel)
+            plt.savefig(dploc + 'NEW_hist_' + vartype + 'colorbar.pdf', bbox_inches='tight')
+            plt.savefig(dploc + 'NEW_hist_' + vartype + 'colorbar.png', bbox_inches='tight')
             
 #####################################################################
 # Plot sea ice freezing and fronts
@@ -2632,7 +2718,7 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
                  crange=[0, 100],
                  colormap=cmocean.cm.phase,
                  moreText='',
-                 fs=28.0):
+                 fs=18.0):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -2697,20 +2783,20 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         if vartype=="month":
             TS = histTS.plot(levels=12, cmap=colormap)
         else:
-            TS = histTS.plot(levels=12, cmap=colormap, vmin=crange[0], vmax=crange[1])
+            TS = histTS.plot(levels=11, cmap=colormap, vmin=crange[0], vmax=crange[1])
 
         # grid
-        CL = plt.contour(sag, ctg, sig0_grid, colors='white', zorder=1)
+        CL = plt.contour(sag, ctg, sig0_grid, colors='grey', zorder=1)
         plt.clabel(CL, fontsize=fs, inline=False, fmt='%.1f') 
-        cbar = TS.colorbar
-        cbar.set_ticks([0,10,20,30,40,50])
-        cbar.set_label('Count',fontsize=fs)
+        #cbar = TS.colorbar
+        #cbar.set_ticks([0,10,20,30,40,50])
+        #cbar.set_label('Count',fontsize=fs)
         plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
         plt.ylabel('Conservative temperature (°C)', fontsize=fs)
         plt.xlim(sbins[0], sbins[-1])
         plt.ylim(tbins[0], tbins[-1])
-        plt.xticks(fontsize=fs)
-        plt.yticks(fontsize=fs)
+        plt.xticks(ticks=[33.50, 34.0, 34.5],fontsize=fs)
+        plt.yticks(ticks=[-2, 0, 2, 4, 6],fontsize=fs)
         plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + moreText + '.png', bbox_inches='tight')
         plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + moreText + '.pdf', bbox_inches='tight')
         plt.show()
