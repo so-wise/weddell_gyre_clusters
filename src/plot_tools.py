@@ -166,18 +166,19 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.prof_CT.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.prof_CT.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
-   ax1.plot(df1.prof_CT.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
+   ax1.plot(df1.prof_CT.quantile(0.25, dim='profile').values, z, lw = 2, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_CT.quantile(0.50, dim='profile').values, z, lw = 2, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_CT.quantile(0.75, dim='profile').values, z, lw = 2, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.prof_CT.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.prof_CT.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
-   ax1.plot(df2.prof_CT.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.prof_CT.quantile(0.25, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_CT.quantile(0.50, dim='profile').values, z, lw = 2, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_CT.quantile(0.75, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
    ax1.set_xlim([Tmin, Tmax])
    ax1.set_ylim([zmin, zmax])
+   ax1.grid(visible=True, which='major', axis='both')
    plt.gca().invert_yaxis()
    plt.xlabel('Conservative temperature (°C)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -193,18 +194,19 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.prof_SA.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.prof_SA.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
-   ax1.plot(df1.prof_SA.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
+   ax1.plot(df1.prof_SA.quantile(0.25, dim='profile').values, z, lw = 2, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.prof_SA.quantile(0.50, dim='profile').values, z, lw = 2, color = 'red', linestyle='solid')
+   ax1.plot(df1.prof_SA.quantile(0.75, dim='profile').values, z, lw = 2, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.prof_SA.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.prof_SA.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
-   ax1.plot(df2.prof_SA.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.prof_SA.quantile(0.25, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.prof_SA.quantile(0.50, dim='profile').values, z, lw = 2, color = 'blue', linestyle='solid')
+   ax1.plot(df2.prof_SA.quantile(0.75, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
    ax1.set_xlim([Smin, Smax])
    ax1.set_ylim([zmin, zmax])
+   ax1.grid(visible=True, which='major', axis='both')
    plt.gca().invert_yaxis()
    plt.xlabel('Absolute salinity (g/kg)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
@@ -220,18 +222,19 @@ def compare_two_collections(ploc, df1, df2, frac = 0.10,
    z = df1.depth.values
    
    # df1
-   ax1.plot(df1.sig0.quantile(0.25, dim='profile').values, z, lw = 5, color = 'red', linestyle='dashed')
-   line1, = ax1.plot(df1.sig0.quantile(0.50, dim='profile').values, z, lw = 5, color = 'red', linestyle='solid')
-   ax1.plot(df1.sig0.quantile(0.75, dim='profile').values, z, lw = 5, color = 'red',linestyle='dashed')
+   ax1.plot(df1.sig0.quantile(0.25, dim='profile').values, z, lw = 2, color = 'red', linestyle='dashed')
+   line1, = ax1.plot(df1.sig0.quantile(0.50, dim='profile').values, z, lw = 2, color = 'red', linestyle='solid')
+   ax1.plot(df1.sig0.quantile(0.75, dim='profile').values, z, lw = 2, color = 'red',linestyle='dashed')
    # df2
-   ax1.plot(df2.sig0.quantile(0.25, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
-   line2, = ax1.plot(df2.sig0.quantile(0.50, dim='profile').values, z, lw = 5, color = 'blue', linestyle='solid')
-   ax1.plot(df2.sig0.quantile(0.75, dim='profile').values, z, lw = 5, color = 'blue', linestyle='dashed')
+   ax1.plot(df2.sig0.quantile(0.25, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
+   line2, = ax1.plot(df2.sig0.quantile(0.50, dim='profile').values, z, lw = 2, color = 'blue', linestyle='solid')
+   ax1.plot(df2.sig0.quantile(0.75, dim='profile').values, z, lw = 2, color = 'blue', linestyle='dashed')
 
    # tick parameters 
    ax1.legend([line1, line2],['Northern','Southern'])
    ax1.set_xlim([sig0min, sig0max])
    ax1.set_ylim([zmin, zmax])
+   ax1.grid(visible=True, which='major', axis='both')
    plt.gca().invert_yaxis()
    plt.xlabel('Potential density (kg/m^3)', fontsize=fs)
    plt.ylabel('Depth (m)', fontsize=fs)
