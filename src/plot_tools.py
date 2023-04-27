@@ -2080,6 +2080,8 @@ def plot_hist_map(ploc, df1D,
             # for most variables, extend colorbar
             myExtend = "both"
             
+            # NOTE: add bounds, norm, and myLabel to new variables!
+            
             # select variable
             if vartype=="Tsurf":
                 myVar = df1.prof_CT
@@ -2094,9 +2096,9 @@ def plot_hist_map(ploc, df1D,
                 myLabel = "Minimum conservative temperature ($^\circ$C)"
             elif vartype=="Smin":
                 myVar = df1.Smin
-                bounds = [33.0, 33.25, 33.5, 33.75, 34.0, 34.25, 34.5]
+                bounds = [33.0, 33.5, 34.0, 34.5]
                 norm = mpl.colors.BoundaryNorm(bounds, colormap.N, extend="both")
-                myLabel = "Minimum conservative temperature ($^\circ$C)"
+                myLabel = "Minimum salinity (psu)"
             elif vartype=="sig0min":
                 myVar = df1.sig0min
             elif vartype=="Tmax":
@@ -2712,7 +2714,7 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
                  crange=[0, 100],
                  colormap=cmocean.cm.phase,
                  moreText='',
-                 fs=28.0):
+                 fs=18.0):
 
     # print out
     print('plot_tools.plot_hist_map')
@@ -2790,7 +2792,7 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         plt.xlim(sbins[0], sbins[-1])
         plt.ylim(tbins[0], tbins[-1])
         plt.xticks(ticks=[33.50, 34.0, 34.5],fontsize=fs)
-        plt.yticks(ticks=[-2, 0, 2, 4],fontsize=fs)
+        plt.yticks(ticks=[-2, 0, 2, 4, 6],fontsize=fs)
         plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + moreText + '.png', bbox_inches='tight')
         plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + moreText + '.pdf', bbox_inches='tight')
         plt.show()
