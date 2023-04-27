@@ -2774,10 +2774,10 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         if vartype=="month":
             TS = histTS.plot(levels=12, cmap=colormap)
         else:
-            TS = histTS.plot(levels=12, cmap=colormap, vmin=crange[0], vmax=crange[1])
+            TS = histTS.plot(levels=11, cmap=colormap, vmin=crange[0], vmax=crange[1])
 
         # grid
-        CL = plt.contour(sag, ctg, sig0_grid, colors='black', zorder=1)
+        CL = plt.contour(sag, ctg, sig0_grid, colors='grey', zorder=1)
         plt.clabel(CL, fontsize=fs, inline=False, fmt='%.1f') 
         #cbar = TS.colorbar
         #cbar.set_ticks([0,10,20,30,40,50])
@@ -2786,8 +2786,8 @@ def plot_hist_TS(ploc, df1D, n_components_selected,
         plt.ylabel('Conservative temperature (°C)', fontsize=fs)
         plt.xlim(sbins[0], sbins[-1])
         plt.ylim(tbins[0], tbins[-1])
-        plt.xticks(fontsize=fs)
-        plt.yticks(fontsize=fs)
+        plt.xticks(ticks=[33.50, 34.0, 34.5],fontsize=fs)
+        plt.yticks(ticks=[-2, 0, 2, 4],fontsize=fs)
         plt.savefig(dploc + 'histogram_' + vartype + '_class' + str(iclass) + moreText + '.png', bbox_inches='tight')
         plt.savefig(dploc + 'histogram_depth' + vartype + '_class' + str(iclass) + moreText + '.pdf', bbox_inches='tight')
         plt.show()
