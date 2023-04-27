@@ -2190,21 +2190,25 @@ def plot_hist_map(ploc, df1D,
             # format ticklines
             gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
                               linewidth=1, color='gray', alpha=0.25, linestyle='--')
-            if iclass==3:
-                gl.top_labels = True
-                gl.bottom_labels = False
-                gl.left_labels = True
-                gl.right_labels = False
-            elif iclass==1:
-                gl.top_labels = False
-                gl.bottom_labels = True
-                gl.left_labels = True
-                gl.right_labels = False
-            else:
-                gl.top_labels = False
-                gl.bottom_labels = False
-                gl.left_labels = True
-                gl.right_labels = False
+            #if iclass==3:
+            #    gl.top_labels = True
+            #    gl.bottom_labels = False
+            #    gl.left_labels = True
+            #    gl.right_labels = False
+            #elif iclass==1:
+            #    gl.top_labels = False
+            #    gl.bottom_labels = True
+            #    gl.left_labels = True
+            #    gl.right_labels = False
+            #else:
+            #    gl.top_labels = False
+            #    gl.bottom_labels = False
+            #    gl.left_labels = True
+            #    gl.right_labels = False
+            gl.top_labels = False
+            gl.bottom_labels = True
+            gl.left_labels = True
+            gl.right_labels = False
                 
             gl.xlines = True
             gl.xlocator = mticker.FixedLocator([-60, -40, -20, 0, 20, 40, 60])
