@@ -498,7 +498,7 @@ def plot_pca_vertical_structure(ploc, profiles, pca, Xpca):
 
     # initialize the figure
     plt.figure(figsize=(30, 15))
-    plt.style.use('seaborn-darkgrid')
+    plt.style.use('seaborn-whitegrid')
     #palette = cmx.Paired(np.linspace(0,1,n_comp))
 
     # vertical coordinate
@@ -1240,11 +1240,17 @@ def plot_CT_and_SA_class_structure(ploc, profiles, class_means,
 # Plot vertical structure of a single class (CT, SA, sigma0)
 #####################################################################
 def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
-                                   zmin=20, zmax=1000,
-                                   Tmin=-3, Tmax=20,
-                                   Smin=33.6, Smax=37.0,
-                                   sig0min=26.0, sig0max=28.0,
-                                   frac=0.1, description='full', 
+                                   zmin=20, 
+                                   zmax=1000,
+                                   Tmin=-3, 
+                                   Tmax=20,
+                                   Smin=33.6, 
+                                   Smax=37.0,
+                                   sig0min=26.0, 
+                                   sig0max=28.0,
+                                   frac=0.1, 
+                                   description='full', 
+                                   alpha=0.01,
                                    withDensity=True):
 
     print('plot_tools.plot_class_vertical_structures')
@@ -1267,7 +1273,7 @@ def plot_class_vertical_structures(ploc, df1, n_components_selected, colormap,
                            Tmin=Tmin, Tmax=Tmax,
                            Smin=Smin, Smax=Smax,
                            sig0min=sig0min, sig0max=sig0max,
-                           alpha=0.01,
+                           alpha=alpha,
                            modStr='Class'+str(nrow)+'z'+description,
                            colorVal=colorVal, 
                            withDensity=withDensity)
